@@ -12,12 +12,14 @@
         .glass { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .tab-active { background-color: #4f46e5 !important; color: white !important; font-weight: 900; box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5); }
         .tab-inactive { background-color: #0f172a; color: #475569; }
+        .board-tab-active { color: #fff; border-bottom: 2px solid #8b5cf6; font-weight: 900; }
+        .board-tab-inactive { color: #64748b; }
         .ai-typing { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .mindmap-font { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .custom-scrollbar::-webkit-scrollbar { height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar { height: 6px; width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.5); border-radius: 10px; }
     </style>
@@ -221,12 +223,26 @@
             </section>
         </div>
 
-        <section class="space-y-6 md:space-y-10 mb-12 md:mb-20 text-left">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/5 pb-4 md:pb-8 gap-4 md:gap-0">
-                <div class="space-y-1 md:space-y-2"><h2 class="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase">Writer's Board</h2><p class="text-rose-400 text-[9px] md:text-[10px] font-bold bg-rose-500/10 inline-block px-2 md:px-3 py-1 rounded-full border border-rose-500/20" data-i18n="boardNotice">⚠️ 공지: 집필과 무관한 글은 AI 검역에 의해 블락 처리되며, 보상 대상에서 제외됩니다.</p></div>
-                <div class="flex gap-2 md:gap-3 w-full md:w-auto"><button onclick="toggleAllGuides()" class="flex-1 md:flex-none bg-white/5 hover:bg-white/10 px-4 md:px-6 py-3 md:py-4 rounded-xl md:rounded-2xl text-[10px] md:text-xs font-black text-slate-400 border border-white/10 transition" id="toggle-board-btn">Community 전체보기</button><button onclick="openWriteModal()" class="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-500 px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl text-[11px] md:text-sm font-black transition text-white shadow-xl" data-i18n="writeGuideBtn">가이드 작성</button></div>
+        <section class="space-y-6 md:space-y-8 mb-12 md:mb-20 text-left">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-white/5 pb-4 gap-4 md:gap-0">
+                <div class="space-y-1 md:space-y-2">
+                    <h2 class="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase">Community Lounge</h2>
+                    <p class="text-rose-400 text-[9px] md:text-[10px] font-bold bg-rose-500/10 inline-block px-2 md:px-3 py-1 rounded-full border border-rose-500/20" data-i18n="boardNotice">⚠️ 공지: AI 검역에 의해 블락 처리된 글은 보상에서 제외됩니다.</p>
+                </div>
+                <div class="flex gap-2 md:gap-3 w-full md:w-auto">
+                    <button onclick="openWriteModal()" class="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-500 px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl text-[11px] md:text-sm font-black transition text-white shadow-xl" data-i18n="writeBtn">글쓰기</button>
+                </div>
             </div>
-            <div id="guide-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8"></div>
+            
+            <div class="flex gap-6 border-b border-white/10 px-2 text-xs md:text-sm">
+                <button onclick="switchBoardTab('guide')" id="board-tab-guide" class="pb-3 px-2 transition-all board-tab-active uppercase tracking-widest">💡 작법/팁 공유</button>
+                <button onclick="switchBoardTab('novel')" id="board-tab-novel" class="pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest">📖 소설 자랑하기</button>
+            </div>
+
+            <div id="guide-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 pt-4"></div>
+            <div class="text-center mt-4">
+                <button onclick="toggleAllGuides()" class="bg-white/5 hover:bg-white/10 px-4 md:px-6 py-2 md:py-3 rounded-xl text-[10px] md:text-xs font-black text-slate-400 border border-white/10 transition" id="toggle-board-btn">전체보기</button>
+            </div>
         </section>
     </div>
 
@@ -247,7 +263,14 @@
     <div id="admin-pw-modal" class="hidden fixed inset-0 z-[600] flex items-center justify-center p-4 md:p-6 text-center"><div class="absolute inset-0 bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-sm p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-red-500/20 space-y-4 md:space-y-6 text-left"><h3 class="text-xl md:text-2xl font-black text-white">Admin Lock</h3><input type="password" id="admin-pw-input" class="w-full p-3 md:p-4 bg-slate-900 border border-white/10 rounded-xl md:rounded-2xl text-center text-white font-black outline-none focus:border-red-500" placeholder="••••"><button onclick="verifyAdmin()" class="w-full py-3 md:py-4 bg-red-600 hover:bg-red-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white">인증</button></div></div>
     <div id="my-inquiries-modal" class="hidden fixed inset-0 z-[400] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/95" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-white/10 overflow-y-auto max-h-[80vh] text-left custom-scrollbar"><h3 class="text-2xl md:text-3xl font-black text-white uppercase border-b border-white/5 pb-3 md:pb-4 mb-3 md:mb-4">Inquiries</h3><div id="user-inquiry-list" class="space-y-3 md:space-y-4"></div></div></div>
     <div id="contact-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 text-left text-left text-left text-left"><div class="absolute inset-0 bg-black/95" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-md p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-white/10 space-y-4 md:space-y-6"><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase mb-2 md:mb-4">Contact</h3><textarea id="contact-msg" class="w-full h-32 md:h-40 bg-slate-900 rounded-xl md:rounded-2xl p-3 md:p-4 text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button onclick="sendInquiry()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white mt-2 md:mt-4 transition-all">보내기</button></div></div>
-    <div id="comm-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/90" onclick="closeWriteModal()"></div><div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6 relative text-left max-h-[90vh] overflow-y-auto"><button onclick="closeWriteModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase">Share Wisdom</h3><input type="text" id="g-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-indigo-500" placeholder="제목"><textarea id="g-content" class="w-full h-40 md:h-80 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button id="guide-submit-btn" onclick="submitGuide()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">등록 (AI 검역)</button></div></div>
+    
+    <div id="comm-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/90" onclick="closeWriteModal()"></div><div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6 relative text-left max-h-[90vh] overflow-y-auto"><button onclick="closeWriteModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase" data-i18n="writeBtn">글쓰기</h3>
+        <select id="g-type" class="w-full p-4 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm text-white outline-none focus:border-indigo-500">
+            <option value="guide">💡 작법 / 팁 공유</option>
+            <option value="novel">📖 내 소설 자랑하기</option>
+        </select>
+        <input type="text" id="g-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-indigo-500" placeholder="제목"><textarea id="g-content" class="w-full h-40 md:h-80 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button id="guide-submit-btn" onclick="submitGuide()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">등록 (AI 검역)</button></div></div>
+    
     <div id="view-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left text-left text-left text-left"><div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeViewModal()"></div><div class="glass w-full max-w-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[210] border border-white/10 overflow-y-auto max-h-[85vh] text-left custom-scrollbar"><button onclick="closeViewModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 id="view-title" class="text-2xl md:text-4xl font-black text-white border-b border-white/5 pb-4 md:pb-6 mb-3 md:mb-4 italic"></h3><div id="view-author" class="text-[10px] md:text-xs text-indigo-400 font-black mb-3 md:mb-4"></div><div id="view-content" class="text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] tracking-wide whitespace-pre-wrap py-4 md:py-6 text-left text-left"></div></div></div>
 
     <script>
@@ -259,20 +282,19 @@
         let points = parseInt(localStorage.getItem('g_points')) || 10;
         let projects = JSON.parse(localStorage.getItem('g_projects')) || [{id: Date.now(), title: "나의 첫 소설", lore: "", chars: []}];
         let currentId = projects[0].id;
-        let myLikedGuides = JSON.parse(localStorage.getItem('g_my_likes')) || [];
-        let myCreatedGuides = JSON.parse(localStorage.getItem('g_my_guides')) || [];
         let inquiries = JSON.parse(localStorage.getItem('g_inquiries')) || [];
         let adminClicks = 0;
         let showAllGuides = false;
+        let currentBoardTab = 'guide'; // 현재 선택된 게시판 탭
         let guides = JSON.parse(localStorage.getItem('g_guides')) || [];
         let lastChargedMode = "";
         let lastChargedPoints = 0;
         let currentUserSession = null;
 
         const uiTexts = {
-            'ko': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> 로그인 시 <span class="text-white underline font-black">1000P</span> 증정! 게스트는 10P 제공. (계정 연동 시 클라우드 저장 지원)', 'logout': '로그아웃', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': '세계관 설계부터 모순 검사, 시장 분석까지 한 번에.', 'heroDesc1': '노벨베이스는 작가의 설정을 완벽하게 보존하고, 개연성을 검토하며, 새로운 영감을 제안합니다.', 'heroDesc2': '집필의 모든 기초 설정을 AI와 함께 설계하고 이야기의 구멍을 완벽하게 메우세요.', 'guideBtn': '🚀 노벨베이스 200% 활용 가이드 보기', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '전용 워크스페이스로 이동하여 소설을 직접 집필하고 계정에 동기화하세요.', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': 'TRPG 플레이어를 위한 다이스 룰, 백스토리 및 시나리오 생성 도구로 진입합니다.', 'tabChar': '인물 시뮬레이터', 'tabRelation': '인물 관계도', 'tabScan': '설정 검사/최적화', 'tabSuggest': '소재 추천', 'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'swipeNotice': '👉 메뉴를 옆으로 스와이프하여 더 많은 기능 확인', 'addCharBtn': '+ 인물 추가', 'optEvent': '🔥 사건 발생 (사고/행동 반응)', 'optDialogue': '💬 대사 전달 (화자/청자 지정)', 'targetLabel': '대상:', 'speakerLabel': '🗣️ 화자:', 'listenerLabel': '👂 청자:', 'simBtn': '반응 시뮬레이션 (-2P)', 'regenBtn': '🔄 다시 생성', 'refundBtn': '⚠️ 환급 신청', 'orgTableBtn': '📊 표 정리', 'summarizeBtn': '📝 전체 요약', 'relMapBtn': '관계도 마인드맵 생성 (-2P)', 'redrawBtn': '🔄 다시 그리기', 'checkUpdateBtn': '🔄 새로운 리포트 확인', 'trendLockDesc': '관리자의 최신 리포트가 준비되어 있습니다.', 'trendUnlockBtn': '리포트 열람 (-1P)', 'formatBtn': '가독성 최적화', 'scanHelpTitle': '🔍 이 기능은 무엇을 하나요?', 'scanHelp1': '<b>설정 모순 검사:</b> 좌측의 설정과 원고를 실시간 비교하여 설정 오류를 잡아냅니다.', 'scanHelp2': '<b>모바일 가독성 최적화:</b> 긴 문단을 모바일 호흡에 맞춰 자동 교정합니다.', 'scanBtn': '개연성 검사 시작 (-2P)', 'reScanBtn': '🔄 재검사', 'suggestDesc': '설정을 기반으로 이야기에 새로운 활력을 불어넣을 아이디어를 제안합니다.', 'otherSuggestBtn': '🔄 다른 추천', 'boardNotice': '⚠️ 공지: 집필과 무관한 글은 AI 검역에 의해 블락 처리되며, 보상 대상에서 제외됩니다.', 'writeGuideBtn': '가이드 작성', 'footerDesc': '작가님의 창작 완결을 위한 최고의 AI 파트너. 모든 데이터는 안전하게 본인 계정과 브라우저에 저장됩니다.', 'secDesc1': '본 서비스는 사용자 고유의 <b class="text-white">Groq API Key</b>를 연료로 가동됩니다.', 'secDesc2': '키는 브라우저 <b class="text-emerald-400">암호화 영역(LocalStorage)</b>에만 저장됩니다.', 'secDesc3': '<b class="text-rose-400">서버로 키를 전송하거나 클라우드에 공유하지 않습니다.</b> 안심하세요.', 'apiGuideBtn': 'API 키 발급 가이드 상세보기 →', 'inquiryBtn': '문의 및 답변 확인', 'relationDesc': '복잡한 관계를 한눈에 파악할 수 있는 텍스트 마인드맵을 생성합니다.' },
-            'en': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> Get <span class="text-white underline font-black">1000P</span> on login! Guests get 10P. (Cloud sync supported)', 'logout': 'Logout', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': 'World-building, Consistency Check, and Market Analysis all at once.', 'heroDesc1': 'NovelBase preserves your lore, checks consistency, and inspires new ideas.', 'heroDesc2': 'Design your fundamental settings with AI and fill the plot holes perfectly.', 'guideBtn': '🚀 View NovelBase 200% Usage Guide', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': 'Go to the dedicated workspace to write and sync your novels to your account.', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': 'Enter the tool for TRPG players to roll dice, generate backstories, and create campaigns.', 'tabChar': 'Character Simulator', 'tabRelation': 'Relation Map', 'tabScan': 'Scan & Optimize', 'tabSuggest': 'Idea Suggestion', 'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'swipeNotice': '👉 Swipe the menu sideways to see more features', 'addCharBtn': '+ Add Character', 'optEvent': '🔥 Event Occurred (Action/Thought)', 'optDialogue': '💬 Deliver Dialogue (Speaker/Listener)', 'targetLabel': 'Target:', 'speakerLabel': '🗣️ Speaker:', 'listenerLabel': '👂 Listener:', 'simBtn': 'Simulate Reaction (-2P)', 'regenBtn': '🔄 Regenerate', 'refundBtn': '⚠️ Refund Request', 'orgTableBtn': '📊 Organize Table', 'summarizeBtn': '📝 Summarize Lore', 'relMapBtn': 'Generate Mindmap (-2P)', 'redrawBtn': '🔄 Redraw', 'checkUpdateBtn': '🔄 Check New Report', 'trendLockDesc': 'The latest report from the admin is ready.', 'trendUnlockBtn': 'Unlock Report (-1P)', 'formatBtn': 'Optimize Readability', 'scanHelpTitle': '🔍 What does this do?', 'scanHelp1': '<b>Consistency Check:</b> Real-time comparison between lore and manuscript to catch plot holes.', 'scanHelp2': '<b>Readability:</b> Auto-corrects long paragraphs to fit mobile reading pace.', 'scanBtn': 'Start Consistency Scan (-2P)', 'reScanBtn': '🔄 Rescan', 'suggestDesc': 'Proposes ideas to breathe new life into your story based on the lore.', 'otherSuggestBtn': '🔄 Suggest Others', 'boardNotice': '⚠️ Notice: Irrelevant posts will be blocked by AI and excluded from rewards.', 'writeGuideBtn': 'Write Guide', 'footerDesc': 'The best AI partner for your creative completion. All data is safely stored in your account & browser.', 'secDesc1': 'This service is powered by your unique <b class="text-white">Groq API Key</b>.', 'secDesc2': 'The key is stored only in the <b class="text-emerald-400">encrypted LocalStorage</b> of your browser.', 'secDesc3': '<b class="text-rose-400">We never send or share your key to cloud servers.</b> Use it safely.', 'apiGuideBtn': 'API Key Issuance & Security Guide (Details) →', 'inquiryBtn': 'Check Inquiries & Replies', 'relationDesc': 'Generates a text mindmap to grasp complex relationships at a glance.' },
-            'zh': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> 登录即送 <span class="text-white underline font-black">1000P</span>！访客获得 10P。 (支持云同步)', 'logout': '登出', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': '世界观设计、矛盾检查、市场分析一站式完成。', 'heroDesc1': 'NovelBase 完美保存您的设定，检查连贯性，并提供新的灵感。', 'heroDesc2': '与 AI 一起设计基础设定，完美填补故事漏洞。', 'guideBtn': '🚀 查看 NovelBase 200% 使用指南', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '前往专用工作区直接撰写小说并同步到您的账户。', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': '进入 TRPG 玩家的骰子规则、角色背景和战役生成工具。', 'tabChar': '角色模拟器', 'tabRelation': '人物关系图', 'tabScan': '设定检查/优化', 'tabSuggest': '素材推荐', 'newNovelBtn': '+ 新建小说', 'deleteBtn': '删除', 'swipeNotice': '👉 侧向滑动菜单以查看更多功能', 'addCharBtn': '+ 添加角色', 'optEvent': '🔥 发生事件（思考/行动反应）', 'optDialogue': '💬 传递对话（指定说/听者）', 'targetLabel': '目标:', 'speakerLabel': '🗣️ 说话者:', 'listenerLabel': '👂 听众:', 'simBtn': '模拟反应 (-2P)', 'regenBtn': '🔄 重新生成', 'refundBtn': '⚠️ 申请退款', 'orgTableBtn': '📊 整理信息表', 'summarizeBtn': '📝 设定整体摘要', 'relMapBtn': '生成关系思维导图 (-2P)', 'redrawBtn': '🔄 重新绘制', 'checkUpdateBtn': '🔄 检查新报告', 'trendLockDesc': '管理员的最新报告已准备就绪。', 'trendUnlockBtn': '解锁报告 (-1P)', 'formatBtn': '优化可读性', 'scanHelpTitle': '🔍 这是一个什么功能？', 'scanHelp1': '<b>设定矛盾检查:</b> 实时比较左侧设定和原稿，捕捉设定错误。', 'scanHelp2': '<b>移动端可读性优化:</b> 根据移动端阅读节奏自动校正长段落。', 'scanBtn': '开始连贯性扫描 (-2P)', 'reScanBtn': '🔄 重新扫描', 'suggestDesc': '基于设定提出想法，为故事注入新活力。', 'otherSuggestBtn': '🔄 其他推荐', 'boardNotice': '⚠️ 公告: 与写作无关的帖子将被 AI 屏蔽，且不计入奖励。', 'writeGuideBtn': '撰写指南', 'footerDesc': '您创作完结的最佳 AI 伙伴。所有数据均安全保存在您的账户和浏览器中。', 'secDesc1': '本服务由您独特的 <b class="text-white">Groq API 密钥</b> 驱动。', 'secDesc2': '密钥仅保存在浏览器的 <b class="text-emerald-400">加密 LocalStorage</b> 中。', 'secDesc3': '<b class="text-rose-400">我们绝不会将您的密钥发送或共享到云服务器。</b> 请放心使用。', 'apiGuideBtn': 'API 密钥获取及安全指南（详情） →', 'inquiryBtn': '查看咨询及回复', 'relationDesc': '生成文本思维导图，一目了然地掌握复杂关系。' }
+            'ko': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> 로그인 시 <span class="text-white underline font-black">1000P</span> 증정! 게스트는 10P 제공. (계정 연동 시 클라우드 저장 지원)', 'logout': '로그아웃', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': '세계관 설계부터 모순 검사, 시장 분석까지 한 번에.', 'heroDesc1': '노벨베이스는 작가의 설정을 완벽하게 보존하고, 개연성을 검토하며, 새로운 영감을 제안합니다.', 'heroDesc2': '집필의 모든 기초 설정을 AI와 함께 설계하고 이야기의 구멍을 완벽하게 메우세요.', 'guideBtn': '🚀 노벨베이스 200% 활용 가이드 보기', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '전용 워크스페이스로 이동하여 소설을 직접 집필하고 계정에 동기화하세요.', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': 'TRPG 플레이어를 위한 다이스 룰, 백스토리 및 시나리오 생성 도구로 진입합니다.', 'tabChar': '인물 시뮬레이터', 'tabRelation': '인물 관계도', 'tabScan': '설정 검사/최적화', 'tabSuggest': '소재 추천', 'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'swipeNotice': '👉 메뉴를 옆으로 스와이프하여 더 많은 기능 확인', 'addCharBtn': '+ 인물 추가', 'optEvent': '🔥 사건 발생 (사고/행동 반응)', 'optDialogue': '💬 대사 전달 (화자/청자 지정)', 'targetLabel': '대상:', 'speakerLabel': '🗣️ 화자:', 'listenerLabel': '👂 청자:', 'simBtn': '반응 시뮬레이션 (-2P)', 'regenBtn': '🔄 다시 생성', 'refundBtn': '⚠️ 환급 신청', 'orgTableBtn': '📊 표 정리', 'summarizeBtn': '📝 전체 요약', 'relMapBtn': '관계도 마인드맵 생성 (-2P)', 'redrawBtn': '🔄 다시 그리기', 'checkUpdateBtn': '🔄 새로운 리포트 확인', 'trendLockDesc': '관리자의 최신 리포트가 준비되어 있습니다.', 'trendUnlockBtn': '리포트 열람 (-1P)', 'formatBtn': '가독성 최적화', 'scanHelpTitle': '🔍 이 기능은 무엇을 하나요?', 'scanHelp1': '<b>설정 모순 검사:</b> 좌측의 설정과 원고를 실시간 비교하여 설정 오류를 잡아냅니다.', 'scanHelp2': '<b>모바일 가독성 최적화:</b> 긴 문단을 모바일 호흡에 맞춰 자동 교정합니다.', 'scanBtn': '개연성 검사 시작 (-2P)', 'reScanBtn': '🔄 재검사', 'suggestDesc': '설정을 기반으로 이야기에 새로운 활력을 불어넣을 아이디어를 제안합니다.', 'otherSuggestBtn': '🔄 다른 추천', 'boardNotice': '⚠️ 공지: AI 검역에 의해 블락 처리된 글은 보상에서 제외됩니다.', 'writeBtn': '글쓰기', 'footerDesc': '작가님의 창작 완결을 위한 최고의 AI 파트너. 모든 데이터는 안전하게 본인 계정과 브라우저에 저장됩니다.', 'secDesc1': '본 서비스는 사용자 고유의 <b class="text-white">Groq API Key</b>를 연료로 가동됩니다.', 'secDesc2': '키는 브라우저 <b class="text-emerald-400">암호화 영역(LocalStorage)</b>에만 저장됩니다.', 'secDesc3': '<b class="text-rose-400">서버로 키를 전송하거나 클라우드에 공유하지 않습니다.</b> 안심하세요.', 'apiGuideBtn': 'API 키 발급 가이드 상세보기 →', 'inquiryBtn': '문의 및 답변 확인', 'relationDesc': '복잡한 관계를 한눈에 파악할 수 있는 텍스트 마인드맵을 생성합니다.' },
+            'en': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> Get <span class="text-white underline font-black">1000P</span> on login! Guests get 10P. (Cloud sync supported)', 'logout': 'Logout', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': 'World-building, Consistency Check, and Market Analysis all at once.', 'heroDesc1': 'NovelBase preserves your lore, checks consistency, and inspires new ideas.', 'heroDesc2': 'Design your fundamental settings with AI and fill the plot holes perfectly.', 'guideBtn': '🚀 View NovelBase 200% Usage Guide', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': 'Go to the dedicated workspace to write and sync your novels to your account.', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': 'Enter the tool for TRPG players to roll dice, generate backstories, and create campaigns.', 'tabChar': 'Character Simulator', 'tabRelation': 'Relation Map', 'tabScan': 'Scan & Optimize', 'tabSuggest': 'Idea Suggestion', 'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'swipeNotice': '👉 Swipe the menu sideways to see more features', 'addCharBtn': '+ Add Character', 'optEvent': '🔥 Event Occurred (Action/Thought)', 'optDialogue': '💬 Deliver Dialogue (Speaker/Listener)', 'targetLabel': 'Target:', 'speakerLabel': '🗣️ Speaker:', 'listenerLabel': '👂 Listener:', 'simBtn': 'Simulate Reaction (-2P)', 'regenBtn': '🔄 Regenerate', 'refundBtn': '⚠️ Refund Request', 'orgTableBtn': '📊 Organize Table', 'summarizeBtn': '📝 Summarize Lore', 'relMapBtn': 'Generate Mindmap (-2P)', 'redrawBtn': '🔄 Redraw', 'checkUpdateBtn': '🔄 Check New Report', 'trendLockDesc': 'The latest report from the admin is ready.', 'trendUnlockBtn': 'Unlock Report (-1P)', 'formatBtn': 'Optimize Readability', 'scanHelpTitle': '🔍 What does this do?', 'scanHelp1': '<b>Consistency Check:</b> Real-time comparison between lore and manuscript to catch plot holes.', 'scanHelp2': '<b>Readability:</b> Auto-corrects long paragraphs to fit mobile reading pace.', 'scanBtn': 'Start Consistency Scan (-2P)', 'reScanBtn': '🔄 Rescan', 'suggestDesc': 'Proposes ideas to breathe new life into your story based on the lore.', 'otherSuggestBtn': '🔄 Suggest Others', 'boardNotice': '⚠️ Notice: Blocked posts by AI will be excluded from rewards.', 'writeBtn': 'Write', 'footerDesc': 'The best AI partner for your creative completion. All data is safely stored in your account & browser.', 'secDesc1': 'This service is powered by your unique <b class="text-white">Groq API Key</b>.', 'secDesc2': 'The key is stored only in the <b class="text-emerald-400">encrypted LocalStorage</b> of your browser.', 'secDesc3': '<b class="text-rose-400">We never send or share your key to cloud servers.</b> Use it safely.', 'apiGuideBtn': 'API Key Issuance & Security Guide (Details) →', 'inquiryBtn': 'Check Inquiries & Replies', 'relationDesc': 'Generates a text mindmap to grasp complex relationships at a glance.' },
+            'zh': { 'loginBonus': '📢 <span class="text-white font-black italic">LOGIN BONUS:</span> 登录即送 <span class="text-white underline font-black">1000P</span>！访客获得 10P。 (支持云同步)', 'logout': '登出', 'heroTitle': 'Story <span class="text-indigo-500 italic">Foundation</span>', 'heroSub': '世界观设计、矛盾检查、市场分析一站式完成。', 'heroDesc1': 'NovelBase 完美保存您的设定，检查连贯性，并提供新的灵感。', 'heroDesc2': '与 AI 一起设计基础设定，完美填补故事漏洞。', 'guideBtn': '🚀 查看 NovelBase 200% 使用指南', 'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '前往专用工作区直接撰写小说并同步到您的账户。', 'linkTrpgTitle': 'TRPG Master Engine', 'linkTrpgDesc': '进入 TRPG 玩家的骰子规则、角色背景和战役生成工具。', 'tabChar': '角色模拟器', 'tabRelation': '人物关系图', 'tabScan': '设定检查/优化', 'tabSuggest': '素材推荐', 'newNovelBtn': '+ 新建小说', 'deleteBtn': '删除', 'swipeNotice': '👉 侧向滑动菜单以查看更多功能', 'addCharBtn': '+ 添加角色', 'optEvent': '🔥 发生事件（思考/行动反应）', 'optDialogue': '💬 传递对话（指定说/听者）', 'targetLabel': '目标:', 'speakerLabel': '🗣️ 说话者:', 'listenerLabel': '👂 听众:', 'simBtn': '模拟反应 (-2P)', 'regenBtn': '🔄 重新生成', 'refundBtn': '⚠️ 申请退款', 'orgTableBtn': '📊 整理信息表', 'summarizeBtn': '📝 设定整体摘要', 'relMapBtn': '生成关系思维导图 (-2P)', 'redrawBtn': '🔄 重新绘制', 'checkUpdateBtn': '🔄 检查新报告', 'trendLockDesc': '管理员的最新报告已准备就绪。', 'trendUnlockBtn': '解锁报告 (-1P)', 'formatBtn': '优化可读性', 'scanHelpTitle': '🔍 这是一个什么功能？', 'scanHelp1': '<b>设定矛盾检查:</b> 实时比较左侧设定和原稿，捕捉设定错误。', 'scanHelp2': '<b>移动端可读性优化:</b> 根据移动端阅读节奏自动校正长段落。', 'scanBtn': '开始连贯性扫描 (-2P)', 'reScanBtn': '🔄 重新扫描', 'suggestDesc': '基于设定提出想法，为故事注入新活力。', 'otherSuggestBtn': '🔄 其他推荐', 'boardNotice': '⚠️ 公告: 被 AI 屏蔽的帖子将不计入奖励。', 'writeBtn': '写文章', 'footerDesc': '您创作完结的最佳 AI 伙伴。所有数据均安全保存在您的账户和浏览器中。', 'secDesc1': '本服务由您独特的 <b class="text-white">Groq API 密钥</b> 驱动。', 'secDesc2': '密钥仅保存在浏览器的 <b class="text-emerald-400">加密 LocalStorage</b> 中。', 'secDesc3': '<b class="text-rose-400">我们绝不会将您的密钥发送或共享到云服务器。</b> 请放心使用。', 'apiGuideBtn': 'API 密钥获取及安全指南（详情） →', 'inquiryBtn': '查看咨询及回复', 'relationDesc': '生成文本思维导图，一目了然地掌握复杂关系。' }
         };
 
         const placeholders = {
@@ -298,7 +320,7 @@
             });
 
             const boardBtn = document.getElementById('toggle-board-btn');
-            if(boardBtn) boardBtn.innerText = showAllGuides ? (lang==='ko'?'Community 간략히보기':(lang==='en'?'View Less':'收起社区')) : (lang==='ko'?'Community 전체보기':(lang==='en'?'View All Community':'查看全部社区'));
+            if(boardBtn) boardBtn.innerText = showAllGuides ? (lang==='ko'?'간략히보기':(lang==='en'?'View Less':'收起')) : (lang==='ko'?'전체보기':(lang==='en'?'View All':'查看全部'));
         }
 
         function safeRestoreApiKey() {
@@ -320,19 +342,13 @@
                     localStorage.setItem('g_points', points);
                     document.getElementById('sync-status').classList.remove('hidden');
                 }
-            } catch (e) { console.error("Cloud load error, falling back to local storage.", e); }
+            } catch (e) { console.error("Cloud load error", e); }
         }
 
         async function syncDataToCloud() {
             if (!currentUserSession) return;
-            try {
-                await sbClient.from('novelbase_users').upsert({
-                    id: currentUserSession.user.id,
-                    projects: projects,
-                    points: points,
-                    updated_at: new Date()
-                });
-            } catch (e) { console.error("Cloud sync error.", e); }
+            try { await sbClient.from('novelbase_users').upsert({ id: currentUserSession.user.id, projects: projects, points: points, updated_at: new Date() }); } 
+            catch (e) { console.error("Cloud sync error", e); }
         }
 
         async function init() {
@@ -347,16 +363,16 @@
                 await loadDataFromCloud(currentUserSession);
             }
 
-            const pointStatus = localStorage.getItem('g_point_init_v46'); 
+            const pointStatus = localStorage.getItem('g_point_init_v47'); 
             if (!pointStatus) { 
                 points = currentUserSession ? 1000 : 10; 
-                localStorage.setItem('g_point_init_v46', currentUserSession ? 'member' : 'guest'); 
+                localStorage.setItem('g_point_init_v47', currentUserSession ? 'member' : 'guest'); 
                 localStorage.setItem('g_points', points); 
                 syncDataToCloud(); 
             }
             else if (pointStatus === 'guest' && currentUserSession) { 
                 points += 990; 
-                localStorage.setItem('g_point_init_v46', 'member'); 
+                localStorage.setItem('g_point_init_v47', 'member'); 
                 localStorage.setItem('g_points', points); 
                 syncDataToCloud();
                 alert(savedLang === 'ko' ? "🎉 로그인 보너스 990P가 지급되어 총 1000P가 되었습니다!" : (savedLang === 'en' ? "🎉 990P bonus granted. You now have 1000P!" : "🎉 登录奖励 990P，总计 1000P！")); 
@@ -539,11 +555,11 @@
             }
             
             if (lang === 'ko') {
-                prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 단, 사용자가 입력한 '인물 이름, 지명, 스킬명 등 고유명사'가 영어나 타 언어일 경우 절대 번역하거나 발음대로 적지 말고 원문 그대로(예: limstro) 유지할 것. 그 외의 외계어 혼용은 절대 금지.]`;
+                prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 단, 사용자가 입력한 '인물 이름, 지명, 스킬명 등 고유명사'가 영어나 타 언어일 경우 절대 번역하거나 발음대로 적지 말고 원문 그대로 유지할 것. 외계어 혼용 절대 금지.]`;
             } else if (lang === 'en') {
-                prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. HOWEVER, if the user inputted proper nouns in another language, keep those proper nouns in their original language. Do not translate them.]`;
+                prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. Keep non-English proper nouns original.]`;
             } else if (lang === 'zh') {
-                prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。但是，如果用户输入的“专有名词”是其他语言，请务必保持原文，绝对不要翻译。]`;
+                prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。专有名词保持原文。]`;
             }
 
             try {
@@ -603,11 +619,11 @@
             else prompt = `[전체 설정 데이터]\n${combinedLore}\n\n질문: ${document.getElementById('question').value}`;
 
             if (lang === 'ko') {
-                prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 단, 사용자가 입력한 '인물 이름, 지명, 스킬명 등 고유명사'가 영어나 타 언어일 경우 절대 번역하거나 발음대로 적지 말고 원문 그대로(예: limstro) 유지할 것. 그 외의 외계어 혼용은 절대 금지.]`;
+                prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 단, 사용자가 입력한 '인물 이름, 지명, 스킬명 등 고유명사'가 영어나 타 언어일 경우 절대 번역하거나 발음대로 적지 말고 원문 그대로 유지할 것.]`;
             } else if (lang === 'en') {
-                prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. HOWEVER, if the user inputted proper nouns in another language, keep those proper nouns in their original language. Do not translate them.]`;
+                prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. Keep proper nouns in their original language.]`;
             } else if (lang === 'zh') {
-                prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。但是，如果用户输入的“专有名词”是其他语言，请务必保持原文，绝对不要翻译。]`;
+                prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。专有名词保持原文。]`;
             }
 
             try {
@@ -779,30 +795,61 @@
             if(!n) return; localStorage.setItem('g_user_nickname', n); location.reload(); 
         }
 
+        // [핵심 기능: 커뮤니티 투 트랙 렌더링]
+        function switchBoardTab(tab) {
+            currentBoardTab = tab;
+            document.getElementById('board-tab-guide').className = tab === 'guide' ? 'pb-3 px-2 transition-all board-tab-active uppercase tracking-widest' : 'pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest';
+            document.getElementById('board-tab-novel').className = tab === 'novel' ? 'pb-3 px-2 transition-all board-tab-active uppercase tracking-widest' : 'pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest';
+            renderGuides();
+        }
+
         function renderGuides() { 
             const container = document.getElementById('guide-container'); 
-            let d = showAllGuides ? guides : guides.slice(0, 6); 
+            // 탭에 맞는 글만 필터링 (기존 글은 type이 없으므로 guide로 취급)
+            let filteredGuides = guides.filter(g => (g.type || 'guide') === currentBoardTab);
+            let d = showAllGuides ? filteredGuides : filteredGuides.slice(0, 6); 
+            
+            if(d.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-3 text-center py-10 text-slate-500 italic">아직 등록된 글이 없습니다. 첫 글을 작성해 보세요!</div>`;
+                return;
+            }
+
             container.innerHTML = d.map(g => `<div onclick="openViewModal(${g.id})" class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border ${g.isRelevant ? 'border-white/5' : 'border-rose-900/50'} hover:border-indigo-500 transition cursor-pointer text-left relative"><h3 class="font-black text-white mb-2 md:mb-3 text-base md:text-lg italic uppercase truncate">${g.title} ${!g.isRelevant ? '<span class="text-rose-500 text-[10px]">[Blocked]</span>' : ''}</h3><p class="text-[10px] md:text-xs text-slate-500 h-14 md:h-16 overflow-hidden mb-4 md:mb-6">${g.isRelevant ? g.content : '규정 위반'}</p><div class="flex justify-between items-center"><span class="text-[9px] md:text-[10px] font-black text-indigo-400">@${g.author}</span><button onclick="likeGuide(${g.id}, event)" class="text-rose-500 text-xs md:text-sm">❤️ ${g.likes}</button></div></div>`).join(''); 
         }
+        
         function openWriteModal() { document.getElementById('comm-modal').classList.remove('hidden'); }
         function closeWriteModal() { document.getElementById('comm-modal').classList.add('hidden'); }
+        
+        // [핵심 기능: 커뮤니티 투 트랙 글쓰기 제출]
         async function submitGuide() { 
             const k = getSafeApiKey(); 
+            const type = document.getElementById('g-type').value;
             const t = document.getElementById('g-title').value; 
             const c = document.getElementById('g-content').value; 
             if(!k || !t || !c) return alert("내용과 키를 확인하세요."); 
+            
             const btn = document.getElementById('guide-submit-btn'); 
             btn.innerText = "검역 중..."; 
+            
+            // 검역 기준 변경 (소설 자랑일 경우 소설이면 통과)
+            let checkPrompt = type === 'guide' ? "주어진 글이 웹소설 작법이나 팁이면 YES 아니면 NO" : "주어진 글이 소설의 일부 내용이나 세계관 설정 등 소설과 관련된 창작물이면 YES 아니면 NO";
+
             try { 
-                const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {method:'POST', headers:{'Authorization':`Bearer ${k}`, 'Content-Type':'application/json'}, body:JSON.stringify({model:"llama-3.3-70b-versatile", messages:[{role:"system", content:"소설 팁이면 YES 아니면 NO"},{role:"user", content:`${t}\n${c}`}]})}); 
+                const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {method:'POST', headers:{'Authorization':`Bearer ${k}`, 'Content-Type':'application/json'}, body:JSON.stringify({model:"llama-3.3-70b-versatile", messages:[{role:"system", content: checkPrompt},{role:"user", content:`${t}\n${c}`}]})}); 
                 const data = await resp.json(); 
                 const isRelevant = data.choices[0].message.content.includes("YES"); 
-                guides.unshift({id: Date.now(), title: t, content: c, author: localStorage.getItem('g_user_nickname') || "Author", likes: 0, isRelevant}); 
+                
+                guides.unshift({id: Date.now(), title: t, content: c, author: localStorage.getItem('g_user_nickname') || "Author", likes: 0, isRelevant, type: type}); 
                 localStorage.setItem('g_guides', JSON.stringify(guides)); 
-                renderGuides(); closeWriteModal(); 
-                if(!isRelevant) alert("집필과 무관하여 블락 처리됩니다."); 
+                
+                // 해당 탭으로 자동 이동 후 렌더링
+                switchBoardTab(type);
+                closeWriteModal(); 
+                
+                if(!isRelevant) alert("목적과 무관한 글로 판정되어 블락 처리됩니다."); 
             } catch(e){alert(e);} finally { btn.innerText = "등록 (AI 검역)"; } 
         }
+
         function likeGuide(id, e) { 
             e.stopPropagation(); 
             const g = guides.find(x => x.id === id); 
@@ -820,8 +867,8 @@
             const btn = document.getElementById('toggle-board-btn');
             if(btn) {
                 btn.innerText = showAllGuides ? 
-                    (lang==='ko'?'Community 간략히보기':(lang==='en'?'View Less':'收起社区')) : 
-                    (lang==='ko'?'Community 전체보기':(lang==='en'?'View All Community':'查看全部社区'));
+                    (lang==='ko'?'간략히보기':(lang==='en'?'View Less':'收起')) : 
+                    (lang==='ko'?'전체보기':(lang==='en'?'View All':'查看全部'));
             }
             renderGuides(); 
         }
