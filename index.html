@@ -190,7 +190,10 @@
 
                 <div id="panel-qa" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] min-h-[500px] md:min-h-[730px] space-y-4 md:space-y-6 flex flex-col">
                     <div class="relative"><input type="text" id="question" class="w-full p-4 md:p-5 bg-slate-950 rounded-2xl border border-white/5 outline-none focus:border-indigo-500 pr-24 md:pr-32 text-sm md:text-base text-slate-200 shadow-inner placeholder:text-slate-600" data-i18n-placeholder="askPh" placeholder="질문을 입력하세요."><button onclick="runAI('chat')" class="absolute right-2 top-2 bottom-2 px-4 md:px-8 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-black text-xs md:text-sm text-white transition-all">ASK</button></div>
-                    <div class="grid grid-cols-2 gap-2 md:gap-3 text-xs"><button onclick="runAI('organize')" class="py-3 md:py-4 bg-emerald-900/20 text-emerald-400 border border-emerald-500/20 rounded-xl md:rounded-2xl font-black uppercase italic shadow-lg text-[10px] md:text-xs" data-i18n="orgTableBtn">📊 표 정리</button><button onclick="runAI('summarize')" class="py-3 md:py-4 bg-slate-800 text-slate-300 rounded-xl md:rounded-2xl font-black uppercase italic shadow-lg text-[10px] md:text-xs" data-i18n="summarizeBtn">📝 전체 요약</button></div>
+                    <div class="grid grid-cols-2 gap-2 md:gap-3 text-xs">
+                        <button onclick="runAI('organize')" class="py-3 md:py-4 bg-emerald-900/20 text-emerald-400 border border-emerald-500/20 rounded-xl md:rounded-2xl font-black uppercase italic shadow-lg text-[10px] md:text-xs" data-i18n="orgTableBtn">📊 표 정리</button>
+                        <button onclick="runAI('summarize')" class="py-3 md:py-4 bg-slate-800 text-slate-300 rounded-xl md:rounded-2xl font-black uppercase italic shadow-lg text-[10px] md:text-xs" data-i18n="summarizeBtn">📝 전체 요약</button>
+                    </div>
                     <div id="result-qa" class="prose prose-invert max-w-none text-sm md:text-lg leading-[1.8] md:leading-[2.2] tracking-wide text-slate-100 p-5 md:p-8 bg-slate-950/50 rounded-[1.5rem] md:rounded-[2.5rem] min-h-[300px] md:min-h-[400px] border border-white/5 shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
                 </div>
 
@@ -240,7 +243,7 @@
             
             <div class="flex gap-6 border-b border-white/10 px-2 text-xs md:text-sm">
                 <button onclick="switchBoardTab('guide')" id="board-tab-guide" class="pb-3 px-2 transition-all board-tab-active uppercase tracking-widest">💡 작법/팁 공유</button>
-                <button onclick="switchBoardTab('novel')" id="board-tab-novel" class="pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest">📖 소설 자랑하기</button>
+                <button onclick="switchBoardTab('novel')" id="board-tab-novel" class="pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest">📖 설정 자랑하기</button>
             </div>
 
             <div id="guide-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 pt-4"></div>
@@ -264,9 +267,9 @@
     
     <div id="admin-panel" class="hidden fixed inset-0 z-[700] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/98 backdrop-blur-2xl" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-4xl p-6 md:p-12 rounded-[2rem] md:rounded-[4rem] z-[710] border border-indigo-500/50 shadow-2xl overflow-y-auto max-h-[90vh] space-y-6 md:space-y-10"><h3 class="text-2xl md:text-4xl font-black text-indigo-400 italic uppercase">Admin Console</h3><div class="bg-white/5 p-6 md:p-8 rounded-2xl md:rounded-3xl border border-emerald-500/30"><h4 class="text-emerald-400 mb-2 font-black uppercase text-[10px] md:text-xs text-left">Market Trend Upload</h4><textarea id="admin-raw-trend-input" class="w-full h-24 md:h-40 bg-slate-900 border border-white/10 rounded-xl md:rounded-2xl p-3 md:p-4 text-white text-[10px] md:text-xs text-left custom-scrollbar" placeholder="데이터 복붙"></textarea><button onclick="publishTrendReport()" id="publish-btn" class="w-full py-3 md:py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl md:rounded-2xl font-black text-xs md:text-sm text-white mt-4 transition-all">AI 분석 리포트 발행</button></div><div id="admin-inquiry-list" class="space-y-3 md:space-y-4 text-left"></div></div></div>
     
-    <div id="terms-agreement-modal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1010] border border-indigo-500/30 shadow-2xl space-y-6 md:space-y-8"><h3 class="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase text-center">Terms of <span class="text-indigo-500">Service</span></h3><div class="bg-slate-950/50 p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-white/5 h-[250px] md:h-[350px] overflow-y-auto text-[10px] md:text-xs text-slate-400 leading-6 md:leading-7 font-medium space-y-4 md:space-y-6 custom-scrollbar"><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase italic underline text-left">제 1조 (서비스 목적 및 포인트 정책)</h4><p>본 서비스 '노벨베이스'는 소설 작가의 설정 관리 및 보조를 목적하며, 비로그인 10P, 로그인 정회원에게 1000P를 지급합니다.</p></section><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase text-left">제 2조 (보안 및 책임)</h4><p>API 키는 브라우저 LocalStorage에만 저장되며 서버는 이를 수집하지 않습니다. 유출 책임은 본인에게 있습니다.</p></section><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase text-left">제 3조 (커뮤니티 검역)</h4><p>집필과 관련 없는 내용은 AI 검역에 의해 블락 처리되며, 보상 대상에서 제외됩니다.</p></section></div><div class="flex items-center gap-3 md:gap-4 bg-white/5 p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/10"><input type="checkbox" id="agree-check" class="w-5 h-5 md:w-6 md:h-6 rounded border-white/10 accent-indigo-500 cursor-pointer"><label for="agree-check" class="text-xs md:text-sm font-bold text-white cursor-pointer italic uppercase">정책에 동의합니다.</label></div><button onclick="proceedToNickname()" class="w-full py-3 md:py-5 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg transition text-white shadow-xl">동의하고 시작하기</button></div></div>
+    <div id="terms-agreement-modal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-6 text-left text-left"><div class="absolute inset-0 bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1010] border border-indigo-500/30 shadow-2xl space-y-6 md:space-y-8"><h3 class="text-2xl md:text-4xl font-black text-white italic tracking-tighter uppercase text-center">Terms of <span class="text-indigo-500">Service</span></h3><div class="bg-slate-950/50 p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-white/5 h-[250px] md:h-[350px] overflow-y-auto text-[10px] md:text-xs text-slate-400 leading-6 md:leading-7 font-medium space-y-4 md:space-y-6 custom-scrollbar"><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase italic underline text-left">제 1조 (서비스 목적 및 포인트 정책)</h4><p>본 서비스 '노벨베이스'는 소설 작가의 설정 관리 및 보조를 목적하며, 비로그인 10P, 로그인 정회원에게 1000P를 지급합니다.</p></section><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase text-left">제 2조 (보안 및 책임)</h4><p>API 키는 브라우저 LocalStorage에만 저장되며 서버는 이를 수집하지 않습니다. 유출 책임은 본인에게 있습니다.</p></section><section><h4 class="text-indigo-400 font-black mb-1 md:mb-2 uppercase text-left">제 3조 (커뮤니티 검역)</h4><p>집필과 관련 없는 내용은 AI 검역에 의해 블락 처리되며, 보상 대상에서 제외됩니다.</p></section></div><div class="flex items-center gap-3 md:gap-4 bg-white/5 p-4 md:p-6 rounded-xl md:rounded-2xl border border-white/10"><input type="checkbox" id="agree-check" class="w-5 h-5 md:w-6 md:h-6 rounded border-white/10 accent-indigo-500 cursor-pointer"><label for="agree-check" class="text-xs md:text-sm font-bold text-white cursor-pointer italic uppercase">정책에 동의합니다.</label></div><button onclick="proceedToNickname()" class="w-full py-3 md:py-5 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg transition text-white shadow-xl">동의하고 시작하기</button></div></div>
     
-    <div id="api-modal" class="hidden fixed inset-0 z-[1200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1210] border border-emerald-500/20 shadow-2xl space-y-6 md:space-y-10 max-h-[90vh] overflow-y-auto"><h3 class="text-2xl md:text-4xl font-black text-white tracking-tighter italic uppercase text-center">Ultimate <span class="text-emerald-400">API</span> Guide</h3><div class="space-y-4 md:space-y-6 text-xs md:text-sm font-medium text-slate-300 text-left"><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">01</div><p class="opacity-90"><a href="https://console.groq.com/keys" target="_blank" class="text-blue-400 underline font-bold">Groq Console</a> 접속 후 'Create API Key'를 눌러 <b class="text-white font-black">gsk_...</b> 키를 발급받으세요.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">02</div><p class="opacity-90">발급된 키를 복사하여 메인 화면의 'Private Key' 입력창에 넣으세요. 이 키는 작가님의 <b>개인 비서 비용</b>을 지불하는 용도와 같습니다.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">03</div><p class="opacity-90">노벨베이스는 서버에 키를 저장하지 않습니다. 오직 작가님의 브라우저에만 암호화되어 저장되니 안심하고 사용하세요.</p></div></div><button onclick="this.parentElement.parentElement.classList.add('hidden')" class="w-full py-3 md:py-5 bg-emerald-600 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">확인 완료</button></div></div>
+    <div id="api-modal" class="hidden fixed inset-0 z-[1200] flex items-center justify-center p-4 md:p-6 text-left text-left text-left"><div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1210] border border-emerald-500/20 shadow-2xl space-y-6 md:space-y-10 max-h-[90vh] overflow-y-auto"><h3 class="text-2xl md:text-4xl font-black text-white tracking-tighter italic uppercase text-center">Ultimate <span class="text-emerald-400">API</span> Guide</h3><div class="space-y-4 md:space-y-6 text-xs md:text-sm font-medium text-slate-300 text-left"><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5 text-left text-left text-left"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">01</div><p class="opacity-90 text-left text-left"><a href="https://console.groq.com/keys" target="_blank" class="text-blue-400 underline font-bold">Groq Console</a> 접속 후 'Create API Key'를 눌러 <b class="text-white font-black">gsk_...</b> 키를 발급받으세요.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5 text-left text-left text-left"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">02</div><p class="opacity-90 text-left text-left">발급된 키를 복사하여 메인 화면의 'Private Key' 입력창에 넣으세요. 이 키는 작가님의 <b>개인 비서 비용</b>을 지불하는 용도와 같습니다.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-white/5 rounded-2xl md:rounded-3xl border border-white/5 text-left text-left text-left"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">03</div><p class="opacity-90 text-left text-left">노벨베이스는 서버에 키를 저장하지 않습니다. 오직 작가님의 브라우저에만 암호화되어 저장되니 안심하고 사용하세요.</p></div></div><button onclick="this.parentElement.parentElement.classList.add('hidden')" class="w-full py-3 md:py-5 bg-emerald-600 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">확인 완료</button></div></div>
     
     <div id="nickname-modal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-6 text-center"><div class="absolute inset-0 bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-md p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-emerald-500/20 shadow-2xl space-y-6 md:space-y-8"><h3 class="text-2xl md:text-3xl font-black text-white uppercase italic tracking-tight">Identity Setup</h3><input type="text" id="new-nickname" class="w-full p-4 md:p-5 bg-slate-900 border border-white/10 rounded-2xl md:rounded-3xl text-center text-lg md:text-xl font-black text-white outline-none focus:border-emerald-500" placeholder="필명 입력"><button onclick="saveNickname()" class="w-full py-3 md:py-5 bg-emerald-600 hover:bg-emerald-500 rounded-xl md:rounded-2xl font-black text-white text-base md:text-lg shadow-xl transition-all">입장</button></div></div>
     
@@ -274,11 +277,11 @@
     
     <div id="my-inquiries-modal" class="hidden fixed inset-0 z-[400] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/95" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-white/10 overflow-y-auto max-h-[80vh] text-left custom-scrollbar"><h3 class="text-2xl md:text-3xl font-black text-white uppercase border-b border-white/5 pb-3 md:pb-4 mb-3 md:mb-4">Inquiries</h3><div id="user-inquiry-list" class="space-y-3 md:space-y-4"></div></div></div>
     
-    <div id="contact-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/95" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-md p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-white/10 space-y-4 md:space-y-6"><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase mb-2 md:mb-4">Contact</h3><textarea id="contact-msg" class="w-full h-32 md:h-40 bg-slate-900 rounded-xl md:rounded-2xl p-3 md:p-4 text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button onclick="sendInquiry()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white mt-2 md:mt-4 transition-all">보내기</button></div></div>
+    <div id="contact-modal" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 text-left text-left text-left text-left"><div class="absolute inset-0 bg-black/95" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-md p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-white/10 space-y-4 md:space-y-6"><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase mb-2 md:mb-4">Contact</h3><textarea id="contact-msg" class="w-full h-32 md:h-40 bg-slate-900 rounded-xl md:rounded-2xl p-3 md:p-4 text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button onclick="sendInquiry()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white mt-2 md:mt-4 transition-all">보내기</button></div></div>
     
-    <div id="comm-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/90" onclick="closeWriteModal()"></div><div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6 relative text-left max-h-[90vh] overflow-y-auto"><button onclick="closeWriteModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase" data-i18n="writeBtn">글쓰기</h3><select id="g-type" class="w-full p-4 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm text-white outline-none focus:border-indigo-500"><option value="guide">💡 작법 / 팁 공유</option><option value="novel">📖 내 소설 자랑하기</option></select><input type="text" id="g-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-indigo-500" placeholder="제목"><textarea id="g-content" class="w-full h-40 md:h-80 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button id="guide-submit-btn" onclick="submitGuide()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">등록 (AI 검역)</button></div></div>
+    <div id="comm-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/90" onclick="closeWriteModal()"></div><div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6 relative text-left max-h-[90vh] overflow-y-auto"><button onclick="closeWriteModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 class="text-2xl md:text-3xl font-black text-white italic uppercase" data-i18n="writeBtn">글쓰기</h3><select id="g-type" class="w-full p-4 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm text-white outline-none focus:border-indigo-500"><option value="guide">💡 작법 / 팁 공유</option><option value="novel">📖 내 설정 자랑하기</option></select><input type="text" id="g-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-indigo-500" placeholder="제목"><textarea id="g-content" class="w-full h-40 md:h-80 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="내용"></textarea><button id="guide-submit-btn" onclick="submitGuide()" class="w-full py-3 md:py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">등록 (AI 검역)</button></div></div>
     
-    <div id="view-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeViewModal()"></div><div class="glass w-full max-w-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[210] border border-white/10 overflow-y-auto max-h-[85vh] text-left custom-scrollbar"><button onclick="closeViewModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 id="view-title" class="text-2xl md:text-4xl font-black text-white border-b border-white/5 pb-4 md:pb-6 mb-3 md:mb-4 italic"></h3><div id="view-author" class="text-[10px] md:text-xs text-indigo-400 font-black mb-3 md:mb-4"></div><div id="view-content" class="text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] tracking-wide whitespace-pre-wrap py-4 md:py-6 text-left"></div></div></div>
+    <div id="view-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left text-left text-left text-left"><div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeViewModal()"></div><div class="glass w-full max-w-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[210] border border-white/10 overflow-y-auto max-h-[85vh] text-left custom-scrollbar"><button onclick="closeViewModal()" class="absolute top-6 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl">✕</button><h3 id="view-title" class="text-2xl md:text-4xl font-black text-white border-b border-white/5 pb-4 md:pb-6 mb-3 md:mb-4 italic"></h3><div id="view-author" class="text-[10px] md:text-xs text-indigo-400 font-black mb-3 md:mb-4"></div><div id="view-content" class="text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] tracking-wide whitespace-pre-wrap py-4 md:py-6 text-left text-left"></div></div></div>
 
     <script>
         const ADMIN_PASS = "2007";
@@ -287,8 +290,8 @@
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
         let points = parseInt(localStorage.getItem('g_points')) || 10;
-        let projects = JSON.parse(localStorage.getItem('g_projects')) || [{id: Date.now(), title: "나의 첫 소설", lore: "", chars: []}];
-        let currentId = projects[0].id;
+        let projects = JSON.parse(localStorage.getItem('g_projects')) || [];
+        let currentId = null;
         let inquiries = JSON.parse(localStorage.getItem('g_inquiries')) || [];
         let adminClicks = 0;
         let showAllGuides = false;
@@ -339,13 +342,13 @@
         async function handleAuth(provider) { await sbClient.auth.signInWithOAuth({ provider, options: { redirectTo: window.location.origin }}); }
         async function handleSignOut() { await sbClient.auth.signOut(); location.reload(); }
 
+        // [클라우드 연동 로직 (완벽 보존)]
         async function loadDataFromCloud(session) {
             try {
                 const { data, error } = await sbClient.from('novelbase_users').select('*').eq('id', session.user.id).single();
                 if (data) {
                     if (data.projects && data.projects.length > 0) {
                         projects = data.projects;
-                        currentId = projects[0].id; // 🔥 로딩 꼬임 방지 핵심 로직
                     }
                     if (data.points !== undefined) points = data.points;
                     localStorage.setItem('g_projects', JSON.stringify(projects));
@@ -371,21 +374,28 @@
             
             if (currentUserSession) {
                 await loadDataFromCloud(currentUserSession);
-            } else {
-                projects = JSON.parse(localStorage.getItem('g_projects')) || [{id: Date.now(), title: "나의 첫 소설", lore: "", chars: []}];
-                if(projects.length > 0) currentId = projects[0].id;
             }
 
-            const pointStatus = localStorage.getItem('g_point_init_v48'); 
+            // 로컬스토리지나 클라우드에 프로젝트가 없다면 빈 프로젝트 생성
+            if (!projects || projects.length === 0) {
+                projects = [{id: Date.now(), title: "나의 첫 소설", lore: "", chars: []}];
+            }
+            
+            // currentId 명확히 잡기 (버그 픽스 핵심!)
+            if (!currentId || !projects.find(p => p.id === currentId)) {
+                currentId = projects[0].id;
+            }
+
+            const pointStatus = localStorage.getItem('g_point_init_v49'); 
             if (!pointStatus) { 
                 points = currentUserSession ? 1000 : 10; 
-                localStorage.setItem('g_point_init_v48', currentUserSession ? 'member' : 'guest'); 
+                localStorage.setItem('g_point_init_v49', currentUserSession ? 'member' : 'guest'); 
                 localStorage.setItem('g_points', points); 
                 syncDataToCloud(); 
             }
             else if (pointStatus === 'guest' && currentUserSession) { 
                 points += 990; 
-                localStorage.setItem('g_point_init_v48', 'member'); 
+                localStorage.setItem('g_point_init_v49', 'member'); 
                 localStorage.setItem('g_points', points); 
                 syncDataToCloud();
                 alert(savedLang === 'ko' ? "🎉 로그인 보너스 990P가 지급되어 총 1000P가 되었습니다!" : (savedLang === 'en' ? "🎉 990P bonus granted. You now have 1000P!" : "🎉 登录奖励 990P，总计 1000P！")); 
@@ -402,15 +412,14 @@
                     if(document.getElementById('point-notice')) document.getElementById('point-notice').classList.add('hidden');
                 }
             }
-            document.getElementById('full-terms-box').innerHTML = document.querySelector('#terms-agreement-modal .bg-slate-950\\/50').innerHTML;
+            
             updatePointDisplay(); 
             
-            // 데이터 확실히 로드된 후 렌더링
-            if(projects.length > 0) {
-                renderProjects(); 
-                loadProject(currentId); 
-            }
-            
+            // [에러 유발 코드 삭제 완료]
+            // 데이터가 확보된 상태에서 즉각적으로 무조건 렌더링 실시
+            renderProjects(); 
+            loadProject(currentId); 
+
             renderGuides(); 
             renderUserInquiries();
             safeRestoreApiKey();
