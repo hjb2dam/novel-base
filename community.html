@@ -21,33 +21,76 @@
     <nav class="w-full glass sticky top-0 z-[100] border-b border-emerald-500/30 px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="text-2xl md:text-3xl">📚</div>
-            <span class="text-base md:text-xl font-black tracking-tighter uppercase text-white">Community <span class="text-emerald-400">Lounge</span></span>
+            <span class="text-base md:text-xl font-black tracking-tighter uppercase text-white">WebNovel <span class="text-emerald-400">Platform</span></span>
         </div>
         <div class="flex items-center gap-3 md:gap-6">
-            <button onclick="openPublishModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] md:text-sm rounded-lg md:rounded-xl shadow-lg transition">내 소설 공유하기</button>
+            <button onclick="openCreateNovelModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] md:text-sm rounded-lg md:rounded-xl shadow-lg transition">+ 새 작품 등록</button>
             <a href="index.html" class="text-[10px] md:text-xs font-bold text-slate-400 hover:text-white transition underline">← 메인으로</a>
         </div>
     </nav>
 
-    <div class="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-8 md:py-12 flex-1">
-        <div class="mb-8 md:mb-12 text-center space-y-2 md:space-y-3">
-            <h2 class="text-2xl md:text-4xl font-black text-white italic uppercase tracking-widest">Novel <span class="text-emerald-400">Exhibition</span></h2>
-            <p class="text-[10px] md:text-sm text-slate-400">다른 작가님들의 위대한 이야기를 감상하고 평가해주세요.</p>
+    <div class="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-8 md:py-12 flex-1 flex flex-col">
+        
+        <div id="view-novel-list" class="block w-full">
+            <div class="mb-8 md:mb-12 text-center space-y-2 md:space-y-3">
+                <h2 class="text-2xl md:text-4xl font-black text-white italic uppercase tracking-widest">Novel <span class="text-emerald-400">Exhibition</span></h2>
+                <p class="text-[10px] md:text-sm text-slate-400">다른 작가님들의 위대한 세계관에 접속하여 회차별로 평가해주세요.</p>
+            </div>
+            <div id="community-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+                </div>
         </div>
 
-        <div id="community-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+        <div id="view-chapter-list" class="hidden w-full flex-1 flex flex-col max-w-4xl mx-auto">
+            <button onclick="backToNovelList()" class="self-start text-emerald-400 font-bold text-xs md:text-sm hover:text-white transition mb-6">← 작품 목록으로 돌아가기</button>
+            
+            <div class="glass p-6 md:p-10 rounded-[2rem] border border-white/10 mb-8">
+                <div class="flex justify-between items-start mb-4">
+                    <div>
+                        <h2 id="detail-title" class="text-2xl md:text-4xl font-black text-white italic mb-2">작품 제목</h2>
+                        <span id="detail-author" class="text-[10px] md:text-sm font-black text-emerald-400 bg-emerald-900/30 px-3 py-1 rounded-full border border-emerald-500/20">@작가이름</span>
+                    </div>
+                    <button id="btn-add-chapter" onclick="openCreateChapterModal()" class="hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] md:text-xs rounded-xl shadow-lg transition">✍️ 새 회차 연재하기</button>
+                </div>
+                <p id="detail-desc" class="text-xs md:text-base text-slate-400 leading-relaxed mt-4 bg-slate-900/50 p-4 rounded-xl border border-white/5"></p>
             </div>
+
+            <h3 class="text-lg font-black text-white mb-4 pl-2">회차 목록 (<span id="detail-chapter-count">0</span>)</h3>
+            <div id="chapter-list-container" class="space-y-3">
+                </div>
+        </div>
+
     </div>
 
-    <div id="read-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeReadModal()"></div>
-        <div class="glass w-full max-w-4xl p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] z-[210] border border-emerald-500/30 shadow-2xl flex flex-col max-h-[90vh]">
-            <button onclick="closeReadModal()" class="absolute top-5 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl hover:text-white transition">✕</button>
+    <div id="modal-create-novel" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeCreateNovelModal()"></div>
+        <div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-emerald-500/30 space-y-4 md:space-y-6">
+            <h3 class="text-xl md:text-3xl font-black text-white italic uppercase">Create New Novel</h3>
+            <p class="text-[10px] md:text-xs text-slate-400">새로운 작품의 껍데기(세계관)를 만듭니다. 이후 회차를 추가할 수 있습니다.</p>
+            <input type="text" id="novel-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-emerald-500" placeholder="작품 제목 (예: 빙의한 마법사의 사정)">
+            <textarea id="novel-desc" class="w-full h-32 md:h-40 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-emerald-500 custom-scrollbar" placeholder="작품 시놉시스 (줄거리 및 세계관 설명)"></textarea>
+            <button onclick="submitNovel()" class="w-full py-4 md:py-5 bg-emerald-600 hover:bg-emerald-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg text-white shadow-xl transition-all">작품 등록하기</button>
+        </div>
+    </div>
+
+    <div id="modal-create-chapter" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeCreateChapterModal()"></div>
+        <div class="glass w-full max-w-4xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-indigo-500/30 space-y-4 md:space-y-6 flex flex-col max-h-[90vh]">
+            <h3 class="text-xl md:text-3xl font-black text-white italic uppercase">Publish Chapter</h3>
+            <input type="text" id="chapter-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-indigo-500" placeholder="회차 제목 (예: 1화. 낯선 천장)">
+            <textarea id="chapter-content" class="w-full flex-1 min-h-[200px] p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-indigo-500 custom-scrollbar" placeholder="원고 본문 내용"></textarea>
+            <button onclick="submitChapter()" class="w-full py-4 md:py-5 bg-indigo-600 hover:bg-indigo-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg text-white shadow-xl transition-all">연재하기</button>
+        </div>
+    </div>
+
+    <div id="modal-read-chapter" class="hidden fixed inset-0 z-[300] flex items-center justify-center p-4 md:p-6 text-left">
+        <div class="absolute inset-0 bg-black/98 backdrop-blur-3xl" onclick="closeReadChapterModal()"></div>
+        <div class="glass w-full max-w-4xl p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] z-[310] border border-emerald-500/30 shadow-2xl flex flex-col max-h-[95vh]">
+            <button onclick="closeReadChapterModal()" class="absolute top-5 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl hover:text-white transition">✕</button>
             
-            <h3 id="read-title" class="text-xl md:text-4xl font-black text-white border-b border-white/5 pb-3 md:pb-4 mb-2 md:mb-4 italic truncate pr-8"></h3>
-            <div id="read-author" class="text-[10px] md:text-xs text-emerald-400 font-black mb-4 md:mb-6"></div>
+            <p id="read-novel-title" class="text-[10px] md:text-xs text-emerald-400 font-bold mb-1"></p>
+            <h3 id="read-chapter-title" class="text-xl md:text-4xl font-black text-white border-b border-white/5 pb-3 md:pb-4 mb-4 md:mb-6 italic truncate pr-8"></h3>
             
-            <div id="read-content" class="flex-1 overflow-y-auto custom-scrollbar text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] whitespace-pre-wrap pr-2 md:pr-4 mb-4 md:mb-6"></div>
+            <div id="read-chapter-content" class="flex-1 overflow-y-auto custom-scrollbar text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] whitespace-pre-wrap pr-2 md:pr-4 mb-4 md:mb-6"></div>
             
             <div class="flex justify-center items-center gap-4 md:gap-6 border-t border-white/5 pt-4 md:pt-6 mt-auto">
                 <button id="btn-like" class="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-emerald-900/50 rounded-xl md:rounded-2xl transition border border-slate-700 hover:border-emerald-500 text-white font-black text-xs md:text-base shadow-lg">
@@ -60,152 +103,208 @@
         </div>
     </div>
 
-    <div id="publish-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closePublishModal()"></div>
-        <div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6">
-            <h3 class="text-xl md:text-3xl font-black text-white italic uppercase">Publish Novel</h3>
-            <p class="text-[10px] md:text-xs text-slate-400">당신의 소설을 커뮤니티에 공유하고 다른 작가들의 피드백을 받아보세요.</p>
-            <input type="text" id="pub-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-emerald-500" placeholder="소설 제목 (예: 빙의한 마법사의 사정)">
-            <textarea id="pub-content" class="w-full h-48 md:h-64 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-emerald-500 custom-scrollbar" placeholder="자랑할 원고의 본문 내용을 여기에 붙여넣으세요!"></textarea>
-            <button onclick="submitNovel()" class="w-full py-4 md:py-5 bg-emerald-600 hover:bg-emerald-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg text-white shadow-xl transition-all">라운지에 등록하기</button>
-        </div>
-    </div>
-
     <script>
-        // 가상의 커뮤니티 데이터베이스 (LocalStorage를 활용하여 저장)
-        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels')) || [
+        // [데이터 구조 혁신] 작품(Novel) 배열 안에 회차(chapters) 배열이 존재함
+        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels_v2')) || [
             { 
                 id: 1, 
-                title: "검술명가 막내아들로 살아남기 1화", 
+                title: "검술명가 막내아들로 살아남기", 
                 author: "검객킴", 
-                content: "눈을 떠보니 익숙한 천장이 아니었다.\n이곳은 무림 최고의 명가, 백가장의 뒷마당이었다.\n\n'내가 왜 이곳에 있는 거지?'\n\n머리가 깨질 듯이 아파왔다. 어제 분명히 야근을 마치고 편의점 도시락을 먹으며 자취방 침대에 누웠던 기억이 마지막이었다.\n\n그때, 밖에서 날카로운 쇳소리가 들려왔다.\n\n채챙!\n\n\"막내 도련님이 깨어나셨다! 어서 가주님께 알려라!\"\n\n도련님? 가주? \n나는 황급히 자리에서 일어나 거울을 찾았다. 그리고 경악할 수밖에 없었다. 거울 속에 비친 것은 30대 찌든 직장인의 얼굴이 아니라, 창백할 정도로 하얀 피부를 가진 10대 소년의 얼굴이었기 때문이다.", 
-                likes: 12, 
-                dislikes: 1 
-            },
-            { 
-                id: 2, 
-                title: "이계에서 온 마법사", 
-                author: "매직포스", 
-                content: "마나의 흐름이 끊겼다.\n현대 서울 한복판에 떨어진 대마법사 르네의 첫마디는 이것이었다.\n\n'여기 와이파이 비번이 뭐요?'\n\n카페 알바생은 황당한 표정으로 지팡이를 든 은발의 외국인을 쳐다보았다.\n\"네? 아, 저기 영수증 하단에 적혀있어요.\"\n\n르네는 영수증이라는 종이 쪼가리를 받아 들고는 눈살을 찌푸렸다. \n'이 문명은 마나 대신 전파라는 것을 쓴다고 했지. 제법 흥미롭군.'", 
-                likes: 8, 
-                dislikes: 0 
+                desc: "무림 최고의 명가, 백가장의 뒷마당에서 눈을 뜬 30대 찌든 직장인의 무림 생존기.", 
+                chapters: [
+                    {
+                        chapterId: 101,
+                        title: "1화. 낯선 천장",
+                        content: "눈을 떠보니 익숙한 천장이 아니었다.\n이곳은 무림 최고의 명가, 백가장의 뒷마당이었다.\n\n'내가 왜 이곳에 있는 거지?'\n\n머리가 깨질 듯이 아파왔다. 어제 분명히 야근을 마치고 편의점 도시락을 먹으며 자취방 침대에 누웠던 기억이 마지막이었다.",
+                        likes: 45, dislikes: 2
+                    },
+                    {
+                        chapterId: 102,
+                        title: "2화. 기연을 얻다",
+                        content: "그때, 밖에서 날카로운 쇳소리가 들려왔다.\n\n채챙!\n\n\"막내 도련님이 깨어나셨다! 어서 가주님께 알려라!\"\n\n도련님? 가주? \n나는 황급히 자리에서 일어나 거울을 찾았다.",
+                        likes: 38, dislikes: 0
+                    }
+                ]
             }
         ];
 
-        let currentReadId = null;
+        let currentViewNovelId = null; // 현재 열어본 작품 ID
+        let currentReadChapterId = null; // 현재 읽고 있는 회차 ID
 
-        // 커뮤니티 메인 화면 렌더링
-        function renderCommunity() {
+        // 1. 메인 작품 리스트 렌더링
+        function renderNovelList() {
             const grid = document.getElementById('community-grid');
             if(commNovels.length === 0) {
-                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 italic text-sm">아직 등록된 소설이 없습니다. 첫 번째 작가가 되어보세요!</div>`;
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 italic text-sm">아직 등록된 소설이 없습니다. 첫 번째 작품을 등록해보세요!</div>`;
                 return;
             }
 
-            grid.innerHTML = commNovels.map(novel => `
-                <div onclick="openReadModal(${novel.id})" class="glass p-6 md:p-8 rounded-[2rem] novel-card cursor-pointer flex flex-col h-[280px] border border-white/5 relative group">
-                    <h3 class="font-black text-white mb-2 md:mb-3 text-lg md:text-xl italic truncate pr-4">${novel.title}</h3>
+            grid.innerHTML = commNovels.map(novel => {
+                // 총 좋아요 수 계산 (모든 회차의 좋아요 합)
+                const totalLikes = novel.chapters.reduce((sum, ch) => sum + ch.likes, 0);
+                
+                return `
+                <div onclick="openNovelDetail(${novel.id})" class="glass p-6 md:p-8 rounded-[2rem] novel-card cursor-pointer flex flex-col border border-white/5 relative group h-[250px]">
+                    <div class="flex justify-between items-start mb-2 md:mb-3">
+                        <h3 class="font-black text-white text-lg md:text-xl italic truncate flex-1 pr-2">${novel.title}</h3>
+                        <span class="text-[10px] font-bold text-slate-500 bg-black/50 px-2 py-1 rounded-md shrink-0">총 ${novel.chapters.length}화</span>
+                    </div>
                     <span class="text-[10px] md:text-xs font-black text-emerald-400 mb-3 md:mb-4 block">@${novel.author}</span>
-                    <p class="text-xs md:text-sm text-slate-500 overflow-hidden flex-1 leading-relaxed">${novel.content.substring(0, 150)}...</p>
+                    <p class="text-xs md:text-sm text-slate-500 overflow-hidden flex-1 leading-relaxed line-clamp-3">${novel.desc}</p>
                     
-                    <div class="flex justify-between items-center border-t border-white/5 pt-4 mt-4 text-[10px] md:text-xs font-bold">
-                        <span class="text-emerald-500 group-hover:text-emerald-400 transition">👍 ${novel.likes}</span>
-                        <span class="text-rose-500/70 group-hover:text-rose-500 transition">👎 ${novel.dislikes}</span>
+                    <div class="border-t border-white/5 pt-4 mt-auto text-[10px] md:text-xs font-bold text-slate-400">
+                        <span class="text-emerald-500 mr-3">누적 추천 👍 ${totalLikes}</span>
+                    </div>
+                </div>
+            `}).join('');
+        }
+
+        // 2. 작품 상세(회차 목록) 열기
+        function openNovelDetail(id) {
+            currentViewNovelId = id;
+            const novel = commNovels.find(x => x.id === id);
+            if(!novel) return;
+
+            document.getElementById('view-novel-list').classList.add('hidden');
+            document.getElementById('view-chapter-list').classList.remove('hidden');
+
+            document.getElementById('detail-title').innerText = novel.title;
+            document.getElementById('detail-author').innerText = `@${novel.author}`;
+            document.getElementById('detail-desc').innerText = novel.desc;
+            document.getElementById('detail-chapter-count').innerText = novel.chapters.length;
+
+            // [권한 체크] 로그인한 닉네임과 작가 닉네임이 같으면 연재 버튼 활성화
+            const currentUser = localStorage.getItem('g_user_nickname') || "무명작가";
+            const btnAdd = document.getElementById('btn-add-chapter');
+            if(novel.author === currentUser) {
+                btnAdd.classList.remove('hidden');
+            } else {
+                btnAdd.classList.add('hidden');
+            }
+
+            renderChapterList();
+        }
+
+        // 회차 리스트 렌더링
+        function renderChapterList() {
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            const container = document.getElementById('chapter-list-container');
+            
+            if(novel.chapters.length === 0) {
+                container.innerHTML = `<div class="p-6 text-center text-slate-500 bg-white/5 rounded-2xl italic text-xs">아직 연재된 회차가 없습니다.</div>`;
+                return;
+            }
+
+            // 최신 회차가 위로 오게 뒤집어서 렌더링 (선택 사항, 여기선 순서대로 1화부터 렌더링)
+            container.innerHTML = novel.chapters.map(ch => `
+                <div onclick="openReadChapterModal(${ch.chapterId})" class="bg-slate-900/50 hover:bg-slate-800 p-4 md:p-5 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition cursor-pointer flex justify-between items-center group">
+                    <h4 class="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition truncate pr-4">${ch.title}</h4>
+                    <div class="flex items-center gap-4 shrink-0">
+                        <span class="text-[10px] md:text-xs font-bold text-slate-400">👍 ${ch.likes}</span>
+                        <span class="text-[10px] md:text-xs text-indigo-400 font-bold px-3 py-1 bg-indigo-900/30 rounded-lg">읽기 →</span>
                     </div>
                 </div>
             `).join('');
         }
 
-        // 소설 읽기 모달 열기
-        function openReadModal(id) {
-            currentReadId = id;
-            const novel = commNovels.find(x => x.id === id);
-            if(novel) {
-                document.getElementById('read-title').innerText = novel.title;
-                document.getElementById('read-author').innerText = `@${novel.author}`;
-                document.getElementById('read-content').innerText = novel.content;
-                document.getElementById('count-like').innerText = novel.likes;
-                document.getElementById('count-dislike').innerText = novel.dislikes;
-                
-                // 좋아요 / 싫어요 버튼에 현재 소설 ID 연동
-                document.getElementById('btn-like').onclick = () => voteNovel(id, 'like');
-                document.getElementById('btn-dislike').onclick = () => voteNovel(id, 'dislike');
-
-                document.getElementById('read-modal').classList.remove('hidden');
-                // 모달을 열 때마다 스크롤을 맨 위로 초기화
-                document.getElementById('read-content').scrollTop = 0; 
-            }
+        function backToNovelList() {
+            document.getElementById('view-chapter-list').classList.add('hidden');
+            document.getElementById('view-novel-list').classList.remove('hidden');
+            renderNovelList(); // 누적 좋아요 갱신을 위해 재렌더링
         }
 
-        function closeReadModal() { 
-            document.getElementById('read-modal').classList.add('hidden'); 
-        }
-        
-        function openPublishModal() { 
-            document.getElementById('publish-modal').classList.remove('hidden'); 
-        }
-        
-        function closePublishModal() { 
-            document.getElementById('publish-modal').classList.add('hidden'); 
-        }
+        // ==========================================
+        // 새 작품 만들기 로직
+        // ==========================================
+        function openCreateNovelModal() { document.getElementById('modal-create-novel').classList.remove('hidden'); }
+        function closeCreateNovelModal() { document.getElementById('modal-create-novel').classList.add('hidden'); }
 
-        // 새 소설 등록하기
         function submitNovel() {
-            const title = document.getElementById('pub-title').value.trim();
-            const content = document.getElementById('pub-content').value.trim();
-            
-            // 메인 페이지에서 가입했던 닉네임을 로컬 스토리지에서 가져옴
+            const title = document.getElementById('novel-title').value.trim();
+            const desc = document.getElementById('novel-desc').value.trim();
             const author = localStorage.getItem('g_user_nickname') || "무명작가";
 
-            if(!title || !content) {
-                return alert("제목과 내용을 모두 입력해주세요!");
-            }
+            if(!title || !desc) return alert("제목과 시놉시스를 모두 적어주세요!");
 
-            // 배열의 맨 앞(최신글)에 추가
-            commNovels.unshift({ 
-                id: Date.now(), 
-                title: title, 
-                author: author, 
-                content: content, 
-                likes: 0, 
-                dislikes: 0 
-            });
+            const newNovel = { id: Date.now(), title, author, desc, chapters: [] };
+            commNovels.unshift(newNovel);
+            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
             
-            // 데이터베이스(LocalStorage) 저장
-            localStorage.setItem('g_comm_novels', JSON.stringify(commNovels));
-            
-            // 폼 초기화 및 창 닫기
-            document.getElementById('pub-title').value = ''; 
-            document.getElementById('pub-content').value = '';
-            closePublishModal(); 
-            
-            // 화면 다시 그리기
-            renderCommunity();
-            alert("소설이 성공적으로 라운지에 공유되었습니다!");
+            document.getElementById('novel-title').value = ''; document.getElementById('novel-desc').value = '';
+            closeCreateNovelModal(); renderNovelList();
+            alert("새로운 작품이 등록되었습니다! 이제 회차를 연재해보세요.");
         }
 
-        // 좋아요 & 싫어요 투표 기능
-        function voteNovel(id, type) {
-            const novel = commNovels.find(x => x.id === id);
-            if(novel) {
-                // 단순 카운트 증가 (실제 서비스에서는 유저당 1회 제한을 걸어야 함)
-                if(type === 'like') novel.likes += 1;
-                if(type === 'dislike') novel.dislikes += 1;
+        // ==========================================
+        // 새 회차 연재하기 로직
+        // ==========================================
+        function openCreateChapterModal() { document.getElementById('modal-create-chapter').classList.remove('hidden'); }
+        function closeCreateChapterModal() { document.getElementById('modal-create-chapter').classList.add('hidden'); }
+
+        function submitChapter() {
+            const title = document.getElementById('chapter-title').value.trim();
+            const content = document.getElementById('chapter-content').value.trim();
+            if(!title || !content) return alert("제목과 본문을 입력해주세요!");
+
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            if(!novel) return;
+
+            novel.chapters.push({ chapterId: Date.now(), title, content, likes: 0, dislikes: 0 });
+            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+
+            document.getElementById('chapter-title').value = ''; document.getElementById('chapter-content').value = '';
+            closeCreateChapterModal();
+            document.getElementById('detail-chapter-count').innerText = novel.chapters.length;
+            renderChapterList();
+            alert("새 회차가 성공적으로 연재되었습니다!");
+        }
+
+        // ==========================================
+        // 회차 읽기 & 평가 (Like/Dislike) 로직
+        // ==========================================
+        function openReadChapterModal(chapterId) {
+            currentReadChapterId = chapterId;
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            const chapter = novel.chapters.find(c => c.chapterId === chapterId);
+            
+            if(chapter) {
+                document.getElementById('read-novel-title').innerText = `${novel.title} >`;
+                document.getElementById('read-chapter-title').innerText = chapter.title;
+                document.getElementById('read-chapter-content').innerText = chapter.content;
+                document.getElementById('count-like').innerText = chapter.likes;
+                document.getElementById('count-dislike').innerText = chapter.dislikes;
                 
-                // 데이터베이스 업데이트
-                localStorage.setItem('g_comm_novels', JSON.stringify(commNovels));
-                
-                // 모달 내부의 숫자 즉시 갱신
-                document.getElementById('count-like').innerText = novel.likes;
-                document.getElementById('count-dislike').innerText = novel.dislikes;
-                
-                // 바깥 리스트 화면 갱신
-                renderCommunity();
+                // 투표 이벤트 바인딩
+                document.getElementById('btn-like').onclick = () => voteChapter(chapterId, 'like');
+                document.getElementById('btn-dislike').onclick = () => voteChapter(chapterId, 'dislike');
+
+                document.getElementById('modal-read-chapter').classList.remove('hidden');
+                document.getElementById('read-chapter-content').scrollTop = 0; 
             }
         }
 
-        // 페이지 로드 시 최초 1회 렌더링
-        window.onload = renderCommunity;
+        function closeReadChapterModal() { document.getElementById('modal-read-chapter').classList.add('hidden'); }
+
+        function voteChapter(chapterId, type) {
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            const chapter = novel.chapters.find(c => c.chapterId === chapterId);
+            
+            if(chapter) {
+                if(type === 'like') chapter.likes += 1;
+                if(type === 'dislike') chapter.dislikes += 1;
+                
+                localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+                
+                document.getElementById('count-like').innerText = chapter.likes;
+                document.getElementById('count-dislike').innerText = chapter.dislikes;
+                
+                // 백그라운드 리스트 최신화
+                renderChapterList();
+            }
+        }
+
+        // 앱 시작 시
+        window.onload = renderNovelList;
     </script>
 </body>
 </html>
