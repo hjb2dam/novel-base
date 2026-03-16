@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Lounge - NovelBase</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; }
+        .glass { background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .novel-card { transition: all 0.3s ease; }
+        .novel-card:hover { transform: translateY(-5px); border-color: #10b981; box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen flex flex-col">
+
+    <nav class="w-full glass sticky top-0 z-[100] border-b border-emerald-500/30 px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg">
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="text-2xl md:text-3xl">📚</div>
+            <span class="text-base md:text-xl font-black tracking-tighter uppercase text-white">Community <span class="text-emerald-400">Lounge</span></span>
+        </div>
+        <div class="flex items-center gap-3 md:gap-6">
+            <button onclick="openPublishModal()" class="px-3 py-1.5 md:px-4 md:py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] md:text-sm rounded-lg md:rounded-xl shadow-lg transition">내 소설 공유하기</button>
+            <a href="index.html" class="text-[10px] md:text-xs font-bold text-slate-400 hover:text-white transition underline">← 메인으로</a>
+        </div>
+    </nav>
+
+    <div class="max-w-[1400px] mx-auto w-full px-4 md:px-6 py-8 md:py-12 flex-1">
+        <div class="mb-8 md:mb-12 text-center space-y-2 md:space-y-3">
+            <h2 class="text-2xl md:text-4xl font-black text-white italic uppercase tracking-widest">Novel <span class="text-emerald-400">Exhibition</span></h2>
+            <p class="text-[10px] md:text-sm text-slate-400">다른 작가님들의 위대한 이야기를 감상하고 평가해주세요.</p>
+        </div>
+
+        <div id="community-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
+            </div>
+    </div>
+
+    <div id="read-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closeReadModal()"></div>
+        <div class="glass w-full max-w-4xl p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] z-[210] border border-emerald-500/30 shadow-2xl flex flex-col max-h-[90vh]">
+            <button onclick="closeReadModal()" class="absolute top-5 md:top-8 right-6 md:right-8 text-slate-500 text-xl md:text-2xl hover:text-white transition">✕</button>
+            
+            <h3 id="read-title" class="text-xl md:text-4xl font-black text-white border-b border-white/5 pb-3 md:pb-4 mb-2 md:mb-4 italic truncate pr-8"></h3>
+            <div id="read-author" class="text-[10px] md:text-xs text-emerald-400 font-black mb-4 md:mb-6"></div>
+            
+            <div id="read-content" class="flex-1 overflow-y-auto custom-scrollbar text-slate-300 text-sm md:text-lg leading-[1.8] md:leading-[2.2] whitespace-pre-wrap pr-2 md:pr-4 mb-4 md:mb-6"></div>
+            
+            <div class="flex justify-center items-center gap-4 md:gap-6 border-t border-white/5 pt-4 md:pt-6 mt-auto">
+                <button id="btn-like" class="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-emerald-900/50 rounded-xl md:rounded-2xl transition border border-slate-700 hover:border-emerald-500 text-white font-black text-xs md:text-base shadow-lg">
+                    👍 <span id="count-like">0</span>
+                </button>
+                <button id="btn-dislike" class="flex items-center gap-2 px-6 py-3 bg-slate-800 hover:bg-rose-900/50 rounded-xl md:rounded-2xl transition border border-slate-700 hover:border-rose-500 text-white font-black text-xs md:text-base shadow-lg">
+                    👎 <span id="count-dislike">0</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="publish-modal" class="hidden fixed inset-0 z-[200] flex items-center justify-center p-4 md:p-6 text-left">
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-md" onclick="closePublishModal()"></div>
+        <div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] z-[210] border border-white/10 space-y-4 md:space-y-6">
+            <h3 class="text-xl md:text-3xl font-black text-white italic uppercase">Publish Novel</h3>
+            <p class="text-[10px] md:text-xs text-slate-400">당신의 소설을 커뮤니티에 공유하고 다른 작가들의 피드백을 받아보세요.</p>
+            <input type="text" id="pub-title" class="w-full p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-sm md:text-base text-white outline-none focus:border-emerald-500" placeholder="소설 제목 (예: 빙의한 마법사의 사정)">
+            <textarea id="pub-content" class="w-full h-48 md:h-64 p-4 md:p-5 bg-slate-950 border border-white/5 rounded-xl md:rounded-2xl text-xs md:text-sm text-white outline-none focus:border-emerald-500 custom-scrollbar" placeholder="자랑할 원고의 본문 내용을 여기에 붙여넣으세요!"></textarea>
+            <button onclick="submitNovel()" class="w-full py-4 md:py-5 bg-emerald-600 hover:bg-emerald-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg text-white shadow-xl transition-all">라운지에 등록하기</button>
+        </div>
+    </div>
+
+    <script>
+        // 가상의 커뮤니티 데이터베이스 (LocalStorage를 활용하여 저장)
+        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels')) || [
+            { 
+                id: 1, 
+                title: "검술명가 막내아들로 살아남기 1화", 
+                author: "검객킴", 
+                content: "눈을 떠보니 익숙한 천장이 아니었다.\n이곳은 무림 최고의 명가, 백가장의 뒷마당이었다.\n\n'내가 왜 이곳에 있는 거지?'\n\n머리가 깨질 듯이 아파왔다. 어제 분명히 야근을 마치고 편의점 도시락을 먹으며 자취방 침대에 누웠던 기억이 마지막이었다.\n\n그때, 밖에서 날카로운 쇳소리가 들려왔다.\n\n채챙!\n\n\"막내 도련님이 깨어나셨다! 어서 가주님께 알려라!\"\n\n도련님? 가주? \n나는 황급히 자리에서 일어나 거울을 찾았다. 그리고 경악할 수밖에 없었다. 거울 속에 비친 것은 30대 찌든 직장인의 얼굴이 아니라, 창백할 정도로 하얀 피부를 가진 10대 소년의 얼굴이었기 때문이다.", 
+                likes: 12, 
+                dislikes: 1 
+            },
+            { 
+                id: 2, 
+                title: "이계에서 온 마법사", 
+                author: "매직포스", 
+                content: "마나의 흐름이 끊겼다.\n현대 서울 한복판에 떨어진 대마법사 르네의 첫마디는 이것이었다.\n\n'여기 와이파이 비번이 뭐요?'\n\n카페 알바생은 황당한 표정으로 지팡이를 든 은발의 외국인을 쳐다보았다.\n\"네? 아, 저기 영수증 하단에 적혀있어요.\"\n\n르네는 영수증이라는 종이 쪼가리를 받아 들고는 눈살을 찌푸렸다. \n'이 문명은 마나 대신 전파라는 것을 쓴다고 했지. 제법 흥미롭군.'", 
+                likes: 8, 
+                dislikes: 0 
+            }
+        ];
+
+        let currentReadId = null;
+
+        // 커뮤니티 메인 화면 렌더링
+        function renderCommunity() {
+            const grid = document.getElementById('community-grid');
+            if(commNovels.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-20 text-slate-500 italic text-sm">아직 등록된 소설이 없습니다. 첫 번째 작가가 되어보세요!</div>`;
+                return;
+            }
+
+            grid.innerHTML = commNovels.map(novel => `
+                <div onclick="openReadModal(${novel.id})" class="glass p-6 md:p-8 rounded-[2rem] novel-card cursor-pointer flex flex-col h-[280px] border border-white/5 relative group">
+                    <h3 class="font-black text-white mb-2 md:mb-3 text-lg md:text-xl italic truncate pr-4">${novel.title}</h3>
+                    <span class="text-[10px] md:text-xs font-black text-emerald-400 mb-3 md:mb-4 block">@${novel.author}</span>
+                    <p class="text-xs md:text-sm text-slate-500 overflow-hidden flex-1 leading-relaxed">${novel.content.substring(0, 150)}...</p>
+                    
+                    <div class="flex justify-between items-center border-t border-white/5 pt-4 mt-4 text-[10px] md:text-xs font-bold">
+                        <span class="text-emerald-500 group-hover:text-emerald-400 transition">👍 ${novel.likes}</span>
+                        <span class="text-rose-500/70 group-hover:text-rose-500 transition">👎 ${novel.dislikes}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 소설 읽기 모달 열기
+        function openReadModal(id) {
+            currentReadId = id;
+            const novel = commNovels.find(x => x.id === id);
+            if(novel) {
+                document.getElementById('read-title').innerText = novel.title;
+                document.getElementById('read-author').innerText = `@${novel.author}`;
+                document.getElementById('read-content').innerText = novel.content;
+                document.getElementById('count-like').innerText = novel.likes;
+                document.getElementById('count-dislike').innerText = novel.dislikes;
+                
+                // 좋아요 / 싫어요 버튼에 현재 소설 ID 연동
+                document.getElementById('btn-like').onclick = () => voteNovel(id, 'like');
+                document.getElementById('btn-dislike').onclick = () => voteNovel(id, 'dislike');
+
+                document.getElementById('read-modal').classList.remove('hidden');
+                // 모달을 열 때마다 스크롤을 맨 위로 초기화
+                document.getElementById('read-content').scrollTop = 0; 
+            }
+        }
+
+        function closeReadModal() { 
+            document.getElementById('read-modal').classList.add('hidden'); 
+        }
+        
+        function openPublishModal() { 
+            document.getElementById('publish-modal').classList.remove('hidden'); 
+        }
+        
+        function closePublishModal() { 
+            document.getElementById('publish-modal').classList.add('hidden'); 
+        }
+
+        // 새 소설 등록하기
+        function submitNovel() {
+            const title = document.getElementById('pub-title').value.trim();
+            const content = document.getElementById('pub-content').value.trim();
+            
+            // 메인 페이지에서 가입했던 닉네임을 로컬 스토리지에서 가져옴
+            const author = localStorage.getItem('g_user_nickname') || "무명작가";
+
+            if(!title || !content) {
+                return alert("제목과 내용을 모두 입력해주세요!");
+            }
+
+            // 배열의 맨 앞(최신글)에 추가
+            commNovels.unshift({ 
+                id: Date.now(), 
+                title: title, 
+                author: author, 
+                content: content, 
+                likes: 0, 
+                dislikes: 0 
+            });
+            
+            // 데이터베이스(LocalStorage) 저장
+            localStorage.setItem('g_comm_novels', JSON.stringify(commNovels));
+            
+            // 폼 초기화 및 창 닫기
+            document.getElementById('pub-title').value = ''; 
+            document.getElementById('pub-content').value = '';
+            closePublishModal(); 
+            
+            // 화면 다시 그리기
+            renderCommunity();
+            alert("소설이 성공적으로 라운지에 공유되었습니다!");
+        }
+
+        // 좋아요 & 싫어요 투표 기능
+        function voteNovel(id, type) {
+            const novel = commNovels.find(x => x.id === id);
+            if(novel) {
+                // 단순 카운트 증가 (실제 서비스에서는 유저당 1회 제한을 걸어야 함)
+                if(type === 'like') novel.likes += 1;
+                if(type === 'dislike') novel.dislikes += 1;
+                
+                // 데이터베이스 업데이트
+                localStorage.setItem('g_comm_novels', JSON.stringify(commNovels));
+                
+                // 모달 내부의 숫자 즉시 갱신
+                document.getElementById('count-like').innerText = novel.likes;
+                document.getElementById('count-dislike').innerText = novel.dislikes;
+                
+                // 바깥 리스트 화면 갱신
+                renderCommunity();
+            }
+        }
+
+        // 페이지 로드 시 최초 1회 렌더링
+        window.onload = renderCommunity;
+    </script>
+</body>
+</html>
