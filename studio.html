@@ -1,104 +1,146 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" class="dark">
 <head>
     <meta charset="UTF-8">
     <title>WebNovel Studio - NovelBase</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
-        body { font-family: 'Pretendard', sans-serif; background-color: #020617; scroll-behavior: smooth; overflow: hidden; }
-        .glass { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        body { font-family: 'Pretendard', sans-serif; transition: background-color 0.3s, color 0.3s; overflow: hidden; }
+        
+        /* 라이트/다크모드 Glassmorphism */
+        .glass { backdrop-filter: blur(20px); transition: all 0.3s; }
+        .dark .glass { background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255, 255, 255, 0.05); }
+        html:not(.dark) .glass { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        
         .ai-typing { animation: pulse 1.5s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        /* 스크롤바 최적화 */
         ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+        .dark ::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+        html:not(.dark) ::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); }
         ::-webkit-scrollbar-thumb { background: rgba(79, 70, 229, 0.5); border-radius: 10px; }
-        /* 모바일 슬라이드 패널 트랜지션 */
+        
+        /* 모바일 슬라이드 패널 */
         .slide-panel { transition: transform 0.3s ease-in-out; }
+        
+        /* 친절한 툴팁 (말풍선) */
+        .tooltip { position: relative; display: inline-block; }
+        .tooltip .tooltip-text {
+            visibility: hidden; text-align: center; border-radius: 6px; padding: 6px 12px; position: absolute;
+            z-index: 100; bottom: 125%; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.3s;
+            font-size: 11px; white-space: nowrap; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); pointer-events: none;
+        }
+        .dark .tooltip .tooltip-text { background-color: #334155; color: #fff; }
+        html:not(.dark) .tooltip .tooltip-text { background-color: #fff; color: #334155; border: 1px solid #e2e8f0; }
+        .tooltip:hover .tooltip-text { visibility: visible; opacity: 1; }
     </style>
 </head>
-<body class="text-slate-200 text-left h-screen flex flex-col relative">
+<body class="bg-slate-50 text-slate-800 dark:bg-[#0b0f19] dark:text-slate-200 text-left h-screen flex flex-col relative transition-colors duration-300">
 
-    <nav class="w-full glass z-[100] border-b border-indigo-500/20 px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg">
+    <nav class="w-full glass z-[100] px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg border-b border-slate-200 dark:border-indigo-500/20">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="text-xl md:text-2xl">✍️</div>
-            <span class="text-base md:text-xl font-black tracking-tighter uppercase text-white">WebNovel <span class="text-indigo-400">Studio</span></span>
+            <span class="text-base md:text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">WebNovel <span class="text-indigo-600 dark:text-indigo-400">Studio</span></span>
         </div>
         <div class="flex items-center gap-3 md:gap-6">
-            <div class="bg-yellow-500/10 border border-yellow-500/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full flex items-center gap-2">
-                <span class="text-yellow-500 text-[8px] md:text-[10px] font-black italic">POINTS</span>
-                <span id="user-points" class="text-white text-xs md:text-sm font-black">0</span>
+            <button onclick="toggleTheme()" class="tooltip p-1 md:p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition">
+                <span id="theme-icon" class="text-base md:text-lg">🌞</span>
+                <span class="tooltip-text">화면 밝기 변경</span>
+            </button>
+            <div class="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 px-3 py-1 md:px-4 md:py-1.5 rounded-full flex items-center gap-2 shadow-sm">
+                <span class="text-yellow-600 dark:text-yellow-500 text-[8px] md:text-[10px] font-black italic">POINTS</span>
+                <span id="user-points" class="text-slate-900 dark:text-white text-xs md:text-sm font-black">0</span>
             </div>
-            <a href="index.html" class="text-[10px] md:text-xs font-bold text-slate-400 hover:text-white transition underline">← 메인</a>
+            <a href="index.html" class="text-[10px] md:text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-white transition underline">← 메인</a>
         </div>
     </nav>
 
-    <div class="md:hidden flex justify-between bg-slate-900 border-b border-white/5 p-2 px-4 z-[90]">
-        <button onclick="togglePanel('left-panel')" class="text-[10px] font-bold text-emerald-400 bg-emerald-900/30 px-3 py-1.5 rounded-lg border border-emerald-500/20">📱 설정 보기</button>
-        <span id="mobile-save-status" class="text-[9px] text-slate-500 font-bold mt-1">자동 저장됨</span>
-        <button onclick="togglePanel('right-panel')" class="text-[10px] font-bold text-fuchsia-400 bg-fuchsia-900/30 px-3 py-1.5 rounded-lg border border-fuchsia-500/20">🤖 AI 보조</button>
+    <div class="md:hidden flex justify-between items-center bg-slate-100 dark:bg-slate-900 border-b border-slate-300 dark:border-white/5 p-2 px-4 z-[90] transition-colors">
+        <button onclick="togglePanel('left-panel')" class="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1.5 rounded-lg border border-emerald-200 dark:border-emerald-500/20 shadow-sm">📱 설정 보기</button>
+        <span id="mobile-save-status" class="text-[9px] text-slate-500 font-bold">자동 저장됨</span>
+        <button onclick="togglePanel('right-panel')" class="text-[10px] font-bold text-fuchsia-700 dark:text-fuchsia-400 bg-fuchsia-100 dark:bg-fuchsia-900/30 px-3 py-1.5 rounded-lg border border-fuchsia-200 dark:border-fuchsia-500/20 shadow-sm">🤖 AI 보조</button>
     </div>
 
     <div class="flex-1 flex overflow-hidden relative">
-        <aside id="left-panel" class="slide-panel absolute md:relative z-[80] w-[85%] md:w-[300px] lg:w-[350px] h-full glass border-r border-white/5 flex flex-col p-5 md:p-6 space-y-4 md:space-y-6 transform -translate-x-full md:translate-x-0">
+        <aside id="left-panel" class="slide-panel absolute md:relative z-[80] w-[85%] md:w-[300px] lg:w-[350px] h-full glass border-r border-slate-200 dark:border-white/5 flex flex-col p-5 md:p-6 space-y-4 md:space-y-6 transform -translate-x-full md:translate-x-0">
             <div class="flex justify-between items-center md:hidden mb-2">
-                <h3 class="text-emerald-400 font-black">메뉴</h3>
-                <button onclick="togglePanel('left-panel')" class="text-slate-400 text-xl">✕</button>
+                <h3 class="text-emerald-600 dark:text-emerald-400 font-black">메뉴</h3>
+                <button onclick="togglePanel('left-panel')" class="text-slate-500 text-xl font-bold">✕</button>
             </div>
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <h3 class="text-indigo-400 font-black uppercase tracking-widest text-[10px]">My Novels</h3>
-                    <button onclick="addProject()" class="text-[10px] text-emerald-400 font-bold hover:text-white transition">+ 새 소설</button>
+                    <h3 class="text-indigo-600 dark:text-indigo-400 font-black uppercase tracking-widest text-[10px]">My Novels</h3>
+                    <button onclick="addProject()" class="tooltip text-[10px] text-emerald-600 dark:text-emerald-400 font-bold hover:underline transition">
+                        + 새 소설
+                        <span class="tooltip-text">새로운 작품을 만듭니다.</span>
+                    </button>
                 </div>
-                <div id="project-list" class="space-y-1 max-h-[150px] overflow-y-auto"></div>
+                <div id="project-list" class="space-y-1 max-h-[150px] overflow-y-auto pr-1"></div>
             </div>
             <div class="flex-1 flex flex-col space-y-2 min-h-0">
-                <h3 class="text-emerald-400 font-black uppercase tracking-widest text-[10px]">Lore Reference (설정 참조)</h3>
-                <div id="lore-display" class="flex-1 bg-slate-950/50 rounded-2xl p-4 md:p-5 text-[11px] md:text-[13px] text-slate-300 leading-relaxed overflow-y-auto border border-white/5 whitespace-pre-wrap shadow-inner">설정을 불러오는 중...</div>
+                <h3 class="text-emerald-600 dark:text-emerald-400 font-black uppercase tracking-widest text-[10px]">Lore Reference (설정 참조)</h3>
+                <div id="lore-display" class="flex-1 bg-white dark:bg-slate-950/50 rounded-2xl p-4 md:p-5 text-[11px] md:text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed overflow-y-auto border border-slate-200 dark:border-white/5 whitespace-pre-wrap shadow-inner">설정을 불러오는 중...</div>
             </div>
         </aside>
 
-        <main class="flex-1 flex flex-col p-4 md:p-8 bg-[#0b0f19] h-full z-[10]">
-            <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-white/5 pb-3 md:pb-4">
-                <input type="text" id="editor-title" class="bg-transparent text-xl md:text-3xl font-black text-white outline-none w-full md:w-2/3 focus:border-indigo-500/50 transition" placeholder="제목 없는 회차" oninput="autoSaveDraft()">
+        <main class="flex-1 flex flex-col p-4 md:p-8 bg-white dark:bg-transparent h-full z-[10] transition-colors">
+            <div class="flex justify-between items-center mb-4 md:mb-6 border-b border-slate-200 dark:border-white/5 pb-3 md:pb-4">
+                <input type="text" id="editor-title" class="bg-transparent text-xl md:text-3xl font-black text-slate-900 dark:text-white outline-none w-full md:w-2/3 focus:border-indigo-500/50 transition placeholder-slate-400" placeholder="제목 없는 회차" oninput="autoSaveDraft()">
                 <div class="hidden md:flex gap-4 items-center">
                     <div class="text-[10px] text-slate-500 font-bold" id="save-status">자동 저장됨</div>
-                    <button onclick="deleteProject()" class="px-3 py-1.5 bg-rose-900/50 text-rose-400 rounded-lg text-[10px] font-black hover:bg-rose-600 hover:text-white transition shadow-lg">소설 삭제</button>
+                    <button onclick="deleteProject()" class="tooltip px-3 py-1.5 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-lg text-[10px] font-black hover:bg-rose-200 dark:hover:bg-rose-600 dark:hover:text-white transition shadow-sm">
+                        소설 삭제
+                        <span class="tooltip-text">현재 소설을 완전히 삭제합니다.</span>
+                    </button>
                 </div>
             </div>
             
-            <textarea id="editor-content" class="flex-1 w-full bg-transparent outline-none text-base md:text-lg text-slate-100 leading-[1.8] md:leading-[2.2] tracking-wide resize-none p-1 md:p-2" placeholder="이곳에 위대한 이야기를 써 내려가세요..." oninput="autoSaveDraft(); countCharacters()"></textarea>
+            <textarea id="editor-content" class="flex-1 w-full bg-transparent outline-none text-base md:text-lg text-slate-800 dark:text-slate-100 leading-[1.8] md:leading-[2.2] tracking-wide resize-none p-1 md:p-2 placeholder-slate-300 dark:placeholder-slate-600" placeholder="이곳에 위대한 이야기를 써 내려가세요..." oninput="autoSaveDraft(); countCharacters()"></textarea>
             
-            <div class="mt-3 md:mt-4 flex flex-col md:flex-row justify-between items-center border-t border-white/5 pt-3 md:pt-4 gap-3 md:gap-0">
-                <div class="text-[10px] md:text-xs font-bold text-slate-500">공백 포함 <span id="char-count" class="text-indigo-400">0</span> 자 / 제외 <span id="char-count-no-space" class="text-indigo-400">0</span> 자</div>
+            <div class="mt-3 md:mt-4 flex flex-col md:flex-row justify-between items-center border-t border-slate-200 dark:border-white/5 pt-3 md:pt-4 gap-3 md:gap-0">
+                <div class="text-[10px] md:text-xs font-bold text-slate-500">공백 포함 <span id="char-count" class="text-indigo-600 dark:text-indigo-400">0</span> 자 / 제외 <span id="char-count-no-space" class="text-indigo-600 dark:text-indigo-400">0</span> 자</div>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <button onclick="deleteProject()" class="md:hidden flex-1 py-2 bg-rose-900/50 text-rose-400 rounded-lg text-[10px] font-black">삭제</button>
-                    <button onclick="applySmartFormat()" class="flex-1 md:flex-none px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-[10px] font-black text-white transition">가독성 정렬</button>
+                    <button onclick="deleteProject()" class="md:hidden flex-1 py-2 bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 rounded-lg text-[10px] font-black shadow-sm">삭제</button>
+                    <button onclick="applySmartFormat()" class="tooltip flex-1 md:flex-none px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg text-[10px] font-black transition shadow-sm">
+                        가독성 정렬
+                        <span class="tooltip-text">모바일에서 읽기 편하게 문단 여백을 자동 조절합니다.</span>
+                    </button>
                 </div>
             </div>
         </main>
 
-        <aside id="right-panel" class="slide-panel absolute md:relative right-0 z-[80] w-[85%] md:w-[300px] lg:w-[350px] h-full glass border-l border-white/5 flex flex-col p-5 md:p-6 space-y-4 md:space-y-6 transform translate-x-full md:translate-x-0">
+        <aside id="right-panel" class="slide-panel absolute md:relative right-0 z-[80] w-[85%] md:w-[300px] lg:w-[350px] h-full glass border-l border-slate-200 dark:border-white/5 flex flex-col p-5 md:p-6 space-y-4 md:space-y-6 transform translate-x-full md:translate-x-0">
             <div class="flex justify-between items-center md:hidden mb-2">
-                <h3 class="text-fuchsia-400 font-black">AI 보조</h3>
-                <button onclick="togglePanel('right-panel')" class="text-slate-400 text-xl">✕</button>
+                <h3 class="text-fuchsia-600 dark:text-fuchsia-400 font-black">AI 보조</h3>
+                <button onclick="togglePanel('right-panel')" class="text-slate-500 text-xl font-bold">✕</button>
             </div>
             <div>
-                <h3 class="text-fuchsia-400 font-black uppercase tracking-widest text-[10px] mb-3 md:mb-4">AI Writer Assistant</h3>
-                <p class="text-[10px] md:text-[11px] text-slate-400 mb-3 md:mb-4 leading-relaxed">글이 막히셨나요? <b>인물 설정</b>과 <b>세계관</b>을 모두 반영하여 AI가 전개를 이어 써줍니다.</p>
-                <button onclick="runAIAssist('next_sentence')" class="w-full py-3 md:py-4 bg-fuchsia-600 hover:bg-fuchsia-500 rounded-xl md:rounded-2xl font-black text-white shadow-xl transition-all mb-2 md:mb-3 text-xs md:text-sm">✨ 다음 문장 추천받기 (-1P)</button>
-                <button onclick="runAIAssist('evaluate')" class="w-full py-3 md:py-4 bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl md:rounded-2xl font-black text-white transition-all text-xs md:text-sm">🧐 현재 분량 피드백 (-1P)</button>
+                <h3 class="text-fuchsia-600 dark:text-fuchsia-400 font-black uppercase tracking-widest text-[10px] mb-3 md:mb-4">AI Writer Assistant</h3>
+                <p class="text-[10px] md:text-[11px] text-slate-500 dark:text-slate-400 mb-3 md:mb-4 leading-relaxed">글이 막히셨나요? <b>등록된 인물</b>과 <b>세계관</b>을 AI가 모두 읽어들이고, 문맥에 맞는 전개를 이어 써줍니다.</p>
+                <button onclick="runAIAssist('next_sentence')" class="tooltip w-full py-3 md:py-4 bg-fuchsia-600 hover:bg-fuchsia-500 rounded-xl md:rounded-2xl font-black text-white shadow-lg transition-all mb-2 md:mb-3 text-xs md:text-sm">
+                    ✨ 다음 문장 추천받기 (-1P)
+                    <span class="tooltip-text">현재 원고 내용을 분석하여 다음 내용을 제안합니다.</span>
+                </button>
+                <button onclick="runAIAssist('evaluate')" class="tooltip w-full py-3 md:py-4 bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-700 border border-slate-300 dark:border-white/10 rounded-xl md:rounded-2xl font-black transition-all text-xs md:text-sm shadow-sm">
+                    🧐 현재 분량 피드백 (-1P)
+                    <span class="tooltip-text">전문 편집자의 시선으로 원고의 장단점을 평가합니다.</span>
+                </button>
             </div>
             <div class="flex-1 flex flex-col space-y-2 min-h-0">
                 <h3 class="text-slate-500 font-black uppercase tracking-widest text-[10px]">AI Response</h3>
-                <div id="ai-result" class="flex-1 bg-slate-950/80 rounded-xl md:rounded-2xl p-4 md:p-5 text-xs md:text-sm text-fuchsia-100 overflow-y-auto border border-fuchsia-500/20 leading-relaxed shadow-inner">AI 어시스턴트 대기 중...</div>
-                <button onclick="insertAIResult()" id="insert-btn" class="hidden w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-black text-white mt-2 transition text-[10px] md:text-xs shadow-lg">에디터에 내용 추가하기</button>
+                <div id="ai-result" class="flex-1 bg-white dark:bg-slate-950/80 rounded-xl md:rounded-2xl p-4 md:p-5 text-xs md:text-sm text-slate-800 dark:text-fuchsia-100 overflow-y-auto border border-slate-200 dark:border-fuchsia-500/20 leading-relaxed shadow-inner pr-2">AI 어시스턴트 대기 중...</div>
+                <button onclick="insertAIResult()" id="insert-btn" class="hidden w-full py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-black text-white mt-2 transition text-[10px] md:text-xs shadow-lg">에디터에 내용 덮어쓰기</button>
             </div>
         </aside>
         
-        <div id="mobile-overlay" onclick="closeAllPanels()" class="hidden md:hidden absolute inset-0 bg-black/80 backdrop-blur-sm z-[70]"></div>
+        <div id="mobile-overlay" onclick="closeAllPanels()" class="hidden md:hidden absolute inset-0 bg-slate-900/80 dark:bg-black/80 backdrop-blur-sm z-[70]"></div>
     </div>
 
     <script>
@@ -112,25 +154,46 @@
         let lastAIContent = "";
         let currentUserSession = null;
 
+        // [테마 초기화 및 제어]
+        function toggleTheme() {
+            const html = document.documentElement;
+            const icon = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                icon.innerText = '🌙';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                icon.innerText = '🌞';
+            }
+        }
+        if (localStorage.getItem('theme') === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-icon').innerText = '🌙';
+        }
+
         window.addEventListener('pageshow', function(event) { init(); });
 
         async function loadDataFromCloud(session) {
             try {
-                const { data, error } = await sbClient.from('novelbase_users').select('*').eq('id', session.user.id).single();
+                const { data } = await sbClient.from('novelbase_users').select('*').eq('id', session.user.id).single();
                 if (data) {
-                    if (data.projects) projects = data.projects;
+                    if (data.projects && data.projects.length > 0) {
+                        projects = data.projects;
+                        currentId = projects[0].id; // 안전장치
+                    }
                     if (data.points !== undefined) points = data.points;
                     localStorage.setItem('g_projects', JSON.stringify(projects));
                     localStorage.setItem('g_points', points);
                 }
-            } catch (e) { console.error("Cloud load error.", e); }
+            } catch (e) { console.error(e); }
         }
 
         async function syncDataToCloud() {
             if (!currentUserSession) return;
-            try {
-                await sbClient.from('novelbase_users').upsert({ id: currentUserSession.user.id, projects: projects, points: points, updated_at: new Date() });
-            } catch (e) { console.error("Cloud sync error.", e); }
+            try { await sbClient.from('novelbase_users').upsert({ id: currentUserSession.user.id, projects: projects, points: points, updated_at: new Date() }); } 
+            catch (e) { console.error(e); }
         }
 
         async function init() {
@@ -139,13 +202,24 @@
             
             const { data } = await sbClient.auth.getSession();
             currentUserSession = data.session;
-            if (currentUserSession) await loadDataFromCloud(currentUserSession);
-            else projects = JSON.parse(localStorage.getItem('g_projects')) || []; 
+            
+            if (currentUserSession) {
+                await loadDataFromCloud(currentUserSession);
+            } else {
+                projects = JSON.parse(localStorage.getItem('g_projects')) || []; 
+            }
+
+            if(projects.length > 0) { 
+                currentId = projects[0].id; 
+            } else { 
+                alert("생성된 소설이 없습니다. 메인으로 이동하여 설정을 만드세요."); 
+                window.location.href = "index.html"; 
+                return;
+            }
 
             updatePointDisplay();
-            
-            if(projects.length > 0) { currentId = projects[0].id; renderProjects(); loadProject(currentId); } 
-            else { alert("생성된 소설이 없습니다. 메인으로 이동합니다."); window.location.href = "index.html"; }
+            renderProjects(); 
+            loadProject(currentId); 
         }
 
         function updatePointDisplay() { 
@@ -157,7 +231,7 @@
         function renderProjects() {
             const list = document.getElementById('project-list');
             list.innerHTML = projects.map(p => `
-                <div onclick="loadProject(${p.id}); closeAllPanels();" class="p-3 rounded-xl cursor-pointer text-[10px] md:text-[11px] font-black truncate transition-all ${p.id === currentId ? 'bg-indigo-600/20 text-indigo-400 border border-indigo-500/20' : 'text-slate-600 hover:bg-white/5'}">
+                <div onclick="loadProject(${p.id}); closeAllPanels();" class="p-3 rounded-xl cursor-pointer text-[10px] md:text-[11px] font-black truncate transition-all ${p.id === currentId ? 'bg-indigo-100 dark:bg-indigo-600/20 text-indigo-700 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/20' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-white/5'}">
                     ${p.title}
                 </div>
             `).join('');
@@ -204,13 +278,13 @@
             localStorage.setItem(`g_draft_${currentId}`, JSON.stringify({ title, content }));
             
             const pcStatus = document.getElementById('save-status'); const mbStatus = document.getElementById('mobile-save-status');
-            if(pcStatus) { pcStatus.innerText = "저장 중..."; pcStatus.classList.add('text-emerald-400'); }
-            if(mbStatus) { mbStatus.innerText = "저장 중..."; mbStatus.classList.add('text-emerald-400'); }
+            if(pcStatus) { pcStatus.innerText = "저장 중..."; pcStatus.classList.add('text-emerald-500'); }
+            if(mbStatus) { mbStatus.innerText = "저장 중..."; mbStatus.classList.add('text-emerald-500'); }
             
             clearTimeout(saveTimeout);
             saveTimeout = setTimeout(() => { 
-                if(pcStatus) { pcStatus.innerText = "자동 저장됨"; pcStatus.classList.remove('text-emerald-400'); }
-                if(mbStatus) { mbStatus.innerText = "자동 저장됨"; mbStatus.classList.remove('text-emerald-400'); }
+                if(pcStatus) { pcStatus.innerText = "자동 저장됨"; pcStatus.classList.remove('text-emerald-500'); }
+                if(mbStatus) { mbStatus.innerText = "자동 저장됨"; mbStatus.classList.remove('text-emerald-500'); }
             }, 800);
         }
 
@@ -223,7 +297,7 @@
         function applySmartFormat() { 
             const area = document.getElementById('editor-content'); if(!area.value) return; 
             area.value = area.value.replace(/\n/g, '\n\n').replace(/\s{2,}/g, ' '); 
-            autoSaveDraft(); countCharacters(); alert("모바일 가독성에 맞게 문단이 정렬되었습니다!"); 
+            autoSaveDraft(); countCharacters(); 
         }
 
         // 모바일 UI 패널 제어
@@ -233,12 +307,10 @@
             const isLeft = panelId === 'left-panel';
             
             if (panel.classList.contains(isLeft ? '-translate-x-full' : 'translate-x-full')) {
-                // 열기
-                closeAllPanels(); // 다른 거 닫기
+                closeAllPanels(); 
                 panel.classList.remove(isLeft ? '-translate-x-full' : 'translate-x-full');
                 overlay.classList.remove('hidden');
             } else {
-                // 닫기
                 panel.classList.add(isLeft ? '-translate-x-full' : 'translate-x-full');
                 overlay.classList.add('hidden');
             }
@@ -250,6 +322,7 @@
             document.getElementById('mobile-overlay').classList.add('hidden');
         }
 
+        // [외계어 완벽 방지 프롬프트 유지]
         async function runAIAssist(mode) {
             const API_KEY = localStorage.getItem('groq_api_key');
             if(!API_KEY) return alert("API 키가 증발했습니다. 메인 페이지에서 다시 등록해주세요.");
@@ -263,7 +336,7 @@
             if(!content) return alert("에디터에 원고를 조금이라도 작성해야 분석이 가능합니다.");
 
             points -= 1; updatePointDisplay();
-            insertBtn.classList.add('hidden'); resDiv.innerHTML = "<div class='ai-typing text-fuchsia-400 py-10 text-center font-black uppercase italic'>Writing...</div>";
+            insertBtn.classList.add('hidden'); resDiv.innerHTML = "<div class='ai-typing text-indigo-600 dark:text-fuchsia-400 py-10 text-center font-black uppercase italic'>Writing...</div>";
 
             let charContext = (p.chars && p.chars.length > 0) ? "[등장인물 설정]\n" + p.chars.map(c => `- ${c.name}: ${c.bg}`).join('\n') + "\n\n" : "";
             let prompt = `[소설 메인 세계관]\n${p.lore || "없음"}\n\n${charContext}[현재까지 작성한 원고 내용]\n${content}\n\n`;
@@ -291,7 +364,6 @@
                 resDiv.innerHTML = marked.parse(lastAIContent);
                 if(mode === 'next_sentence') insertBtn.classList.remove('hidden');
                 
-                // 모바일에서 결과창 보이도록 자동 스크롤
                 resDiv.scrollTop = resDiv.scrollHeight;
             } catch (err) { 
                 resDiv.innerHTML = "Error: " + err.message; points += 1; updatePointDisplay(); 
@@ -305,7 +377,7 @@
             autoSaveDraft(); countCharacters();
             document.getElementById('insert-btn').classList.add('hidden'); 
             document.getElementById('ai-result').innerHTML = "내용이 성공적으로 에디터에 추가되었습니다.";
-            closeAllPanels(); // 모바일 닫고 에디터로 복귀
+            closeAllPanels(); 
             area.focus();
         }
     </script>
