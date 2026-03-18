@@ -2,6 +2,7 @@
 <html lang="ko" class="dark">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>내러티브 포지(NarrativeForge) - 창작용 AI 기획 엔진</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -48,6 +49,9 @@
         .view-section { display: none; animation: fadeIn 0.4s ease-in-out; }
         .view-active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 모바일 하단 메뉴용 여백 */
+        .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom) + 10px); }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-[#020617] dark:text-slate-200 overflow-x-hidden transition-colors duration-300">
@@ -61,93 +65,95 @@
     <nav class="w-full glass sticky top-0 z-[100] px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg border-b border-slate-200 dark:border-white/5">
         <div class="flex items-center gap-2 md:gap-3">
             <div class="w-8 h-8 md:w-10 md:h-10 bg-[#df7a00] rounded-[0.5rem] flex items-center justify-center font-black text-white shadow-md text-lg md:text-xl tracking-tighter" style="font-family: Arial, sans-serif;">NF</div>
-            <span class="text-lg md:text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Narrative<span class="text-amber-500 dark:text-amber-400">Forge</span></span>
+            <span class="text-lg md:text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white hidden md:inline">Narrative<span class="text-amber-500 dark:text-amber-400">Forge</span></span>
         </div>
-        <div class="flex items-center gap-3 md:gap-4">
+        <div class="flex items-center gap-2 md:gap-4">
             <button onclick="toggleTheme()" class="tooltip p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition">
                 <span id="theme-icon" class="text-lg">🌞</span>
                 <span class="tooltip-text" data-i18n="themeTooltip">테마 변경</span>
             </button>
-            <select id="app-lang" onchange="applyLanguage()" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 text-slate-700 dark:text-white text-[10px] md:text-xs p-1.5 md:p-2 rounded-lg outline-none cursor-pointer focus:border-amber-500 transition-colors">
-                <option value="ko">🇰🇷 KOR</option>
-                <option value="en">🇺🇸 ENG</option>
-                <option value="zh">🇨🇳 CHN</option>
-            </select>
             
-            <div id="auth-buttons" class="flex flex-col md:flex-row items-center gap-1 md:gap-2">
-                <input type="email" id="email-input" data-i18n-placeholder="emailPh" placeholder="Email" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white text-[10px] md:text-xs p-1.5 md:p-2 rounded-lg outline-none focus:border-amber-500 w-24 md:w-32 placeholder-slate-400">
-                <input type="password" id="pw-input" data-i18n-placeholder="pwPh" placeholder="Password" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white text-[10px] md:text-xs p-1.5 md:p-2 rounded-lg outline-none focus:border-amber-500 w-24 md:w-32 placeholder-slate-400">
+            <div id="auth-buttons" class="flex items-center gap-1 md:gap-2">
+                <input type="email" id="email-input" data-i18n-placeholder="emailPh" placeholder="Email" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white text-[10px] md:text-xs p-1.5 md:p-2 rounded-lg outline-none focus:border-amber-500 w-20 md:w-32 placeholder-slate-400">
+                <input type="password" id="pw-input" data-i18n-placeholder="pwPh" placeholder="Password" class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white text-[10px] md:text-xs p-1.5 md:p-2 rounded-lg outline-none focus:border-amber-500 w-20 md:w-32 placeholder-slate-400">
                 <div class="flex gap-1">
-                    <button onclick="handleEmailLogin()" class="bg-amber-600 hover:bg-amber-500 text-white font-black text-[10px] md:text-xs px-3 py-1.5 md:py-2 rounded-lg transition shadow-md" data-i18n="loginBtn">로그인</button>
-                    <button onclick="handleEmailSignUp()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] md:text-xs px-3 py-1.5 md:py-2 rounded-lg transition shadow-md" data-i18n="signupBtn">가입</button>
+                    <button onclick="handleEmailLogin()" class="bg-amber-600 hover:bg-amber-500 text-white font-black text-[10px] md:text-xs px-2 md:px-3 py-1.5 md:py-2 rounded-lg transition shadow-md" data-i18n="loginBtn">로그인</button>
+                    <button onclick="handleEmailSignUp()" class="hidden md:block bg-emerald-600 hover:bg-emerald-500 text-white font-black text-[10px] md:text-xs px-3 py-1.5 md:py-2 rounded-lg transition shadow-md" data-i18n="signupBtn">가입</button>
                 </div>
             </div>
 
-            <div id="user-info" class="hidden flex items-center gap-2 md:gap-3 bg-slate-100 dark:bg-slate-900/50 p-1 md:p-1.5 pr-3 md:pr-4 rounded-full border border-slate-300 dark:border-white/5">
+            <div id="user-info" class="hidden flex items-center gap-2 md:gap-3 bg-slate-100 dark:bg-slate-900/50 p-1.5 pr-3 rounded-full border border-slate-300 dark:border-white/5">
                 <span id="user-display" class="text-[10px] md:text-xs text-amber-600 dark:text-amber-400 font-bold italic truncate max-w-[60px] md:max-w-none">작가님</span>
                 <button onclick="handleSignOut()" class="text-[9px] md:text-[10px] text-slate-500 hover:text-slate-800 dark:hover:text-white underline" data-i18n="logout">로그아웃</button>
             </div>
         </div>
     </nav>
 
-    <div class="w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 px-4 md:px-8 py-1 flex gap-4 md:gap-8 overflow-x-auto sticky z-[90] top-[60px] md:top-[74px]">
+    <div class="hidden md:flex w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10 px-4 md:px-8 py-1 gap-4 md:gap-8 overflow-x-auto sticky z-[90] top-[74px]">
         <button onclick="switchMainView('dashboard')" id="nav-dashboard" class="px-2 md:px-4 py-3 text-xs md:text-sm font-black text-amber-600 dark:text-amber-400 border-b-2 border-amber-600 dark:border-amber-400 transition whitespace-nowrap" data-i18n="navDashboard">🏠 대시보드</button>
         <button onclick="switchMainView('engine')" id="nav-engine" class="px-2 md:px-4 py-3 text-xs md:text-sm font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition whitespace-nowrap" data-i18n="navEngine">⚙️ AI 설정 엔진</button>
         <button onclick="switchMainView('board')" id="nav-board" class="px-2 md:px-4 py-3 text-xs md:text-sm font-bold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition whitespace-nowrap" data-i18n="navBoard">📢 작가 게시판</button>
     </div>
 
-    <div class="max-w-[1600px] mx-auto px-4 md:px-6 py-6 md:py-10 w-full flex-1">
+    <div class="md:hidden fixed bottom-0 left-0 w-full bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg border-t border-slate-200 dark:border-white/10 z-[120] flex justify-around items-center pb-safe">
+        <button onclick="switchMainView('dashboard')" id="mob-nav-dashboard" class="flex-1 py-3 flex flex-col items-center gap-1 text-amber-600 dark:text-amber-400 transition-colors">
+            <span class="text-xl">🏠</span><span class="text-[9px] font-black">홈</span>
+        </button>
+        <button onclick="switchMainView('engine')" id="mob-nav-engine" class="flex-1 py-3 flex flex-col items-center gap-1 text-slate-400 hover:text-amber-500 transition-colors">
+            <span class="text-xl">⚙️</span><span class="text-[9px] font-black">설정엔진</span>
+        </button>
+        <button onclick="switchMainView('board')" id="mob-nav-board" class="flex-1 py-3 flex flex-col items-center gap-1 text-slate-400 hover:text-amber-500 transition-colors">
+            <span class="text-xl">📢</span><span class="text-[9px] font-black">게시판</span>
+        </button>
+    </div>
+
+    <div class="max-w-[1600px] mx-auto px-4 md:px-6 py-6 md:py-10 w-full flex-1 pb-24 md:pb-10">
 
         <div id="view-dashboard" class="view-section view-active">
-            <div class="w-full relative rounded-[2rem] overflow-hidden shadow-2xl mb-12 border border-slate-200 dark:border-white/10 group">
-                <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Narrative Forge Banner" class="w-full h-[250px] md:h-[450px] object-cover group-hover:scale-105 transition duration-700 opacity-80 mix-blend-screen">
+            
+            <div class="w-full relative rounded-[2rem] overflow-hidden shadow-2xl mb-8 md:mb-12 border border-slate-200 dark:border-white/10 group">
+                <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80" alt="Narrative Forge Banner" class="w-full h-[200px] md:h-[450px] object-cover group-hover:scale-105 transition duration-700 opacity-80 mix-blend-screen">
                 <div class="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/50 to-transparent"></div>
                 <div class="absolute bottom-0 left-0 p-6 md:p-12 w-full">
-                    <h2 class="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase drop-shadow-lg" data-i18n="heroTitle">NARRATIVE <span class="text-amber-500 italic">FORGE</span></h2>
-                    <p class="text-lg md:text-2xl text-amber-100 font-bold mt-2 drop-shadow-md" data-i18n="heroSub">모든 이야기의 기초를 단조하다.</p>
-                    <p class="text-xs md:text-base text-slate-300 mt-2" data-i18n="heroDesc1">모든 창작자를 위한 올인원 AI 이야기 기획 엔진</p>
+                    <h2 class="text-3xl md:text-6xl font-black text-white tracking-tighter uppercase drop-shadow-lg" data-i18n="heroTitle">NARRATIVE <span class="text-amber-500 italic">FORGE</span></h2>
+                    <p class="text-sm md:text-2xl text-amber-100 font-bold mt-1 md:mt-2 drop-shadow-md" data-i18n="heroSub">모든 이야기의 기초를 단조하다.</p>
                 </div>
             </div>
             
-            <div class="flex flex-col md:flex-row gap-3 md:gap-4 justify-center mb-12 px-4">
-                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
-                    <div class="text-2xl mb-2">1️⃣</div><p class="text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step1">AI 두뇌 연결</p><p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400" data-i18n="step1Desc">아래 API 키 입력창에 무료 AI 두뇌를 연결하세요.</p>
+            <div class="flex flex-col md:flex-row gap-3 md:gap-4 justify-center mb-12">
+                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-4 md:p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
+                    <div class="text-xl md:text-2xl mb-2">1️⃣</div><p class="text-xs md:text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step1">AI 두뇌 연결</p><p class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400" data-i18n="step1Desc">아래 API 키 입력창에 무료 AI 두뇌를 연결하세요.</p>
                 </div>
-                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
-                    <div class="text-2xl mb-2">2️⃣</div><p class="text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step2">기초 설정 작성</p><p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400" data-i18n="step2Desc">AI 설정 엔진에서 세계관과 인물을 등록하세요.</p>
+                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-4 md:p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
+                    <div class="text-xl md:text-2xl mb-2">2️⃣</div><p class="text-xs md:text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step2">기초 설정 작성</p><p class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400" data-i18n="step2Desc">AI 설정 엔진에서 세계관과 인물을 등록하세요.</p>
                 </div>
-                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
-                    <div class="text-2xl mb-2">3️⃣</div><p class="text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step3">마법 같은 분석</p><p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400" data-i18n="step3Desc">관계도를 뽑거나 모순을 검사받고 소설을 써보세요.</p>
+                <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-500/20 p-4 md:p-5 rounded-2xl w-full md:flex-1 max-w-none md:max-w-[250px] mx-auto shadow-sm">
+                    <div class="text-xl md:text-2xl mb-2">3️⃣</div><p class="text-xs md:text-sm font-black text-amber-700 dark:text-amber-300 mb-1" data-i18n="step3">마법 같은 분석</p><p class="text-[9px] md:text-[10px] text-slate-500 dark:text-slate-400" data-i18n="step3Desc">관계도를 뽑거나 모순을 검사받고 소설을 써보세요.</p>
                 </div>
             </div>
 
-            <section class="mb-10 md:mb-12 p-6 md:p-10 glass rounded-[2rem] md:rounded-[3rem] border border-amber-200 dark:border-amber-500/20 shadow-2xl text-left">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10 items-center">
+            <section class="mb-10 md:mb-12 p-5 md:p-10 glass rounded-[2rem] md:rounded-[3rem] border border-amber-200 dark:border-amber-500/20 shadow-2xl text-left">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-10 items-center">
                     <div class="space-y-4 md:space-y-6">
                         <div class="inline-flex items-center gap-2 bg-amber-100 dark:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest" data-i18n="apiBadge">초간단 1분 세팅</div>
-                        <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white italic tracking-tighter" data-i18n="apiTitle">🤖 내 전속 AI 비서 고용하기</h2>
-                        <div class="text-xs md:text-sm text-slate-600 dark:text-slate-400 font-medium space-y-3 bg-white dark:bg-black/30 p-5 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+                        <h2 class="text-xl md:text-3xl font-black text-slate-900 dark:text-white italic tracking-tighter" data-i18n="apiTitle">🤖 내 전속 AI 비서 고용하기</h2>
+                        <div class="text-[10px] md:text-sm text-slate-600 dark:text-slate-400 font-medium space-y-3 bg-white dark:bg-black/30 p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
                             <p data-i18n="apiDesc1">이 웹사이트는 <b class="text-amber-600 dark:text-amber-400">100% 무료</b>로 기능들을 제공하지만, AI가 대답을 하기 위한 <b>두뇌(API 키)</b>는 작가님이 직접 연결해 주셔야 합니다.</p>
-                            <p class="text-[10px] md:text-xs bg-slate-100 dark:bg-slate-900 p-3 rounded-xl border border-slate-200 dark:border-slate-800" data-i18n="apiDesc2">
-                                <b>💡 API 키가 무엇인가요?</b><br>AI 회사의 서비스를 내 사이트로 끌어다 쓸 수 있게 해주는 무료 이용권 번호 같은 것입니다.
-                            </p>
                         </div>
-                        <button onclick="document.getElementById('api-modal').classList.remove('hidden')" class="tooltip text-amber-600 dark:text-amber-400 font-black hover:underline text-xs md:text-sm block" data-i18n="apiGuideBtn">
+                        <button onclick="document.getElementById('api-modal').classList.remove('hidden')" class="text-amber-600 dark:text-amber-400 font-black hover:underline text-xs md:text-sm block" data-i18n="apiGuideBtn">
                             🔑 1분 만에 무료 API 키 발급받는 방법 보기 →
-                            <span class="tooltip-text" data-i18n="apiGuideTooltip">클릭하면 발급 링크와 설명서가 뜹니다!</span>
                         </button>
                     </div>
                     <div class="w-full space-y-4">
-                        <div class="relative tooltip w-full">
-                            <span class="absolute top-3 md:top-4 left-5 md:left-7 text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase italic">API Key (gsk_...)</span>
-                            <input type="password" id="apiKey" oninput="saveKey()" data-i18n-placeholder="apiKeyPh" class="w-full pt-8 md:pt-9 pb-5 md:pb-7 px-5 md:px-7 bg-white dark:bg-black/60 rounded-[2rem] md:rounded-[2.5rem] border-2 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-emerald-400 outline-none focus:border-amber-500 transition-all font-mono text-lg md:text-xl shadow-inner" placeholder="gsk_xxxxxxxx">
-                            <span class="tooltip-text" data-i18n="apiKeyTooltip">발급받은 긴 영문/숫자 조합을 이곳에 붙여넣으세요.</span>
+                        <div class="relative w-full">
+                            <span class="absolute top-3 md:top-4 left-4 md:left-7 text-[9px] md:text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase italic">API Key (gsk_...)</span>
+                            <input type="password" id="apiKey" oninput="saveKey()" data-i18n-placeholder="apiKeyPh" class="w-full pt-8 md:pt-9 pb-4 md:pb-7 px-4 md:px-7 bg-white dark:bg-black/60 rounded-2xl md:rounded-[2.5rem] border-2 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-amber-400 outline-none focus:border-amber-500 transition-all font-mono text-sm md:text-xl shadow-inner" placeholder="gsk_xxxxxxxx">
                         </div>
                         <div class="flex justify-between items-center px-2 md:px-6">
-                            <button onclick="document.getElementById('my-inquiries-modal').classList.remove('hidden')" class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 font-black hover:underline uppercase tracking-widest" data-i18n="inquiryBtn">건의사항 및 답변 확인</button>
-                            <div class="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 px-4 md:px-8 py-2 md:py-3 rounded-full inline-flex items-center gap-2 md:gap-4 shadow-sm">
-                                <span class="text-yellow-600 dark:text-yellow-500 text-[10px] md:text-xs font-black italic">POINTS</span>
-                                <span id="user-points" class="text-slate-900 dark:text-white text-xl md:text-3xl font-black italic">10</span>
+                            <button onclick="document.getElementById('my-inquiries-modal').classList.remove('hidden')" class="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 font-black hover:underline uppercase tracking-widest" data-i18n="inquiryBtn">건의사항 및 답변</button>
+                            <div class="bg-yellow-50 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 px-3 md:px-8 py-2 md:py-3 rounded-full inline-flex items-center gap-2 shadow-sm">
+                                <span class="text-yellow-600 dark:text-yellow-500 text-[9px] md:text-xs font-black italic">POINTS</span>
+                                <span id="user-points" class="text-slate-900 dark:text-white text-lg md:text-3xl font-black italic">10</span>
                             </div>
                         </div>
                     </div>
@@ -155,176 +161,164 @@
             </section>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-12">
-                <a href="studio.html" target="_blank" class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 dark:border-amber-500/30 hover:border-amber-500 hover:shadow-xl transition group flex flex-col items-start gap-4">
-                    <div class="text-4xl md:text-5xl group-hover:scale-110 transition">✍️</div>
+                <a href="studio.html" target="_blank" class="glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-amber-500/30 hover:border-amber-500 transition group flex flex-col items-start gap-3 md:gap-4">
+                    <div class="text-3xl md:text-5xl group-hover:scale-110 transition">✍️</div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkNovelTitle">WebNovel Studio</h3>
-                        <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-2" data-i18n="linkNovelDesc">전용 워크스페이스로 이동하여 소설을 직접 집필하세요.</p>
+                        <h3 class="text-lg md:text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkNovelTitle">WebNovel Studio</h3>
+                        <p class="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 md:mt-2" data-i18n="linkNovelDesc">전용 워크스페이스로 이동하여 소설을 직접 집필하세요.</p>
                     </div>
                 </a>
-                <a href="trpg.html" target="_blank" class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 dark:border-amber-500/30 hover:border-amber-500 hover:shadow-xl transition group flex flex-col items-start gap-4">
-                    <div class="text-4xl md:text-5xl group-hover:scale-110 transition">🎲</div>
+                <a href="trpg.html" target="_blank" class="glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-amber-500/30 hover:border-amber-500 transition group flex flex-col items-start gap-3 md:gap-4">
+                    <div class="text-3xl md:text-5xl group-hover:scale-110 transition">🎲</div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkTrpgTitle">TRPG Engine</h3>
-                        <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-2" data-i18n="linkTrpgDesc">나홀로 1인칭 모험 모드 및 GM 보조 도구로 진입합니다.</p>
+                        <h3 class="text-lg md:text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkTrpgTitle">TRPG Engine</h3>
+                        <p class="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 md:mt-2" data-i18n="linkTrpgDesc">나홀로 1인칭 모험 모드 및 GM 보조 도구로 진입합니다.</p>
                     </div>
                 </a>
-                <a href="community.html" target="_blank" class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 dark:border-emerald-500/30 hover:border-emerald-500 hover:shadow-xl transition group flex flex-col items-start gap-4">
-                    <div class="text-4xl md:text-5xl group-hover:scale-110 transition">📚</div>
+                <button onclick="switchMainView('board'); switchBoardTab('novel');" class="glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-200 dark:border-amber-500/30 hover:border-amber-500 transition group flex flex-col items-start gap-3 md:gap-4 text-left w-full h-full">
+                    <div class="text-3xl md:text-5xl group-hover:scale-110 transition">📚</div>
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkCommTitle">Community Lounge</h3>
-                        <p class="text-[10px] md:text-xs text-slate-500 dark:text-slate-400 mt-2" data-i18n="linkCommDesc">작가들의 소설을 공유하고 연재/평가하는 라운지입니다.</p>
+                        <h3 class="text-lg md:text-xl font-black text-slate-900 dark:text-white italic" data-i18n="linkCommTitle">Community Lounge</h3>
+                        <p class="text-[9px] md:text-xs text-slate-500 dark:text-slate-400 mt-1 md:mt-2" data-i18n="linkCommDesc">작가들의 소설을 공유하고 연재/평가하는 라운지입니다.</p>
                     </div>
-                </a>
+                </button>
             </div>
             
-            <div class="text-center mt-8">
-                <button onclick="switchMainView('engine')" class="px-8 py-4 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-2xl shadow-xl transition-all text-lg" data-i18n="goEngineBtn">⚙️ AI 설정 엔진으로 이동하기 →</button>
+            <div class="text-center mt-8 md:hidden">
+                <button onclick="switchMainView('engine')" class="w-full px-8 py-4 bg-amber-600 hover:bg-amber-500 text-white font-black rounded-2xl shadow-xl transition-all text-sm" data-i18n="goEngineBtn">⚙️ AI 설정 엔진으로 이동하기 →</button>
             </div>
         </div>
 
         <div id="view-engine" class="view-section">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 text-left">
-                <aside class="col-span-1 lg:col-span-2 space-y-4">
-                    <button onclick="addProject()" class="w-full py-4 bg-slate-200 dark:bg-emerald-600/10 border border-slate-300 dark:border-emerald-500/20 text-slate-700 dark:text-emerald-400 rounded-2xl font-black text-[11px] hover:bg-slate-300 dark:hover:bg-emerald-600/20 transition shadow-sm" data-i18n="newNovelBtn">+ NEW NOVEL</button>
-                    <div id="project-list" class="space-y-1 flex flex-col max-h-[150px] lg:max-h-[700px] overflow-y-auto custom-scrollbar pr-2"></div>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 text-left">
+                
+                <aside class="col-span-1 lg:col-span-2 space-y-2 md:space-y-4">
+                    <button onclick="addProject()" class="w-full py-3 md:py-4 bg-slate-200 dark:bg-emerald-600/10 border border-slate-300 dark:border-emerald-500/20 text-slate-700 dark:text-emerald-400 rounded-xl md:rounded-2xl font-black text-[10px] md:text-[11px] hover:bg-slate-300 transition shadow-sm" data-i18n="newNovelBtn">+ NEW NOVEL</button>
+                    <div id="project-list" class="flex flex-row md:flex-col gap-2 md:gap-1 overflow-x-auto md:overflow-y-auto max-h-[100px] lg:max-h-[700px] custom-scrollbar pb-2 md:pb-0 pr-2"></div>
                 </aside>
 
                 <main class="col-span-1 lg:col-span-4 space-y-4">
-                    <div class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] shadow-xl h-[400px] md:h-[800px] flex flex-col setting-focus text-left border border-slate-200 dark:border-white/5">
-                        <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <div class="glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-xl h-[350px] md:h-[800px] flex flex-col setting-focus text-left border border-slate-200 dark:border-white/5">
+                        <div class="flex justify-between items-center mb-3 md:mb-6 border-b border-slate-200 dark:border-white/5 pb-2 md:pb-0">
                             <div class="flex items-center gap-2">
-                                <span class="text-[10px] text-amber-600 dark:text-emerald-500 font-black uppercase tracking-widest italic underline">Lore Database</span>
-                                <button onclick="loadExampleLore()" class="tooltip px-2 py-1 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 text-[9px] rounded-lg font-bold hover:bg-amber-200 transition" data-i18n="exampleBtn">
-                                    ✨ 예시 채우기
-                                    <span class="tooltip-text" data-i18n="exampleTooltip">막막하시다면 예시 설정을 불러와보세요!</span>
-                                </button>
+                                <span class="text-[9px] md:text-[10px] text-amber-600 dark:text-amber-500 font-black uppercase tracking-widest italic underline">Lore DB</span>
                             </div>
-                            <div class="flex gap-3 items-center">
-                                <button onclick="forceCloudSync()" class="text-[9px] md:text-[10px] text-amber-600 dark:text-amber-400 font-bold border border-amber-200 dark:border-amber-500/30 px-2 py-1 rounded hover:bg-amber-50 dark:hover:bg-amber-900/30 transition shadow-sm">🔄 PC/폰 동기화</button>
-                                <span id="sync-status" class="text-[9px] text-amber-500 dark:text-amber-400 font-bold hidden" data-i18n="syncStatus">☁️ 동기화됨</span>
-                                <button onclick="deleteProject()" class="text-[10px] text-slate-400 hover:text-rose-500 font-black" data-i18n="deleteBtn">DELETE</button>
+                            <div class="flex gap-2 md:gap-3 items-center">
+                                <button onclick="forceCloudSync()" class="text-[9px] md:text-[10px] text-amber-600 dark:text-amber-400 font-bold border border-amber-200 dark:border-amber-500/30 px-2 py-1 rounded hover:bg-amber-50 dark:hover:bg-amber-900/30 transition">🔄 PC/폰 동기화</button>
+                                <span id="sync-status" class="text-[9px] text-slate-400 dark:text-slate-500 font-bold hidden" data-i18n="syncStatus">☁️</span>
+                                <button onclick="deleteProject()" class="text-[9px] md:text-[10px] text-slate-400 hover:text-rose-500 font-black" data-i18n="deleteBtn">DELETE</button>
                             </div>
                         </div>
-                        <input type="text" id="proj-title" oninput="updateTitle()" class="bg-transparent text-xl md:text-2xl font-black text-slate-900 dark:text-white outline-none w-full mb-4 border-b border-slate-200 dark:border-white/5 pb-2" value="나의 소설 설정">
-                        <textarea id="lore" oninput="autoSave()" data-i18n-placeholder="lorePh" class="flex-1 bg-transparent text-sm leading-relaxed outline-none resize-none text-slate-700 dark:text-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-600 custom-scrollbar" placeholder="소설의 배경, 세계관, 전체적인 스토리 흐름을 상세히 적어주세요."></textarea>
+                        <input type="text" id="proj-title" oninput="updateTitle()" class="bg-transparent text-lg md:text-2xl font-black text-slate-900 dark:text-white outline-none w-full mb-3 md:mb-4 border-b border-slate-200 dark:border-white/5 pb-2" value="나의 소설 설정">
+                        <textarea id="lore" oninput="autoSave()" data-i18n-placeholder="lorePh" class="flex-1 bg-transparent text-xs md:text-sm leading-relaxed outline-none resize-none text-slate-700 dark:text-slate-300 placeholder:text-slate-400 dark:placeholder:text-slate-600 custom-scrollbar" placeholder="소설의 배경, 세계관, 전체적인 스토리 흐름을 상세히 적어주세요."></textarea>
                     </div>
                 </main>
 
                 <section class="col-span-1 lg:col-span-6 space-y-4 md:space-y-6 text-left">
-                    <div class="px-2 flex justify-between items-center animate-pulse">
-                        <span class="text-[9px] md:text-[10px] text-amber-500 dark:text-fuchsia-400 font-bold uppercase tracking-widest" data-i18n="swipeNotice">👉 메뉴를 옆으로 스와이프하여 더 많은 기능 확인</span>
-                    </div>
-                    <div class="flex gap-2 p-1.5 bg-slate-100 dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-white/5 shadow-inner overflow-x-auto custom-scrollbar pb-2">
-                        <button onclick="switchTab('character')" id="tab-character" class="tooltip flex-none min-w-[110px] md:flex-1 md:min-w-[120px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-active uppercase text-white bg-amber-600 shadow-md" data-i18n="tabChar">인물 시뮬레이터<span class="tooltip-text" data-i18n="charTooltip">캐릭터를 만들고 대화를 걸어보세요</span></button>
-                        <button onclick="switchTab('qa')" id="tab-qa" class="tooltip flex-none min-w-[100px] md:flex-1 md:min-w-[110px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-amber-400" data-i18n="tabQa">AI Analysis<span class="tooltip-text" data-i18n="qaTooltip">설정을 요약하거나 표로 정리합니다</span></button>
-                        <button onclick="switchTab('relation')" id="tab-relation" class="tooltip flex-none min-w-[100px] md:flex-1 md:min-w-[110px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-slate-400" data-i18n="tabRelation">인물 관계도<span class="tooltip-text" data-i18n="relTooltip">등록된 인물들의 마인드맵 생성</span></button>
-                        <button onclick="switchTab('trend')" id="tab-trend" class="tooltip flex-none min-w-[100px] md:flex-1 md:min-w-[110px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-emerald-600 dark:text-emerald-400" data-i18n="tabTrend">Trend Scan<span class="tooltip-text" data-i18n="trendTooltip">웹소설 시장 최신 분석 리포트</span></button>
-                        <button onclick="switchTab('scan')" id="tab-scan" class="tooltip flex-none min-w-[100px] md:flex-1 md:min-w-[110px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-slate-400" data-i18n="tabScan">설정 검사/최적화<span class="tooltip-text" data-i18n="scanTooltip">원고의 설정 모순과 캐붕 검사</span></button>
-                        <button onclick="switchTab('suggest')" id="tab-suggest" class="tooltip flex-none min-w-[100px] md:flex-1 md:min-w-[110px] py-3 md:py-4 rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-rose-600 dark:text-rose-500" data-i18n="tabSuggest">소재 추천<span class="tooltip-text" data-i18n="suggestTooltip">다음 전개 아이디어 추천</span></button>
+                    <div class="flex gap-2 p-1 md:p-1.5 bg-slate-100 dark:bg-slate-900 rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/5 shadow-inner overflow-x-auto custom-scrollbar pb-2">
+                        <button onclick="switchTab('character')" id="tab-character" class="flex-none min-w-[90px] md:min-w-[120px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-active uppercase text-white bg-amber-600 shadow-md" data-i18n="tabChar">인물 시뮬레이터</button>
+                        <button onclick="switchTab('qa')" id="tab-qa" class="flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-amber-400" data-i18n="tabQa">AI Analysis</button>
+                        <button onclick="switchTab('relation')" id="tab-relation" class="flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-slate-400" data-i18n="tabRelation">인물 관계도</button>
+                        <button onclick="switchTab('trend')" id="tab-trend" class="flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-emerald-600 dark:text-emerald-400" data-i18n="tabTrend">Trend Scan</button>
+                        <button onclick="switchTab('scan')" id="tab-scan" class="flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-slate-400" data-i18n="tabScan">설정 검사</button>
+                        <button onclick="switchTab('suggest')" id="tab-suggest" class="flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-rose-600 dark:text-rose-500" data-i18n="tabSuggest">소재 추천</button>
                     </div>
 
-                    <div id="panel-character" class="glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-6 text-left flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                    <div id="panel-character" class="glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 md:space-y-6 text-left flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
                         <div class="flex justify-between items-center">
-                            <h3 class="text-amber-600 dark:text-fuchsia-400 font-black italic text-lg md:text-xl uppercase tracking-tighter" data-i18n="tabChar">Character Simulator</h3>
-                            <button onclick="openCharModal(0)" class="px-3 md:px-4 py-1.5 md:py-2 bg-amber-600 dark:bg-fuchsia-600 hover:bg-amber-500 rounded-xl text-[10px] md:text-xs font-black text-white shadow-md transition-all" data-i18n="addCharBtn">+ 인물 추가</button>
+                            <h3 class="text-amber-600 dark:text-amber-500 font-black italic text-base md:text-xl uppercase tracking-tighter" data-i18n="tabChar">Character Simulator</h3>
+                            <button onclick="openCharModal(0)" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-[9px] md:text-xs font-black text-white shadow-md transition-all" data-i18n="addCharBtn">+ 인물 추가</button>
                         </div>
-                        <div id="character-grid" class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 p-4 bg-slate-50 dark:bg-slate-950/30 rounded-3xl border border-slate-200 dark:border-white/5 min-h-[100px] max-h-[150px] overflow-y-auto custom-scrollbar"></div>
-                        <div class="flex flex-col gap-3 md:gap-4 bg-slate-100 dark:bg-slate-900/50 p-4 md:p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
-                            <div class="flex gap-4 items-center">
-                                <select id="sim-type" onchange="toggleSimType()" class="flex-1 p-2 md:p-3 bg-white dark:bg-slate-950 rounded-xl border border-slate-300 dark:border-white/10 text-xs md:text-sm text-slate-800 dark:text-slate-200 font-bold outline-none focus:border-amber-500">
-                                    <option value="event" data-i18n="optEvent">🔥 사건 발생 (사고/행동 반응)</option>
-                                    <option value="dialogue" data-i18n="optDialogue">💬 대사 전달 (화자/청자 지정)</option>
-                                </select>
+                        <div id="character-grid" class="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-4 p-2 md:p-4 bg-slate-50 dark:bg-slate-950/30 rounded-xl md:rounded-3xl border border-slate-200 dark:border-white/5 min-h-[80px] max-h-[120px] md:max-h-[150px] overflow-y-auto custom-scrollbar"></div>
+                        <div class="flex flex-col gap-2 md:gap-4 bg-slate-100 dark:bg-slate-900/50 p-3 md:p-6 rounded-xl md:rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm">
+                            <select id="sim-type" onchange="toggleSimType()" class="w-full p-2 bg-white dark:bg-slate-950 rounded-lg border border-slate-300 dark:border-white/10 text-[10px] md:text-sm font-bold outline-none focus:border-amber-500">
+                                <option value="event" data-i18n="optEvent">🔥 사건 발생 (사고/행동 반응)</option>
+                                <option value="dialogue" data-i18n="optDialogue">💬 대사 전달 (화자/청자 지정)</option>
+                            </select>
+                            <div id="event-options" class="flex gap-2 items-center w-full">
+                                <span class="text-[9px] md:text-xs font-bold text-amber-600 w-8">대상:</span>
+                                <select id="sim-target-event" class="flex-1 p-2 bg-white dark:bg-slate-950 rounded-lg border border-slate-300 dark:border-white/10 text-[10px] md:text-sm font-bold outline-none focus:border-amber-500"></select>
                             </div>
-                            <div id="event-options" class="flex gap-2 md:gap-3 items-center w-full">
-                                <span class="text-[10px] md:text-xs font-bold text-amber-600 dark:text-fuchsia-400 whitespace-nowrap w-8 md:w-12" data-i18n="targetLabel">대상:</span>
-                                <select id="sim-target-event" class="flex-1 p-2 md:p-3 bg-white dark:bg-slate-950 rounded-xl border border-slate-300 dark:border-white/10 text-xs md:text-sm text-slate-800 dark:text-slate-200 font-bold outline-none focus:border-amber-500"></select>
+                            <div id="dialogue-options" class="hidden flex flex-col gap-2 p-2 bg-white dark:bg-slate-950/80 rounded-lg border border-amber-200 dark:border-amber-500/30">
+                                <div class="flex gap-2 items-center"><span class="text-[9px] md:text-xs font-bold text-amber-600 w-8">화자:</span><select id="sim-speaker" class="flex-1 p-1.5 bg-slate-50 dark:bg-slate-900 rounded-lg text-[10px] md:text-sm border border-slate-200 dark:border-white/10 focus:border-amber-500"><option value="user">미상 / 서술자</option></select></div>
+                                <div class="flex gap-2 items-center"><span class="text-[9px] md:text-xs font-bold text-emerald-600 w-8">청자:</span><input type="text" id="sim-listener" data-i18n-placeholder="listenerPh" class="flex-1 p-1.5 bg-slate-50 dark:bg-slate-900 rounded-lg text-[10px] md:text-sm border border-slate-200 dark:border-white/10 focus:border-emerald-500"></div>
                             </div>
-                            <div id="dialogue-options" class="hidden flex flex-col md:flex-row gap-3 md:gap-4 p-3 md:p-4 bg-white dark:bg-slate-950/80 rounded-2xl border border-amber-200 dark:border-fuchsia-500/30">
-                                <div class="flex-1 flex items-center gap-2 md:gap-3"><span class="text-[10px] md:text-xs font-bold text-amber-600 dark:text-fuchsia-400 whitespace-nowrap" data-i18n="speakerLabel">🗣️ 화자:</span><select id="sim-speaker" class="flex-1 p-2 bg-slate-50 dark:bg-slate-900 rounded-lg text-xs md:text-sm text-slate-800 dark:text-white outline-none border border-slate-200 dark:border-white/10 focus:border-amber-500"><option value="user">미상 / 서술자</option></select></div>
-                                <div class="flex-1 flex items-center gap-2 md:gap-3"><span class="text-[10px] md:text-xs font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap" data-i18n="listenerLabel">👂 청자:</span><input type="text" id="sim-listener" data-i18n-placeholder="listenerPh" placeholder="예: 유수연, 전체" class="flex-1 p-2 bg-slate-50 dark:bg-slate-900 rounded-lg text-xs md:text-sm text-slate-800 dark:text-white outline-none border border-slate-200 dark:border-white/10 focus:border-emerald-500"></div>
-                            </div>
-                            <textarea id="sim-input" data-i18n-placeholder="simInputPh" class="w-full h-16 md:h-20 p-3 md:p-4 bg-white dark:bg-slate-950 rounded-2xl outline-none text-xs md:text-sm border border-slate-300 dark:border-white/10 focus:border-amber-500 text-slate-800 dark:text-slate-200" placeholder="발생한 사건이나 건넬 대사를 입력하세요."></textarea>
-                            <button onclick="runCharacterAI()" class="tooltip w-full py-3 md:py-4 bg-amber-600 dark:bg-fuchsia-600 hover:bg-amber-500 rounded-2xl font-black text-white text-sm transition-all shadow-md" data-i18n="simBtn">
-                                반응 시뮬레이션 (-2P)
-                                <span class="tooltip-text" data-i18n="simTooltip">캐릭터들이 이 상황에 어떻게 반응할지 AI가 연기합니다.</span>
-                            </button>
+                            <textarea id="sim-input" data-i18n-placeholder="simInputPh" class="w-full h-12 md:h-20 p-2 md:p-4 bg-white dark:bg-slate-950 rounded-lg md:rounded-2xl outline-none text-[10px] md:text-sm border border-slate-300 dark:border-white/10 focus:border-amber-500" placeholder="발생한 사건이나 대사 입력"></textarea>
+                            <button onclick="runCharacterAI()" class="w-full py-2.5 md:py-4 bg-amber-600 hover:bg-amber-500 rounded-lg md:rounded-2xl font-black text-white text-[10px] md:text-sm transition-all shadow-md" data-i18n="simBtn">반응 시뮬레이션 (-2P)</button>
                         </div>
-                        <div id="result-character" class="prose dark:prose-invert max-w-none text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-[1.5rem] overflow-y-auto border border-slate-200 dark:border-white/5 shadow-inner flex-1 custom-scrollbar"></div>
-                        <div id="character-tools" class="hidden flex gap-4 justify-end pb-2"><button onclick="runCharacterAI(true)" class="text-[10px] text-amber-600 dark:text-indigo-400 font-bold underline" data-i18n="regenBtn">🔄 다시 생성</button><button onclick="requestRefund('character')" class="text-[10px] text-rose-500 font-bold underline" data-i18n="refundBtn">⚠️ 환급 신청</button></div>
+                        <div id="result-character" class="prose dark:prose-invert max-w-none text-xs md:text-base leading-[1.6] md:leading-[1.8] text-slate-800 dark:text-slate-100 p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-[1.5rem] overflow-y-auto border border-slate-200 dark:border-white/5 shadow-inner flex-1 custom-scrollbar"></div>
+                        <div id="character-tools" class="hidden flex gap-4 justify-end pb-1"><button onclick="runCharacterAI(true)" class="text-[9px] text-amber-600 dark:text-amber-400 font-bold underline">🔄 다시 생성</button><button onclick="requestRefund('character')" class="text-[9px] text-rose-500 font-bold underline">⚠️ 환급 신청</button></div>
                     </div>
 
-                    <div id="panel-qa" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-4 md:space-y-6 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
-                        <div class="relative"><input type="text" id="question" data-i18n-placeholder="askPh" class="w-full p-4 md:p-5 bg-white dark:bg-slate-950 rounded-2xl border border-slate-300 dark:border-white/5 outline-none focus:border-amber-500 pr-24 md:pr-32 text-sm text-slate-800 dark:text-slate-200 shadow-inner" placeholder="질문을 입력하세요."><button onclick="runAI('chat')" class="absolute right-2 top-2 bottom-2 px-4 md:px-8 bg-amber-600 hover:bg-amber-500 rounded-xl font-black text-xs md:text-sm text-white transition-all shadow-md">ASK</button></div>
-                        <div class="grid grid-cols-2 gap-2 md:gap-3 text-xs"><button onclick="runAI('organize')" class="tooltip py-3 md:py-4 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-xl md:rounded-2xl font-black uppercase italic shadow-sm text-[10px] md:text-xs" data-i18n="orgTableBtn">📊 표 정리<span class="tooltip-text" data-i18n="orgTooltip">설정들을 모아 표로 그려줍니다.</span></button><button onclick="runAI('summarize')" class="tooltip py-3 md:py-4 bg-slate-800 text-white rounded-xl md:rounded-2xl font-black uppercase italic shadow-sm text-[10px] md:text-xs" data-i18n="summarizeBtn">📝 전체 요약<span class="tooltip-text" data-i18n="sumTooltip">방대한 설정을 깔끔하게 요약합니다.</span></button></div>
-                        <div id="result-qa" class="prose dark:prose-invert max-w-none text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-[1.5rem] border border-slate-200 dark:border-white/5 shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
+                    <div id="panel-qa" class="hidden glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                        <div class="relative"><input type="text" id="question" data-i18n-placeholder="askPh" class="w-full p-3 md:p-5 bg-white dark:bg-slate-950 rounded-xl md:rounded-2xl border border-slate-300 dark:border-white/5 outline-none focus:border-amber-500 pr-16 md:pr-32 text-[10px] md:text-sm text-slate-800 dark:text-slate-200 shadow-inner" placeholder="질문 입력"><button onclick="runAI('chat')" class="absolute right-1 top-1 bottom-1 px-3 md:px-8 bg-amber-600 hover:bg-amber-500 rounded-lg md:rounded-xl font-black text-[9px] md:text-sm text-white shadow-md">ASK</button></div>
+                        <div class="grid grid-cols-2 gap-2 text-[9px] md:text-xs"><button onclick="runAI('organize')" class="py-2.5 md:py-4 bg-emerald-100 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 rounded-lg md:rounded-2xl font-black uppercase italic shadow-sm" data-i18n="orgTableBtn">📊 표 정리</button><button onclick="runAI('summarize')" class="py-2.5 md:py-4 bg-slate-800 text-white rounded-lg md:rounded-2xl font-black uppercase italic shadow-sm" data-i18n="summarizeBtn">📝 전체 요약</button></div>
+                        <div id="result-qa" class="prose dark:prose-invert max-w-none text-xs md:text-base leading-[1.6] md:leading-[1.8] text-slate-800 dark:text-slate-100 p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-[1.5rem] border border-slate-200 dark:border-white/5 shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
                     </div>
 
-                    <div id="panel-relation" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-4 md:space-y-6 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
-                        <h3 class="text-amber-600 dark:text-indigo-400 font-black italic text-lg md:text-xl uppercase tracking-tighter" data-i18n="tabRelation">인물 관계도 (텍스트 맵)</h3>
-                        <p class="text-[10px] md:text-xs text-slate-500" data-i18n="relationDesc">복잡한 관계를 한눈에 파악할 수 있는 텍스트 마인드맵을 생성합니다.</p>
-                        <button onclick="runAI('relation')" class="tooltip w-full py-4 md:py-5 bg-amber-600 hover:bg-amber-500 rounded-xl md:rounded-2xl font-black text-sm text-white shadow-md transition-all" data-i18n="relMapBtn">관계도 마인드맵 생성 (-2P)<span class="tooltip-text" data-i18n="relTooltip2">등록된 인물들의 소속과 관계를 그립니다.</span></button>
-                        <div id="result-relation" class="prose dark:prose-invert max-w-none text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-[1.5rem] border border-slate-200 dark:border-white/5 whitespace-pre-wrap mindmap-font shadow-inner overflow-y-auto flex-1 custom-scrollbar">여기에 인물 관계도가 그려집니다.</div>
-                        <div id="relation-tools" class="hidden flex gap-4 justify-center mt-4 pb-2"><button onclick="runAI('relation', true)" class="text-[10px] text-amber-600 dark:text-indigo-400 font-bold underline" data-i18n="redrawBtn">🔄 다시 그리기</button><button onclick="requestRefund('relation')" class="text-[10px] text-rose-500 font-bold underline" data-i18n="refundBtn">⚠️ 오류 환급 신청</button></div>
+                    <div id="panel-relation" class="hidden glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                        <h3 class="text-amber-600 dark:text-amber-400 font-black italic text-base md:text-xl uppercase tracking-tighter" data-i18n="tabRelation">인물 관계도</h3>
+                        <button onclick="runAI('relation')" class="w-full py-3 md:py-5 bg-amber-600 hover:bg-amber-500 rounded-xl md:rounded-2xl font-black text-[10px] md:text-sm text-white shadow-md" data-i18n="relMapBtn">마인드맵 생성 (-2P)</button>
+                        <div id="result-relation" class="prose dark:prose-invert max-w-none text-[10px] md:text-base leading-[1.6] text-slate-800 dark:text-slate-100 p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-[1.5rem] border border-slate-200 dark:border-white/5 whitespace-pre-wrap mindmap-font shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
+                        <div id="relation-tools" class="hidden flex gap-4 justify-center pb-1"><button onclick="runAI('relation', true)" class="text-[9px] text-amber-600 font-bold underline">🔄 다시 그리기</button><button onclick="requestRefund('relation')" class="text-[9px] text-rose-500 font-bold underline">⚠️ 오류 환급</button></div>
                     </div>
 
-                    <div id="panel-trend" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-4 md:space-y-6 text-center flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
-                        <div class="flex justify-between items-center px-2"><h3 class="text-emerald-600 dark:text-emerald-400 font-black italic text-lg md:text-xl uppercase tracking-tighter text-left" data-i18n="tabTrend">Market Trend</h3><button onclick="checkForTrendUpdate()" class="text-[9px] md:text-[10px] text-emerald-600 dark:text-emerald-500 font-bold hover:underline" data-i18n="checkUpdateBtn">🔄 리포트 확인</button></div>
-                        <div id="trend-lock-screen" class="bg-slate-100 dark:bg-slate-950/80 rounded-[1.5rem] md:rounded-[2.5rem] p-6 md:p-10 border border-emerald-200 dark:border-emerald-500/20 space-y-4"><div class="text-3xl md:text-4xl">🔐</div><p class="text-xs md:text-sm font-bold text-slate-600 dark:text-slate-300 italic" data-i18n="trendLockDesc">관리자의 최신 리포트가 준비되어 있습니다.</p><button onclick="unlockTrendReport()" class="bg-emerald-600 hover:bg-emerald-500 px-6 md:px-8 py-2.5 md:py-3 rounded-xl md:rounded-2xl font-black text-xs md:text-sm text-white shadow-md" data-i18n="trendUnlockBtn">리포트 열람 (-1P)</button></div>
-                        <div id="result-trend" class="hidden prose dark:prose-invert max-w-none text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-2xl md:rounded-3xl min-h-[300px] md:min-h-[400px] border border-slate-200 dark:border-white/5 shadow-inner text-left overflow-y-auto flex-1 custom-scrollbar"></div>
+                    <div id="panel-trend" class="hidden glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 text-center flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                        <div class="flex justify-between items-center px-2"><h3 class="text-emerald-600 dark:text-emerald-400 font-black italic text-base md:text-xl text-left" data-i18n="tabTrend">Market Trend</h3><button onclick="checkForTrendUpdate()" class="text-[9px] text-emerald-600 font-bold hover:underline">🔄 확인</button></div>
+                        <div id="trend-lock-screen" class="bg-slate-100 dark:bg-slate-950/80 rounded-xl md:rounded-[2.5rem] p-6 border border-emerald-200 dark:border-emerald-500/20 space-y-4"><div class="text-3xl">🔐</div><p class="text-[10px] md:text-sm font-bold text-slate-600 dark:text-slate-300 italic">최신 리포트가 준비되었습니다.</p><button onclick="unlockTrendReport()" class="bg-emerald-600 hover:bg-emerald-500 px-6 py-2.5 rounded-xl font-black text-[10px] md:text-sm text-white shadow-md" data-i18n="trendUnlockBtn">열람 (-1P)</button></div>
+                        <div id="result-trend" class="hidden prose dark:prose-invert max-w-none text-xs md:text-base text-slate-800 dark:text-slate-100 p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-3xl border border-slate-200 dark:border-white/5 shadow-inner text-left overflow-y-auto flex-1 custom-scrollbar"></div>
                     </div>
 
-                    <div id="panel-scan" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-4 md:space-y-6 text-left flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
-                        <div class="flex justify-between items-center"><h3 class="text-rose-600 dark:text-rose-500 font-black italic text-lg md:text-xl uppercase tracking-tighter" data-i18n="tabScan">설정 개연성 및 최적화</h3><button onclick="applySmartFormat()" class="px-4 md:px-6 py-1.5 md:py-2 bg-amber-600 hover:bg-amber-500 rounded-lg md:rounded-xl text-[10px] md:text-xs font-black text-white shadow-md" data-i18n="formatBtn">가독성 최적화</button></div>
-                        <textarea id="manuscript" data-i18n-placeholder="manuscriptPh" class="w-full h-40 md:h-64 p-4 md:p-6 bg-white dark:bg-slate-950 rounded-2xl md:rounded-3xl outline-none text-xs md:text-sm border border-slate-300 dark:border-white/5 text-slate-800 dark:text-slate-200 shadow-inner custom-scrollbar" placeholder="검사할 원고 내용을 입력하세요."></textarea>
-                        <button onclick="runAI('scan')" class="tooltip w-full py-4 md:py-5 bg-rose-600 hover:bg-rose-500 rounded-xl md:rounded-2xl font-black text-base md:text-lg text-white shadow-md" data-i18n="scanBtn">개연성 검사 시작 (-2P)<span class="tooltip-text" data-i18n="scanTooltip2">원고에서 설정 모순을 찾아냅니다.</span></button>
-                        <div id="result-scan" class="p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-[1.5rem] text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 min-h-[120px] shadow-inner overflow-y-auto border border-slate-200 dark:border-white/5 flex-1 custom-scrollbar"></div>
-                        <div id="scan-tools" class="hidden flex gap-4 justify-end pb-2"><button onclick="runAI('scan', true)" class="text-[10px] text-amber-600 dark:text-indigo-400 font-bold underline" data-i18n="reScanBtn">🔄 재검사</button><button onclick="requestRefund('scan')" class="text-[10px] text-rose-500 font-bold underline" data-i18n="refundBtn">⚠️ 환급 신청</button></div>
+                    <div id="panel-scan" class="hidden glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                        <div class="flex justify-between items-center"><h3 class="text-rose-600 dark:text-rose-500 font-black italic text-base md:text-xl uppercase" data-i18n="tabScan">설정 개연성 검사</h3><button onclick="applySmartFormat()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 rounded-lg text-[9px] md:text-xs font-black text-white shadow-md">여백 최적화</button></div>
+                        <textarea id="manuscript" data-i18n-placeholder="manuscriptPh" class="w-full h-32 md:h-64 p-3 md:p-6 bg-white dark:bg-slate-950 rounded-xl md:rounded-3xl outline-none text-[10px] md:text-sm border border-slate-300 dark:border-white/5 text-slate-800 dark:text-slate-200 shadow-inner custom-scrollbar" placeholder="검사할 원고 입력"></textarea>
+                        <button onclick="runAI('scan')" class="w-full py-3 md:py-5 bg-rose-600 hover:bg-rose-500 rounded-xl md:rounded-2xl font-black text-[10px] md:text-lg text-white shadow-md" data-i18n="scanBtn">개연성 검사 시작 (-2P)</button>
+                        <div id="result-scan" class="p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-[1.5rem] text-xs md:text-base text-slate-800 dark:text-slate-100 shadow-inner overflow-y-auto border border-slate-200 dark:border-white/5 flex-1 custom-scrollbar"></div>
+                        <div id="scan-tools" class="hidden flex gap-4 justify-end pb-1"><button onclick="runAI('scan', true)" class="text-[9px] text-amber-600 font-bold underline">🔄 재검사</button><button onclick="requestRefund('scan')" class="text-[9px] text-rose-500 font-bold underline">⚠️ 환급</button></div>
                     </div>
 
-                    <div id="panel-suggest" class="hidden glass p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] h-[670px] space-y-4 md:space-y-6 text-left flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
-                        <h3 class="text-rose-600 dark:text-rose-500 font-black italic text-lg md:text-xl uppercase tracking-tighter" data-i18n="tabSuggest">Creative Suggest</h3>
-                        <div class="relative mt-2"><input type="text" id="suggest-topic" data-i18n-placeholder="suggestPh" class="w-full p-4 md:p-5 bg-white dark:bg-slate-950 rounded-xl md:rounded-2xl border border-slate-300 dark:border-white/5 outline-none focus:border-amber-500 pr-24 md:pr-40 text-sm md:text-base text-slate-800 dark:text-slate-200 shadow-inner" placeholder="테마 예: 충격적 반전 등"><button onclick="runAI('suggest')" class="absolute right-2 top-2 bottom-2 px-4 md:px-6 bg-amber-600 hover:bg-amber-500 rounded-lg md:rounded-xl font-black text-[10px] md:text-xs text-white uppercase transition-all shadow-md">Get Idea (-2P)</button></div>
-                        <div id="result-suggest" class="prose dark:prose-invert max-w-none text-sm md:text-base leading-[1.8] tracking-wide text-slate-800 dark:text-slate-100 p-5 md:p-6 bg-white dark:bg-slate-950/50 rounded-[1.5rem] border border-slate-200 dark:border-white/5 shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
-                        <div id="suggest-tools" class="hidden flex gap-4 justify-end pb-2"><button onclick="runAI('suggest', true)" class="text-[10px] text-amber-600 dark:text-indigo-400 font-bold underline" data-i18n="otherSuggestBtn">🔄 다른 추천</button><button onclick="requestRefund('suggest')" class="text-[10px] text-rose-500 font-bold underline" data-i18n="refundBtn">⚠️ 환급 신청</button></div>
+                    <div id="panel-suggest" class="hidden glass p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] h-[500px] md:h-[670px] space-y-4 flex flex-col border border-slate-200 dark:border-white/5 shadow-xl">
+                        <h3 class="text-rose-600 dark:text-rose-500 font-black italic text-base md:text-xl uppercase" data-i18n="tabSuggest">Creative Suggest</h3>
+                        <div class="relative mt-1"><input type="text" id="suggest-topic" data-i18n-placeholder="suggestPh" class="w-full p-3 md:p-5 bg-white dark:bg-slate-950 rounded-xl md:rounded-2xl border border-slate-300 dark:border-white/5 outline-none focus:border-amber-500 pr-20 md:pr-40 text-[10px] md:text-base text-slate-800 dark:text-slate-200 shadow-inner"><button onclick="runAI('suggest')" class="absolute right-1 top-1 bottom-1 px-3 md:px-6 bg-amber-600 hover:bg-amber-500 rounded-lg md:rounded-xl font-black text-[9px] md:text-xs text-white uppercase shadow-md">Idea (-2P)</button></div>
+                        <div id="result-suggest" class="prose dark:prose-invert max-w-none text-xs md:text-base text-slate-800 dark:text-slate-100 p-4 md:p-6 bg-white dark:bg-slate-950/50 rounded-xl md:rounded-[1.5rem] border border-slate-200 dark:border-white/5 shadow-inner overflow-y-auto flex-1 custom-scrollbar"></div>
+                        <div id="suggest-tools" class="hidden flex gap-4 justify-end pb-1"><button onclick="runAI('suggest', true)" class="text-[9px] text-amber-600 font-bold underline">🔄 다른 추천</button><button onclick="requestRefund('suggest')" class="text-[9px] text-rose-500 font-bold underline">⚠️ 환급</button></div>
                     </div>
                 </section>
             </div>
         </div>
 
         <div id="view-board" class="view-section">
-            <section class="space-y-6 md:space-y-8 text-left">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 dark:border-white/5 pb-4 gap-4 md:gap-0">
-                    <div class="space-y-1 md:space-y-2">
-                        <h2 class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white italic tracking-tighter uppercase" data-i18n="navBoard">Writer's Board</h2>
-                        <p class="text-rose-500 dark:text-rose-400 text-[9px] md:text-[10px] font-bold bg-rose-100 dark:bg-rose-500/10 inline-block px-2 md:px-3 py-1 rounded-full border border-rose-200 dark:border-rose-500/20" data-i18n="boardNotice">⚠️ 공지: AI 검역에 의해 블락 처리된 글은 보상에서 제외됩니다.</p>
+            <section class="space-y-4 md:space-y-8 text-left">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 dark:border-white/5 pb-3 md:pb-4 gap-3 md:gap-0">
+                    <div class="space-y-1">
+                        <h2 class="text-xl md:text-4xl font-black text-slate-900 dark:text-white italic tracking-tighter uppercase" data-i18n="navBoard">Writer's Board</h2>
+                        <p class="text-rose-500 dark:text-rose-400 text-[8px] md:text-[10px] font-bold bg-rose-100 dark:bg-rose-500/10 inline-block px-2 py-1 rounded-full">⚠️ AI 검역 블락 시 보상 제외</p>
                     </div>
-                    <div class="flex gap-2 md:gap-3 w-full md:w-auto">
-                        <button onclick="openWriteModal()" class="flex-1 md:flex-none bg-amber-600 hover:bg-amber-500 px-4 md:px-8 py-3 md:py-4 rounded-xl md:rounded-2xl text-[11px] md:text-sm font-black transition text-white shadow-xl" data-i18n="writeBtn">글쓰기</button>
+                    <div class="w-full md:w-auto">
+                        <button onclick="openWriteModal()" class="w-full md:w-auto bg-amber-600 hover:bg-amber-500 px-4 md:px-8 py-2.5 md:py-4 rounded-xl font-black text-white shadow-xl text-xs md:text-sm" data-i18n="writeBtn">글쓰기</button>
                     </div>
                 </div>
                 
-                <div class="flex gap-6 border-b border-slate-200 dark:border-white/10 px-2 text-xs md:text-sm">
-                    <button onclick="switchBoardTab('guide')" id="board-tab-guide" class="pb-3 px-2 transition-all board-tab-active uppercase tracking-widest" data-i18n="tabGuide">💡 작법/팁 공유</button>
-                    <button onclick="switchBoardTab('novel')" id="board-tab-novel" class="pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest" data-i18n="tabNovel">📖 설정 자랑하기</button>
+                <div class="flex gap-4 md:gap-6 border-b border-slate-200 dark:border-white/10 px-1 text-[10px] md:text-sm">
+                    <button onclick="switchBoardTab('guide')" id="board-tab-guide" class="pb-2 md:pb-3 px-2 transition-all board-tab-active uppercase tracking-widest" data-i18n="tabGuide">💡 팁 공유</button>
+                    <button onclick="switchBoardTab('novel')" id="board-tab-novel" class="pb-2 md:pb-3 px-2 transition-all board-tab-inactive uppercase tracking-widest" data-i18n="tabNovel">📖 설정 자랑</button>
                 </div>
 
-                <div id="guide-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8 pt-4"></div>
+                <div id="guide-container" class="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-8 pt-2 md:pt-4"></div>
                 <div class="text-center mt-4">
-                    <button onclick="toggleAllGuides()" class="bg-slate-200 dark:bg-white/5 hover:bg-slate-300 dark:hover:bg-white/10 px-4 md:px-6 py-2 md:py-3 rounded-xl text-[10px] md:text-xs font-black text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-white/10 transition" id="toggle-board-btn">전체보기</button>
+                    <button onclick="toggleAllGuides()" class="bg-slate-200 dark:bg-white/5 px-4 py-2 rounded-xl text-[9px] md:text-xs font-black text-slate-600 border border-slate-300 dark:border-white/10" id="toggle-board-btn">전체보기</button>
                 </div>
             </section>
         </div>
 
     </div>
 
-    <footer class="mt-10 md:mt-20 border-t border-slate-200 dark:border-white/5 py-10 md:py-16 glass text-left relative overflow-hidden mb-16 md:mb-0">
-        <div class="max-w-[1600px] mx-auto px-6 md:px-8 flex flex-col md:flex-row justify-between items-start gap-8 md:gap-12 text-left">
-            <div class="space-y-4 md:space-y-6 text-left"><div class="flex items-center gap-2 md:gap-3"><div class="w-6 h-6 md:w-8 md:h-8 bg-amber-600 rounded-lg flex items-center justify-center font-black text-white text-[10px] md:text-xs">NF</div><span class="text-lg md:text-xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">NarrativeForge</span></div><p class="text-[10px] md:text-xs text-slate-500 max-w-sm" data-i18n="footerDesc">작가님의 창작 완결을 위한 최고의 AI 파트너. 모든 데이터는 안전하게 보관됩니다.</p></div>
-            <div class="grid grid-cols-2 gap-10 md:gap-16"><div class="space-y-3 md:space-y-4 text-left"><h4 class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Support</h4><ul class="text-[10px] md:text-xs text-slate-600 space-y-2 md:space-y-3 font-bold text-left"><li><button onclick="document.getElementById('api-modal').classList.remove('hidden')" class="hover:text-amber-500 transition" data-i18n="apiGuideBtnShort">API 가이드</button></li><li><button onclick="document.getElementById('contact-modal').classList.remove('hidden')" class="hover:text-amber-500 transition" data-i18n="contactBtn">문의하기</button></li></ul></div><div class="space-y-3 md:space-y-4 text-left"><h4 class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest text-left">Legal</h4><ul class="text-[10px] md:text-xs text-slate-600 space-y-2 md:space-y-3 font-bold text-left"><li><button onclick="document.getElementById('terms-modal').classList.remove('hidden')" class="hover:text-amber-500 transition text-left" data-i18n="termsBtn">이용약관</button></li></ul></div></div>
+    <footer class="mt-8 md:mt-20 border-t border-slate-200 dark:border-white/5 py-8 md:py-16 glass text-left relative overflow-hidden mb-16 md:mb-0">
+        <div class="max-w-[1600px] mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-start gap-6 md:gap-12">
+            <div class="space-y-3 md:space-y-6"><div class="flex items-center gap-2"><div class="w-6 h-6 bg-amber-600 rounded-lg flex items-center justify-center font-black text-white text-[9px]">NF</div><span class="text-base md:text-xl font-black text-slate-900 dark:text-white uppercase">NarrativeForge</span></div><p class="text-[9px] md:text-xs text-slate-500 max-w-sm" data-i18n="footerDesc">창작 완결을 위한 최고의 AI 파트너.</p></div>
+            <div class="grid grid-cols-2 gap-8 md:gap-16"><div class="space-y-2 md:space-y-4"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase">Support</h4><ul class="text-[9px] md:text-xs text-slate-600 space-y-2 font-bold"><li><button onclick="document.getElementById('api-modal').classList.remove('hidden')" class="hover:text-amber-500">API 가이드</button></li><li><button onclick="document.getElementById('contact-modal').classList.remove('hidden')" class="hover:text-amber-500">문의하기</button></li></ul></div><div class="space-y-2 md:space-y-4"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase">Legal</h4><ul class="text-[9px] md:text-xs text-slate-600 space-y-2 font-bold"><li><button onclick="document.getElementById('terms-modal').classList.remove('hidden')" class="hover:text-amber-500">이용약관</button></li></ul></div></div>
         </div>
-        <div id="admin-trigger" onclick="adminClick()" class="max-w-[1600px] mx-auto px-6 md:px-8 mt-10 md:mt-16 text-[9px] md:text-[10px] text-slate-500 font-bold tracking-widest uppercase cursor-pointer select-none hover:text-slate-900 dark:hover:text-white transition">© 2026 NARRATIVEFORGE. ALL RIGHTS RESERVED.</div>
+        <div id="admin-trigger" onclick="adminClick()" class="max-w-[1600px] mx-auto px-4 md:px-8 mt-8 md:mt-16 text-[8px] md:text-[10px] text-slate-500 font-bold uppercase cursor-pointer">© 2026 NARRATIVEFORGE.</div>
     </footer>
 
     <div id="feature-intro-modal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-slate-900/90 dark:bg-black/95 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-3xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1110] border border-amber-200 dark:border-amber-500/30 shadow-2xl space-y-6 md:space-y-8 overflow-y-auto max-h-[90vh]"><div class="flex justify-between items-center border-b border-slate-200 dark:border-white/10 pb-4 md:pb-6 mb-2 md:mb-4"><h3 class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white italic tracking-tighter uppercase">NarrativeForge Features</h3><button onclick="this.parentElement.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-800 dark:hover:text-white text-xl md:text-2xl font-light">✕</button></div><div class="space-y-4 md:space-y-8 text-xs md:text-sm text-slate-600 dark:text-slate-300 leading-relaxed"><div class="flex gap-4 md:gap-6 items-start bg-slate-100 dark:bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 hover:border-fuchsia-400 dark:hover:border-fuchsia-500/50 transition"><div class="text-2xl md:text-4xl">🎭</div><div><h4 class="text-fuchsia-600 dark:text-fuchsia-400 font-black text-base md:text-lg uppercase mb-1">Character Simulator</h4><p>캐릭터 설정을 기반으로 <b>겉 반응, 대사, 진짜 속마음</b>을 완벽하게 분리하여 시뮬레이션 해줍니다.</p></div></div><div class="flex gap-4 md:gap-6 items-start bg-slate-100 dark:bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 hover:border-rose-400 dark:hover:border-rose-500/50 transition"><div class="text-2xl md:text-4xl">🔍</div><div><h4 class="text-rose-600 dark:text-rose-500 font-black text-base md:text-lg uppercase mb-1">Consistency & Optimize</h4><p>원고가 기존 설정과 충돌하지 않는지 AI가 정밀 분석하고, 모바일 최적화 여백으로 자동 교정합니다.</p></div></div><div class="flex gap-4 md:gap-6 items-start bg-slate-100 dark:bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 hover:border-emerald-400 dark:hover:border-emerald-500/50 transition"><div class="text-2xl md:text-4xl">📈</div><div><h4 class="text-emerald-600 dark:text-emerald-400 font-black text-base md:text-lg uppercase mb-1">Trend Scan</h4><p>관리자가 발행하는 전문 리포트를 통해 가장 잘 팔리는 장르 비중, 제목 작명법, 최신 키워드를 파악하세요.</p></div></div><div class="flex gap-4 md:gap-6 items-start bg-slate-100 dark:bg-white/5 p-4 md:p-6 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5 hover:border-amber-400 dark:hover:border-amber-500/50 transition"><div class="text-2xl md:text-4xl">🧠</div><div><h4 class="text-amber-600 dark:text-amber-400 font-black text-base md:text-lg uppercase mb-1">AI Analysis & Relation</h4><p>설정을 버튼 한 번에 <b>표로 정리하거나 요약</b>하고, <b>텍스트 마인드맵</b>으로 인물 관계를 한눈에 파악할 수 있게 그려줍니다.</p></div></div></div><button onclick="this.parentElement.parentElement.classList.add('hidden')" class="w-full py-4 md:py-5 bg-amber-600 hover:bg-amber-500 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl transition-all mt-4">확인 완료 및 닫기</button></div></div>
@@ -335,7 +329,7 @@
     
     <div id="terms-agreement-modal" class="hidden fixed inset-0 z-[1000] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-slate-900/90 dark:bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1010] border border-amber-200 dark:border-amber-500/30 shadow-2xl space-y-6 md:space-y-8"><h3 class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white italic tracking-tighter uppercase text-center">Terms of <span class="text-amber-600 dark:text-amber-500">Service</span></h3><div class="bg-white dark:bg-slate-950/50 p-6 md:p-8 rounded-2xl md:rounded-[2rem] border border-slate-200 dark:border-white/5 h-[250px] md:h-[350px] overflow-y-auto text-[10px] md:text-xs text-slate-600 dark:text-slate-400 leading-6 md:leading-7 font-medium space-y-4 md:space-y-6 custom-scrollbar"><section><h4 class="text-amber-600 dark:text-amber-400 font-black mb-1 md:mb-2 uppercase italic underline text-left">제 1조 (서비스 목적 및 포인트 정책)</h4><p>본 서비스 '내러티브 포지'는 작가의 설정 관리 및 보조를 목적하며, 비로그인 10P, 로그인 정회원에게 1000P를 지급합니다.</p></section><section><h4 class="text-amber-600 dark:text-amber-400 font-black mb-1 md:mb-2 uppercase text-left">제 2조 (보안 및 책임)</h4><p>API 키는 브라우저 LocalStorage에만 저장되며 서버는 이를 수집하지 않습니다. 유출 책임은 본인에게 있습니다.</p></section><section><h4 class="text-amber-600 dark:text-amber-400 font-black mb-1 md:mb-2 uppercase text-left">제 3조 (커뮤니티 검역)</h4><p>집필과 관련 없는 내용은 AI 검역에 의해 블락 처리되며, 보상 대상에서 제외됩니다.</p></section></div><div class="flex items-center gap-3 md:gap-4 bg-slate-100 dark:bg-white/5 p-4 md:p-6 rounded-xl md:rounded-2xl border border-slate-200 dark:border-white/10"><input type="checkbox" id="agree-check" class="w-5 h-5 md:w-6 md:h-6 rounded border-slate-300 dark:border-white/10 accent-amber-500 cursor-pointer"><label for="agree-check" class="text-xs md:text-sm font-bold text-slate-800 dark:text-white cursor-pointer italic uppercase">정책에 동의합니다.</label></div><button onclick="proceedToNickname()" class="w-full py-3 md:py-5 bg-amber-600 hover:bg-amber-500 rounded-xl md:rounded-2xl font-black text-sm md:text-lg transition text-white shadow-xl">동의하고 시작하기</button></div></div>
     
-    <div id="api-modal" class="hidden fixed inset-0 z-[1200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-slate-900/90 dark:bg-black/95 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] z-[1210] border border-emerald-200 dark:border-emerald-500/20 shadow-2xl space-y-6 md:space-y-10 max-h-[90vh] overflow-y-auto"><h3 class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase text-center" data-i18n="apiTitle">🤖 내 전속 AI 비서 고용하기</h3><div class="space-y-4 md:space-y-6 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-300 text-left"><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-slate-100 dark:bg-white/5 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-white dark:text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">01</div><p class="opacity-90"><a href="https://console.groq.com/keys" target="_blank" class="text-blue-600 dark:text-blue-400 underline font-bold">Groq Console</a> 접속 후 'Create API Key'를 눌러 <b class="text-slate-900 dark:text-white font-black">gsk_...</b> 키를 발급받으세요.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-slate-100 dark:bg-white/5 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-white dark:text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">02</div><p class="opacity-90" data-i18n="apiGuideStep2">발급된 키를 복사하여 메인 화면의 'API 키 붙여넣기' 창에 넣으세요.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-6 bg-slate-100 dark:bg-white/5 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-white/5"><div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-500 text-white dark:text-black font-black rounded-xl md:rounded-2xl flex items-center justify-center shrink-0">03</div><p class="opacity-90" data-i18n="apiGuideStep3">내러티브 포지는 서버에 키를 저장하지 않습니다. 브라우저에만 보관됩니다.</p></div></div><button onclick="this.parentElement.parentElement.classList.add('hidden')" class="w-full py-3 md:py-5 bg-emerald-600 rounded-xl md:rounded-2xl font-black text-sm md:text-base text-white shadow-xl">확인 완료</button></div></div>
+    <div id="api-modal" class="hidden fixed inset-0 z-[1200] flex items-center justify-center p-4 md:p-6 text-left"><div class="absolute inset-0 bg-slate-900/90 dark:bg-black/95 backdrop-blur-md" onclick="this.parentElement.classList.add('hidden')"></div><div class="glass w-full max-w-2xl p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] z-[1210] border border-emerald-200 dark:border-emerald-500/20 shadow-2xl space-y-5 md:space-y-8 max-h-[90vh] overflow-y-auto"><h3 class="text-2xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase text-center" data-i18n="apiTitle">🤖 내 전속 AI 비서 고용하기</h3><div class="space-y-4 text-xs md:text-sm font-medium text-slate-600 dark:text-slate-300 text-left"><div class="flex gap-4 md:gap-6 p-4 md:p-5 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5"><div class="w-10 h-10 bg-emerald-500 text-white dark:text-black font-black rounded-xl flex items-center justify-center shrink-0">01</div><p class="opacity-90"><a href="https://console.groq.com/keys" target="_blank" class="text-blue-600 dark:text-blue-400 underline font-bold">Groq Console</a> 접속 후 'Create API Key'를 눌러 <b class="text-slate-900 dark:text-white font-black">gsk_...</b> 키를 발급받으세요.</p></div><div class="flex gap-4 md:gap-6 p-4 md:p-5 bg-slate-100 dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/5"><div class="w-10 h-10 bg-emerald-500 text-white dark:text-black font-black rounded-xl flex items-center justify-center shrink-0">02</div><p class="opacity-90">발급된 키를 복사하여 메인 화면의 'API Key' 창에 넣으세요.</p></div></div><div class="mt-4 pt-4 md:pt-6 border-t border-slate-200 dark:border-white/10"><h4 class="text-rose-600 dark:text-rose-400 font-black text-sm md:text-base mb-3">⚠️ 오류가 발생하나요? (Invalid API Key 등)</h4><ul class="space-y-2 text-[10px] md:text-xs text-slate-600 dark:text-slate-300 bg-rose-50 dark:bg-rose-500/10 p-4 md:p-5 rounded-xl border border-rose-200 dark:border-rose-500/20 list-disc list-inside"><li><b>앞뒤 빈칸 확인:</b> 복사/붙여넣기 시 맨 앞이나 뒤에 스페이스(공백)가 들어갔는지 확인하세요. (가장 흔한 원인!)</li><li><b>gsk_ 확인:</b> API 키는 반드시 소문자 <code class="bg-white dark:bg-black/50 px-1 rounded text-rose-500 font-mono">gsk_</code>로 시작해야 합니다.</li><li><b>강력 새로고침:</b> 키를 지우고 다시 입력한 후, 키보드의 <code class="bg-white dark:bg-black/50 px-1 rounded text-amber-600 font-mono">Ctrl + Shift + R</code>을 눌러 화면을 초기화해보세요.</li><li><b>새로 발급받기:</b> 그래도 안 된다면 Groq 사이트에서 기존 키를 삭제(Delete)하고 새 키를 발급받아 적용해보세요.</li></ul></div><button onclick="this.parentElement.parentElement.classList.add('hidden')" class="w-full py-3 md:py-4 mt-2 bg-emerald-600 rounded-xl font-black text-sm md:text-base text-white shadow-xl">확인 완료</button></div></div>
     
     <div id="nickname-modal" class="hidden fixed inset-0 z-[1100] flex items-center justify-center p-4 md:p-6 text-center"><div class="absolute inset-0 bg-slate-900/90 dark:bg-black/98 backdrop-blur-3xl"></div><div class="glass w-full max-w-md p-6 md:p-12 rounded-[2rem] md:rounded-[3.5rem] border border-amber-200 dark:border-amber-500/20 shadow-2xl space-y-6 md:space-y-8"><h3 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight">Identity Setup</h3><input type="text" id="new-nickname" class="w-full p-4 md:p-5 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-2xl md:rounded-3xl text-center text-lg md:text-xl font-black text-slate-800 dark:text-white outline-none focus:border-amber-500" placeholder="필명 입력"><button onclick="saveNickname()" class="w-full py-3 md:py-5 bg-amber-600 hover:bg-amber-500 rounded-xl md:rounded-2xl font-black text-white text-base md:text-lg shadow-xl transition-all">입장</button></div></div>
     
@@ -423,160 +417,9 @@
             alert("예시 세계관이 입력되었습니다! 인물 시뮬레이터 탭으로 이동해 주인공을 추가해보세요.");
         }
 
-        const uiTexts = {
-            'ko': {
-                'loginBonus': '📢 <span class="font-black italic">LOGIN BONUS:</span> 로그인 시 <span class="underline font-black">1000P</span> 증정! 게스트는 10P 제공.',
-                'logout': '로그아웃', 'loginBtn': '로그인', 'signupBtn': '가입',
-                'navDashboard': '🏠 대시보드', 'navEngine': '⚙️ AI 설정 엔진', 'navBoard': '📢 작가 게시판',
-                'heroTitle': 'NARRATIVE <span class="text-amber-600 dark:text-amber-500 italic">FORGE</span>',
-                'heroSub': '모든 이야기의 기초를 단조하다.',
-                'heroDesc1': '모든 창작자를 위한 올인원 AI 이야기 기획 엔진',
-                'step1': 'AI 두뇌 연결', 'step1Desc': '아래 API 키 입력창에 무료 AI 두뇌를 연결하세요.',
-                'step2': '기초 설정 작성', 'step2Desc': 'AI 설정 엔진에서 세계관과 인물을 등록하세요.',
-                'step3': '마법 같은 분석', 'step3Desc': '관계도를 뽑거나 모순을 검사받고 소설을 써보세요.',
-                'guideBtn': '🚀 동영상/상세 가이드 보기 (준비중)',
-                'apiBadge': '초간단 1분 세팅', 'apiTitle': '🤖 내 전속 AI 비서 고용하기',
-                'apiDesc1': '이 웹사이트는 100% 무료로 기능들을 제공하지만, AI가 대답을 하기 위한 두뇌(API 키)는 작가님이 직접 연결해 주셔야 합니다.',
-                'apiDesc2': '<b>💡 API 키가 무엇인가요?</b><br>AI 회사의 서비스를 내 사이트로 끌어다 쓸 수 있게 해주는 무료 이용권 번호 같은 것입니다.',
-                'apiGuideBtn': '🔑 1분 만에 무료 API 키 발급받는 방법 보기 →',
-                'inquiryBtn': '건의사항 및 답변',
-                'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '전용 워크스페이스로 이동하여 소설을 직접 집필하세요.',
-                'linkTrpgTitle': 'TRPG Engine', 'linkTrpgDesc': '나홀로 1인칭 모험 모드 및 GM 보조 도구로 진입합니다.',
-                'linkCommTitle': 'Community Lounge', 'linkCommDesc': '작가들의 소설을 공유하고 연재/평가하는 라운지입니다.',
-                'goEngineBtn': '⚙️ AI 설정 엔진으로 이동하기 →',
-                'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'exampleBtn': '✨ 예시 채우기',
-                'swipeNotice': '👉 메뉴를 옆으로 스와이프하여 더 많은 기능 확인',
-                'tabChar': '인물 시뮬레이터', 'tabQa': 'AI Analysis', 'tabRelation': '인물 관계도',
-                'tabTrend': 'Trend Scan', 'tabScan': '설정 검사/최적화', 'tabSuggest': '소재 추천',
-                'addCharBtn': '+ 인물 추가', 'optEvent': '🔥 사건 발생 (사고/행동 반응)', 'optDialogue': '💬 대사 전달 (화자/청자 지정)',
-                'targetLabel': '대상:', 'speakerLabel': '🗣️ 화자:', 'listenerLabel': '👂 청자:',
-                'simBtn': '반응 시뮬레이션 (-2P)', 'regenBtn': '🔄 다시 생성', 'refundBtn': '⚠️ 환급 신청',
-                'orgTableBtn': '📊 표 정리', 'summarizeBtn': '📝 전체 요약',
-                'relMapBtn': '관계도 마인드맵 생성 (-2P)', 'relationDesc': '복잡한 관계를 한눈에 파악할 수 있는 텍스트 마인드맵을 생성합니다.',
-                'redrawBtn': '🔄 다시 그리기', 'checkUpdateBtn': '🔄 리포트 확인',
-                'trendLockDesc': '관리자의 최신 리포트가 준비되어 있습니다.', 'trendUnlockBtn': '리포트 열람 (-1P)',
-                'formatBtn': '가독성 최적화', 'scanHelpTitle': '🔍 이 기능은 무엇을 하나요?',
-                'scanHelp1': '<b>설정 모순 검사:</b> 원고를 비교하여 설정 오류를 잡아냅니다.', 'scanHelp2': '<b>모바일 가독성 최적화:</b> 긴 문단을 모바일 호흡에 맞춰 자동 교정합니다.',
-                'scanBtn': '개연성 검사 시작 (-2P)', 'reScanBtn': '🔄 재검사',
-                'suggestDesc': '설정을 기반으로 이야기에 새로운 활력을 불어넣을 아이디어를 제안합니다.', 'otherSuggestBtn': '🔄 다른 추천',
-                'boardNotice': '⚠️ 공지: AI 검역에 의해 블락 처리된 글은 보상에서 제외됩니다.',
-                'writeBtn': '글쓰기', 'tabGuide': '💡 작법/팁 공유', 'tabNovel': '📖 설정 자랑하기',
-                'footerDesc': '작가님의 창작 완결을 위한 최고의 AI 파트너. 모든 데이터는 안전하게 보관됩니다.',
-                'themeTooltip': '화면 밝기 변경', 'apiGuideTooltip': '클릭하면 발급 링크와 설명서가 뜹니다!', 'apiKeyTooltip': '발급받은 긴 영문/숫자 조합을 이곳에 붙여넣으세요.',
-                'exampleTooltip': '막막하시다면 예시 설정을 불러와보세요!', 'charTooltip': '캐릭터를 만들고 대화를 걸어보세요', 'qaTooltip': '설정을 요약하거나 표로 정리합니다',
-                'relTooltip': '등록된 인물들의 마인드맵 생성', 'trendTooltip': '웹소설 시장 최신 분석 리포트', 'scanTooltip': '원고의 설정 모순과 캐붕 검사',
-                'suggestTooltip': '다음 전개 아이디어 추천', 'simTooltip': '캐릭터들이 이 상황에 어떻게 반응할지 AI가 연기합니다.', 'orgTooltip': '설정들을 모아 표로 그려줍니다.',
-                'sumTooltip': '방대한 설정을 깔끔하게 요약합니다.', 'relTooltip2': '등록된 인물들의 소속과 관계를 그립니다.', 'scanTooltip2': '원고에서 설정 모순을 찾아냅니다.',
-                'syncStatus': '☁️ 동기화됨', 'apiGuideBtnShort': 'API 가이드', 'contactBtn': '문의하기', 'termsBtn': '이용약관',
-                'apiGuideStep2': '발급된 키를 복사하여 메인 화면의 API 키 입력창에 넣으세요.', 'apiGuideStep3': '내러티브 포지는 서버에 키를 저장하지 않습니다. 브라우저에만 보관됩니다.'
-            },
-            'en': {
-                'loginBonus': '📢 <span class="font-black italic">LOGIN BONUS:</span> Get <span class="underline font-black">1000P</span> on login!',
-                'logout': 'Logout', 'loginBtn': 'Login', 'signupBtn': 'Sign Up',
-                'navDashboard': '🏠 Dashboard', 'navEngine': '⚙️ AI Lore Engine', 'navBoard': '📢 Community',
-                'heroTitle': 'NARRATIVE <span class="text-amber-600 dark:text-amber-500 italic">FORGE</span>',
-                'heroSub': 'Forging your story’s structure.',
-                'heroDesc1': 'All-in-one AI story planning engine for every creator.',
-                'step1': 'Link AI Brain', 'step1Desc': 'Enter your free API key below.',
-                'step2': 'Write Basic Lore', 'step2Desc': 'Add world-building in Lore Engine.',
-                'step3': 'Magical Analysis', 'step3Desc': 'Organize tables, check for OOC, and write.',
-                'guideBtn': '🚀 View Guide (Preparing)',
-                'apiBadge': 'Easy 1-min Setup', 'apiTitle': '🤖 Hire Your Private AI Assistant',
-                'apiDesc1': 'Features are 100% free, but you need to connect an API key.',
-                'apiDesc2': '<b>💡 What is an API key?</b><br>It is like a free pass number to use AI company services.',
-                'apiGuideBtn': '🔑 How to get a free API key in 1 min →',
-                'inquiryBtn': 'Inquiries',
-                'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': 'Go to the dedicated workspace to write your novels.',
-                'linkTrpgTitle': 'TRPG Engine', 'linkTrpgDesc': 'Solo adventure mode and GM assist tools.',
-                'linkCommTitle': 'Community Lounge', 'linkCommDesc': 'Share novels and evaluate them.',
-                'goEngineBtn': '⚙️ Go to AI Lore Engine →',
-                'newNovelBtn': '+ NEW NOVEL', 'deleteBtn': 'DELETE', 'exampleBtn': '✨ Fill Example',
-                'swipeNotice': '👉 Swipe the menu sideways for more',
-                'tabChar': 'Character Simulator', 'tabQa': 'AI Analysis', 'tabRelation': 'Relation Map',
-                'tabTrend': 'Trend Scan', 'tabScan': 'Scan & Optimize', 'tabSuggest': 'Idea Suggestion',
-                'addCharBtn': '+ Add Character', 'optEvent': '🔥 Event (Action/Reaction)', 'optDialogue': '💬 Dialogue (Speaker/Listener)',
-                'targetLabel': 'Target:', 'speakerLabel': '🗣️ Speaker:', 'listenerLabel': '👂 Listener:',
-                'simBtn': 'Simulate Reaction (-2P)', 'regenBtn': '🔄 Regenerate', 'refundBtn': '⚠️ Refund',
-                'orgTableBtn': '📊 Organize Table', 'summarizeBtn': '📝 Summarize Lore',
-                'relMapBtn': 'Generate Mindmap (-2P)', 'relationDesc': 'Generates a text mindmap to grasp relationships.',
-                'redrawBtn': '🔄 Redraw', 'checkUpdateBtn': '🔄 Check Report',
-                'trendLockDesc': 'The latest report is ready.', 'trendUnlockBtn': 'Unlock Report (-1P)',
-                'formatBtn': 'Optimize Format', 'scanHelpTitle': '🔍 What does this do?',
-                'scanHelp1': '<b>Consistency Check:</b> Catches lore errors real-time.', 'scanHelp2': '<b>Format:</b> Adjusts paragraphs for mobile reading.',
-                'scanBtn': 'Start Scan (-2P)', 'reScanBtn': '🔄 Rescan',
-                'suggestDesc': 'Proposes ideas to breathe new life into your story.', 'otherSuggestBtn': '🔄 Suggest Others',
-                'boardNotice': '⚠️ Notice: Blocked posts are excluded from rewards.',
-                'writeBtn': 'Write', 'tabGuide': '💡 Tips', 'tabNovel': '📖 Showcase',
-                'footerDesc': 'The best AI partner. Data safely stored in your account & browser.',
-                'themeTooltip': 'Toggle Theme', 'apiGuideTooltip': 'Click for guide link!', 'apiKeyTooltip': 'Paste your API key here.',
-                'exampleTooltip': 'Load an example lore!', 'charTooltip': 'Talk to characters', 'qaTooltip': 'Summarize or make tables',
-                'relTooltip': 'Generate relationship map', 'trendTooltip': 'Latest market trends', 'scanTooltip': 'Check for plot holes',
-                'suggestTooltip': 'Get story ideas', 'simTooltip': 'AI simulates the characters.', 'orgTooltip': 'Makes a table of info.',
-                'sumTooltip': 'Summarizes massive lore.', 'relTooltip2': 'Draws the connections.', 'scanTooltip2': 'Finds contradictions.',
-                'syncStatus': '☁️ Synced', 'apiGuideBtnShort': 'API Guide', 'contactBtn': 'Contact Us', 'termsBtn': 'Terms of Service',
-                'apiGuideStep2': 'Paste the key into the API key input box.', 'apiGuideStep3': 'We do NOT store your key on the server.'
-            },
-            'zh': {
-                'loginBonus': '📢 <span class="font-black italic">LOGIN BONUS:</span> 登录即送 <span class="underline font-black">1000P</span>！',
-                'logout': '登出', 'loginBtn': '登录', 'signupBtn': '注册',
-                'navDashboard': '🏠 仪表板', 'navEngine': '⚙️ AI 设定引擎', 'navBoard': '📢 社区',
-                'heroTitle': 'NARRATIVE <span class="text-amber-600 dark:text-amber-500 italic">FORGE</span>',
-                'heroSub': '为您的故事锻造结构。',
-                'heroDesc1': '适合所有创作者的 AI 故事规划引擎。',
-                'step1': '连接 AI 大脑', 'step1Desc': '在下方输入您的免费 API 密钥。',
-                'step2': '编写基础设定', 'step2Desc': '在 设定引擎 中编写世界观并注册角色。',
-                'step3': '神奇的分析', 'step3Desc': '整理表格，检查矛盾，开始写小说。',
-                'guideBtn': '🚀 查看指南 (准备中)',
-                'apiBadge': '1分钟快速设置', 'apiTitle': '🤖 雇佣您的私人 AI 助手',
-                'apiDesc1': '功能 100% 免费，但您需要自己连接 API 密钥（AI 大脑）。',
-                'apiDesc2': '<b>💡 什么是 API 密钥？</b><br>它就像是一个免费通行证，让您使用 AI 公司的服务。',
-                'apiGuideBtn': '🔑 1分钟免费获取 API 密钥的方法 →',
-                'inquiryBtn': '查看咨询',
-                'linkNovelTitle': 'WebNovel Studio', 'linkNovelDesc': '前往专用工作区直接撰写小说。',
-                'linkTrpgTitle': 'TRPG Engine', 'linkTrpgDesc': '进入单人冒险模式和 GM 辅助工具。',
-                'linkCommTitle': 'Community Lounge', 'linkCommDesc': '分享小说并进行评价。',
-                'goEngineBtn': '⚙️ 前往 AI 设定引擎 →',
-                'newNovelBtn': '+ 新建小说', 'deleteBtn': '删除', 'exampleBtn': '✨ 填充示例',
-                'swipeNotice': '👉 侧向滑动菜单查看更多',
-                'tabChar': '角色模拟器', 'tabQa': 'AI 分析', 'tabRelation': '人物关系图',
-                'tabTrend': '趋势扫描', 'tabScan': '设定检查/优化', 'tabSuggest': '素材推荐',
-                'addCharBtn': '+ 添加角色', 'optEvent': '🔥 发生事件', 'optDialogue': '💬 传递对话',
-                'targetLabel': '目标:', 'speakerLabel': '🗣️ 说话者:', 'listenerLabel': '👂 听众:',
-                'simBtn': '模拟反应 (-2P)', 'regenBtn': '🔄 重新生成', 'refundBtn': '⚠️ 退款',
-                'orgTableBtn': '📊 整理信息表', 'summarizeBtn': '📝 设定摘要',
-                'relMapBtn': '生成思维导图 (-2P)', 'relationDesc': '生成文本思维导图，一目了然地掌握关系。',
-                'redrawBtn': '🔄 重新绘制', 'checkUpdateBtn': '🔄 检查新报告',
-                'trendLockDesc': '最新报告已准备就绪。', 'trendUnlockBtn': '解锁报告 (-1P)',
-                'formatBtn': '优化格式', 'scanHelpTitle': '🔍 这是一个什么功能？',
-                'scanHelp1': '<b>连贯性检查:</b> 实时捕捉设定错误。', 'scanHelp2': '<b>排版:</b> 自动校正移动端段落。',
-                'scanBtn': '开始扫描 (-2P)', 'reScanBtn': '🔄 重新扫描',
-                'suggestDesc': '基于设定提出新想法。', 'otherSuggestBtn': '🔄 其他推荐',
-                'boardNotice': '⚠️ 公告: 被屏蔽的帖子不计入奖励。',
-                'writeBtn': '写文章', 'tabGuide': '💡 技巧分享', 'tabNovel': '📖 设定展示',
-                'footerDesc': '最佳 AI 伙伴。数据安全保存在您的账户和浏览器中。',
-                'themeTooltip': '切换主题', 'apiGuideTooltip': '点击查看指南！', 'apiKeyTooltip': '在此粘贴 API 密钥。',
-                'exampleTooltip': '加载示例！', 'charTooltip': '与角色对话', 'qaTooltip': '总结或制作表格',
-                'relTooltip': '生成关系图', 'trendTooltip': '最新市场趋势', 'scanTooltip': '检查漏洞',
-                'suggestTooltip': '获取灵感', 'simTooltip': 'AI 模拟角色。', 'orgTooltip': '制作信息表。',
-                'sumTooltip': '总结大量设定。', 'relTooltip2': '绘制人物关系。', 'scanTooltip2': '发现矛盾。',
-                'syncStatus': '☁️ 已同步', 'apiGuideBtnShort': 'API 指南', 'contactBtn': '联系我们', 'termsBtn': '服务条款',
-                'apiGuideStep2': '将密钥粘贴到 API 密钥输入框中。', 'apiGuideStep3': '我们不会在服务器上存储您的密钥。'
-            }
-        };
-
-        const placeholders = {
-            'ko': { 'emailPh': '이메일', 'pwPh': '비밀번호', 'apiKeyPh': 'gsk_xxxxxxxx', 'lorePh': '소설의 배경, 세계관, 전체적인 스토리 흐름을 상세히 적어주세요.', 'listenerPh': '예: 유수연, 전체', 'simInputPh': '발생한 사건이나 건넬 대사를 입력하세요.', 'askPh': '질문을 입력하세요.', 'manuscriptPh': '원고 내용을 입력하세요.', 'suggestPh': '테마 예: 충격적 반전 등' },
-            'en': { 'emailPh': 'Email', 'pwPh': 'Password', 'apiKeyPh': 'gsk_xxxxxxxx', 'lorePh': 'Enter background and lore...', 'listenerPh': 'Ex: Su-yeon, Everyone', 'simInputPh': 'Enter event or dialogue...', 'askPh': 'Enter your question.', 'manuscriptPh': 'Enter manuscript.', 'suggestPh': 'Theme Ex: Shocking twist' },
-            'zh': { 'emailPh': '电子邮箱', 'pwPh': '密码', 'apiKeyPh': 'gsk_xxxxxxxx', 'lorePh': '输入世界观...', 'listenerPh': '例：柳秀妍，全体', 'simInputPh': '输入事件或对话...', 'askPh': '输入问题。', 'manuscriptPh': '输入原稿。', 'suggestPh': '主题例：令人震惊的反转' }
-        };
-
         function applyLanguage() {
             const lang = document.getElementById('app-lang').value;
             localStorage.setItem('g_app_lang', lang);
-            const texts = uiTexts[lang];
-            const phTexts = placeholders[lang];
-            document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (texts[key]) el.innerHTML = texts[key]; });
-            document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const key = el.getAttribute('data-i18n-placeholder'); if (phTexts[key]) el.placeholder = phTexts[key]; });
             const boardBtn = document.getElementById('toggle-board-btn');
             if(boardBtn) boardBtn.innerText = showAllGuides ? (lang==='ko'?'간략히보기':(lang==='en'?'View Less':'收起')) : (lang==='ko'?'전체보기':(lang==='en'?'View All':'查看全部'));
         }
@@ -720,9 +563,9 @@
             const lang = document.getElementById('app-lang').value;
             
             if (p.chars.length === 0) {
-                grid.innerHTML = `<div class="col-span-3 md:col-span-4 text-center py-6 text-[10px] md:text-xs text-slate-500 dark:text-slate-400 italic">${lang==='ko'?'등록된 인물이 없습니다. + 인물 추가 버튼을 눌러주세요.':(lang==='en'?'No characters. Click + Add Character.':'没有注册的角色。请点击 + 添加角色按钮。')}</div>`;
-                if(selectEvent) selectEvent.innerHTML = `<option value="all">${lang==='ko'?'인물을 먼저 추가해주세요':(lang==='en'?'Add characters first':'请先添加角色')}</option>`;
-                if(simSpeaker) simSpeaker.innerHTML = `<option value="user">${lang==='ko'?'미상 / 서술자':(lang==='en'?'Unknown / Narrator':'未知 / 叙述者')}</option>`;
+                grid.innerHTML = `<div class="col-span-3 md:col-span-4 text-center py-6 text-[10px] md:text-xs text-slate-500 dark:text-slate-400 italic">등록된 인물이 없습니다. + 인물 추가 버튼을 눌러주세요.</div>`;
+                if(selectEvent) selectEvent.innerHTML = `<option value="all">인물을 먼저 추가해주세요</option>`;
+                if(simSpeaker) simSpeaker.innerHTML = `<option value="user">미상 / 서술자</option>`;
                 return;
             }
 
@@ -733,22 +576,20 @@
                 </div>
             `).join('');
 
-            if(selectEvent) selectEvent.innerHTML = `<option value="all">${lang==='ko'?'전체 인물 반응 보기':(lang==='en'?'See all reactions':'查看所有人反应')}</option>` + p.chars.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-            if(simSpeaker) simSpeaker.innerHTML = `<option value="user">${lang==='ko'?'미상 / 외부인':(lang==='en'?'Unknown / Outsider':'未知 / 外部人')}</option>` + p.chars.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if(selectEvent) selectEvent.innerHTML = `<option value="all">전체 인물 반응 보기</option>` + p.chars.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+            if(simSpeaker) simSpeaker.innerHTML = `<option value="user">미상 / 외부인</option>` + p.chars.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         }
 
         function toggleSimType() {
             const type = document.getElementById('sim-type').value;
-            const lang = document.getElementById('app-lang').value;
-            const ph = placeholders[lang].simInputPh;
             if(type === 'event') {
                 document.getElementById('event-options').classList.remove('hidden');
                 document.getElementById('dialogue-options').classList.add('hidden');
-                document.getElementById('sim-input').placeholder = ph;
+                document.getElementById('sim-input').placeholder = "발생한 사건이나 대사를 입력하세요.";
             } else {
                 document.getElementById('event-options').classList.add('hidden');
                 document.getElementById('dialogue-options').classList.remove('hidden');
-                document.getElementById('sim-input').placeholder = lang === 'ko' ? "건넬 대사를 입력하세요. (예: 배신자는 너였구나.)" : (lang === 'en' ? "Enter dialogue. (e.g., You were the traitor.)" : "请输入要说的台词。(例：原来你就是叛徒。)");
+                document.getElementById('sim-input').placeholder = "건넬 대사를 입력하세요. (예: 배신자는 너였구나.)";
             }
         }
 
@@ -802,13 +643,12 @@
             const input = document.getElementById('sim-input').value.trim();
             const resDiv = document.getElementById('result-character');
             const toolDiv = document.getElementById('character-tools');
-            const lang = document.getElementById('app-lang').value;
 
             if(!key) return alert("❌ API Key Missing!");
             if(!input) return alert("❌ Input event/dialogue!");
 
             const p = projects.find(x => x.id === currentId);
-            if(!p.chars || p.chars.length === 0) return alert(lang === 'ko' ? "❌ 먼저 인물을 한 명이라도 등록해주세요!" : "❌ Add a character first!");
+            if(!p.chars || p.chars.length === 0) return alert("❌ 먼저 인물을 한 명이라도 등록해주세요!");
 
             let cost = isUpdate ? 0 : 2;
             if(points < cost) return alert("Not enough points!");
@@ -833,9 +673,7 @@
                 prompt += `[인물 정보 DB]\n${charContext}\n\n[대화 상황]\n- 화자(말하는 사람): ${speakerName}\n- 청자(듣는 사람): ${listenerText}\n- 대사 내용: "${input}"\n\n위 대사를 들었을 때 청자(들)이 어떻게 맞받아칠지, 청자에 해당하는 인물별로 다음 형식에 맞춰 각각 작성해:\n- 겉 반응 (행동/표정)\n- 답변 대사\n- 진짜 속마음`;
             }
             
-            if (lang === 'ko') prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 고유명사는 원문 유지.]`;
-            else if (lang === 'en') prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. Keep proper nouns in their original language.]`;
-            else if (lang === 'zh') prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。专有名词保持原文。]`;
+            prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 고유명사는 원문 유지.]`;
 
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -843,12 +681,16 @@
                     body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "system", content: "You must strictly follow the output language and proper noun preservation directives."}, {role: "user", content: prompt}], temperature: 0.6 })
                 });
                 const data = await response.json(); 
-                // 🚨 에러 방어 코드 추가
+                
+                // 🚨 에러 가이드 출력 코드
                 if(data.error) throw new Error(data.error.message);
 
                 resDiv.innerHTML = marked.parse(data.choices[0].message.content);
                 if(toolDiv) toolDiv.classList.remove('hidden');
-            } catch (err) { resDiv.innerHTML = "Error: " + err.message; points += cost; updatePointDisplay(); }
+            } catch (err) { 
+                resDiv.innerHTML = `<div class='text-rose-500 font-bold p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-500/30'>🚨 Error: ${err.message}<br><br><button onclick='document.getElementById("api-modal").classList.remove("hidden")' class='text-amber-600 dark:text-amber-400 underline mt-2 text-xs md:text-sm font-black'>💡 API 오류 해결 가이드 열기</button></div>`; 
+                points += cost; updatePointDisplay(); 
+            }
         }
 
         async function runAI(mode, isUpdate = false) {
@@ -856,14 +698,13 @@
             const lore = document.getElementById('lore').value.trim();
             const resDiv = document.getElementById(`result-${mode}`) || document.getElementById('result-qa');
             const toolDiv = document.getElementById(`${mode}-tools`);
-            const lang = document.getElementById('app-lang').value;
             
             const p = projects.find(x => x.id === currentId);
             const hasChars = p && p.chars && p.chars.length > 0;
 
             if(!key) return alert("❌ API Key Missing!");
-            if(mode !== 'trend' && !lore && !hasChars) return alert(lang === 'ko' ? "❌ 설정(Lore)이나 인물 정보를 먼저 입력해야 AI 분석이 가능합니다!" : "❌ Add Lore or Characters first!");
-            if(mode === 'scan' && !document.getElementById('manuscript').value.trim()) return alert(lang === 'ko' ? "❌ 검사할 원고 내용을 입력해주세요!" : "❌ Enter manuscript first!");
+            if(mode !== 'trend' && !lore && !hasChars) return alert("❌ 설정(Lore)이나 인물 정보를 먼저 입력해야 AI 분석이 가능합니다!");
+            if(mode === 'scan' && !document.getElementById('manuscript').value.trim()) return alert("❌ 검사할 원고 내용을 입력해주세요!");
 
             let cost = (mode === 'chat' || isUpdate) ? 0 : 2;
             if(points < cost) return alert("Not enough points!");
@@ -885,9 +726,7 @@
             else if(mode === 'summarize') prompt = `[전체 설정 데이터]\n${combinedLore}\n\n세계관과 인물 설정을 모두 융합하여 하나의 기획서처럼 전체 요약.`;
             else prompt = `[전체 설정 데이터]\n${combinedLore}\n\n질문: ${document.getElementById('question').value}`;
 
-            if (lang === 'ko') prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 고유명사 유지.]`;
-            else if (lang === 'en') prompt += `\n\n[⚠️ABSOLUTE RULE: Output entirely in natural English. Keep proper nouns original.]`;
-            else if (lang === 'zh') prompt += `\n\n[⚠️绝对规则：基本输出必须100%使用流利的中文。专有名词保持原文。]`;
+            prompt += `\n\n[⚠️절대 규칙: 기본 출력은 반드시 100% 자연스러운 한국어(Korean)로 작성할 것. 고유명사 유지.]`;
 
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -896,12 +735,15 @@
                 });
                 const data = await response.json();
                 
-                // 🚨 에러 방어 코드 추가
+                // 🚨 에러 가이드 출력 코드
                 if(data.error) throw new Error(data.error.message);
 
                 resDiv.innerHTML = marked.parse(data.choices[0].message.content);
                 if(toolDiv) toolDiv.classList.remove('hidden');
-            } catch (err) { resDiv.innerHTML = "Error: " + err.message; points += cost; updatePointDisplay(); }
+            } catch (err) { 
+                resDiv.innerHTML = `<div class='text-rose-500 font-bold p-4 bg-rose-50 dark:bg-rose-900/20 rounded-xl border border-rose-200 dark:border-rose-500/30'>🚨 Error: ${err.message}<br><br><button onclick='document.getElementById("api-modal").classList.remove("hidden")' class='text-amber-600 dark:text-amber-400 underline mt-2 text-xs md:text-sm font-black'>💡 API 오류 해결 가이드 열기</button></div>`; 
+                points += cost; updatePointDisplay(); 
+            }
         }
 
         async function publishTrendReport() {
@@ -910,17 +752,12 @@
             
             const raw = document.getElementById('admin-raw-trend-input').value;
             const btn = document.getElementById('publish-btn');
-            const lang = document.getElementById('app-lang').value;
             
             if(!raw) return alert("❌ Data Missing!");
             
             btn.innerText = "Processing..."; btn.disabled = true;
-            let prompt = `당신은 No.1 웹소설 시장 분석가입니다. 아래 데이터에서 UI 설명은 철저히 무시하고 오직 1.장르 분포(%) 2.제목 트렌드 3.핵심 키워드 4.집필 전략만 Markdown으로 요약하세요.\n\n[데이터]\n${raw}`;
+            let prompt = `당신은 No.1 웹소설 시장 분석가입니다. 아래 데이터에서 UI 설명은 철저히 무시하고 오직 1.장르 분포(%) 2.제목 트렌드 3.핵심 키워드 4.집필 전략만 Markdown으로 요약하세요.\n\n[데이터]\n${raw}\n\n[⚠️절대 규칙: 반드시 100% 자연스러운 한국어(Korean)로만 출력할 것.]`;
             
-            if (lang === 'ko') prompt += `\n\n[⚠️절대 규칙: 반드시 100% 자연스러운 한국어(Korean)로만 출력할 것.]`;
-            else if (lang === 'en') prompt += `\n\n[⚠️ABSOLUTE RULE: Output 100% in English.]`;
-            else if (lang === 'zh') prompt += `\n\n[⚠️绝对规则：必须100%使用中文输出。]`;
-
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
                     method: 'POST', headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
@@ -928,7 +765,7 @@
                 });
                 const data = await response.json();
                 
-                // 🚨 에러 방어 코드 추가
+                // 🚨 에러 가이드 출력 코드
                 if(data.error) throw new Error(data.error.message);
 
                 localStorage.setItem('latest_trend_report', data.choices[0].message.content);
@@ -972,7 +809,7 @@
                 const el = document.getElementById(`panel-${id}`); if(el) el.classList.toggle('hidden', id !== tab); 
                 const btn = document.getElementById(`tab-${id}`); 
                 if(btn) { 
-                    if (id === tab) { btn.className = `flex-none min-w-[90px] md:min-w-[120px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-active uppercase text-white bg-amber-600 dark:bg-fuchsia-600 shadow-md`; } 
+                    if (id === tab) { btn.className = `flex-none min-w-[90px] md:min-w-[120px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-active uppercase text-white bg-amber-600 shadow-md`; } 
                     else { btn.className = `flex-none min-w-[90px] md:min-w-[110px] py-2 md:py-4 rounded-lg md:rounded-xl font-bold text-[9px] md:text-[10px] transition-all tab-inactive uppercase text-slate-600 dark:text-slate-400`; } 
                 } 
             }); 
@@ -1078,7 +915,6 @@
                 const resp = await fetch("https://api.groq.com/openai/v1/chat/completions", {method:'POST', headers:{'Authorization':`Bearer ${k}`, 'Content-Type':'application/json'}, body:JSON.stringify({model:"llama-3.3-70b-versatile", messages:[{role:"system", content: checkPrompt},{role:"user", content:`${t}\n${c}`}]})}); 
                 const data = await resp.json(); 
                 
-                // 🚨 에러 방어 코드 추가
                 if(data.error) throw new Error(data.error.message);
 
                 const isRelevant = data.choices[0].message.content.includes("YES"); 
