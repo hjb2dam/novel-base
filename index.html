@@ -362,10 +362,29 @@
         let adminClicks = 0;
         let showAllGuides = false;
         let currentBoardTab = 'guide'; 
-        let guides = JSON.parse(localStorage.getItem('g_guides')) || [];
+        
+        // ----------------------------------------------------
+        // [수정 포인트] 작가 게시판 데이터를 로컬이 아닌 클라우드(Supabase)에서 가져오도록 변경
+        let guides = [];
         let lastChargedMode = "";
         let lastChargedPoints = 0;
         let currentUserSession = null;
+
+        // 클라우드에서 최신 게시글(가이드/소설) 가져오기
+        async function fetchGuides() {
+            const { data, error } = await sbClient
+                .from('board_posts')
+                .select('*')
+                .order('id', { ascending: false }); // 최신 글이 위로 오도록 정렬
+            
+            if (!error) {
+                guides = data || [];
+                renderGuides();
+            } else {
+                console.error("게시판 데이터를 불러오는데 실패했습니다.", error);
+            }
+        }
+        // ----------------------------------------------------
 
         function switchMainView(viewName) {
             document.getElementById('view-dashboard').classList.remove('view-active');
@@ -627,7 +646,6 @@
             catch (e) { console.error("Cloud sync error", e); }
         }
 
-        // 🔄 강제 동기화 (수동 풀링)
         async function forceCloudSync() {
             if(!currentUserSession) return alert("로그인이 필요합니다. 상단에서 로그인해주세요.");
             const btn = event.currentTarget;
@@ -691,7 +709,10 @@
             updatePointDisplay(); 
             renderProjects(); 
             loadProject(currentId); 
-            renderGuides(); 
+            
+            // [수정 포인트] 시작할 때 서버에서 게시판 글 불러오기
+            await fetchGuides(); 
+            
             renderUserInquiries();
             safeRestoreApiKey();
             checkTrendLockStatus();
@@ -844,7 +865,6 @@
                 });
                 const data = await response.json(); 
                 
-                // 🚨 에러 발생 시 방어벽
                 if(data.error) throw new Error(data.error.message);
 
                 resDiv.innerHTML = marked.parse(data.choices[0].message.content);
@@ -900,7 +920,6 @@
                 });
                 const data = await response.json();
                 
-                // 🚨 에러 발생 시 방어벽
                 if(data.error) throw new Error(data.error.message);
 
                 resDiv.innerHTML = marked.parse(data.choices[0].message.content);
@@ -999,7 +1018,6 @@
             if(confirm("삭제?")) { projects = projects.filter(x => x.id !== currentId); currentId = projects[0].id; localStorage.setItem('g_projects', JSON.stringify(projects)); syncDataToCloud(); loadProject(currentId); } 
         }
         
-        // 🔄 타이핑할 때마다 서버를 때리지 않도록 1초 딜레이(디바운스) 적용
         let titleTimeout;
         function updateTitle() { 
             const p = projects.find(x => x.id === currentId); 
@@ -1019,7 +1037,6 @@
             } 
         }
         
-        // 🔄 세계관 작성 시 1초 딜레이(디바운스) 적용하여 안전하게 서버 저장
         let saveTimeout;
         function autoSave() { 
             const p = projects.find(x => x.id === currentId); 
@@ -1070,6 +1087,7 @@
         function openWriteModal() { document.getElementById('comm-modal').classList.remove('hidden'); }
         function closeWriteModal() { document.getElementById('comm-modal').classList.add('hidden'); }
         
+        // [수정 포인트] 클라우드(Supabase)에 새로운 글 추가하도록 변경
         async function submitGuide() { 
             const k = getSafeApiKey(); 
             const type = document.getElementById('g-type').value;
@@ -1088,18 +1106,62 @@
 
                 const isRelevant = data.choices[0].message.content.includes("YES"); 
                 
-                guides.unshift({id: Date.now(), title: t, content: c, author: localStorage.getItem('g_user_nickname') || "Author", likes: 0, isRelevant, type: type}); 
-                localStorage.setItem('g_guides', JSON.stringify(guides)); 
+                // Supabase에 데이터 넣기
+                const newGuide = {
+                    id: Date.now(), 
+                    title: t, 
+                    content: c, 
+                    author: localStorage.getItem('g_user_nickname') || "Author", 
+                    likes: 0, 
+                    "isRelevant": isRelevant, 
+                    type: type,
+                    rewarded: false
+                };
                 
-                switchBoardTab(type); closeWriteModal(); 
+                const { error: insertError } = await sbClient.from('board_posts').insert([newGuide]);
+                if(insertError) throw new Error(insertError.message);
+                
+                closeWriteModal(); 
                 if(!isRelevant) alert("목적과 무관한 글로 판정되어 블락 처리됩니다."); 
-            } catch(e){alert("검역 오류: " + e.message + "\n\n(API 키 오류인지 확인해 주세요.)");} finally { btn.innerText = "등록 (AI 검역)"; } 
+                
+                // 서버에서 다시 글 갱신
+                await fetchGuides();
+                switchBoardTab(type); 
+            } catch(e){alert("게시 오류: " + e.message);} finally { btn.innerText = "등록 (AI 검역)"; } 
         }
 
-        function likeGuide(id, e) { 
-            e.stopPropagation(); const g = guides.find(x => x.id === id); 
-            if(g) { g.likes += 1; if(g.likes >= 20 && !g.rewarded && g.isRelevant) { g.rewarded = true; points += 50; updatePointDisplay(); } localStorage.setItem('g_guides', JSON.stringify(guides)); renderGuides(); } 
+        // [수정 포인트] 클라우드(Supabase)에 추천 정보 업데이트 하도록 변경 (무한 추천 방지 포함)
+        async function likeGuide(id, e) { 
+            e.stopPropagation(); 
+            
+            // 중복 추천 방지 로직 (브라우저 로컬 저장소 활용)
+            const voteKey = `voted_guide_${id}`;
+            if (localStorage.getItem(voteKey)) {
+                return alert("이미 이 글에 추천을 남기셨습니다.");
+            }
+
+            const g = guides.find(x => x.id === id); 
+            if(g) { 
+                let newLikes = g.likes + 1;
+                let newRewarded = g.rewarded;
+                
+                // 20개 넘으면 포인트 지급 (이미 지급받은 글은 제외)
+                if(newLikes >= 20 && !newRewarded && g.isRelevant) { 
+                    newRewarded = true; 
+                    points += 50; 
+                    updatePointDisplay(); 
+                    alert("🎉 게시글 추천 20개 달성! 50P가 지급되었습니다.");
+                } 
+                
+                // Supabase 데이터 업데이트
+                const { error } = await sbClient.from('board_posts').update({ likes: newLikes, rewarded: newRewarded }).eq('id', id);
+                if(error) return alert("추천 처리 중 문제가 발생했습니다: " + error.message);
+
+                localStorage.setItem(voteKey, 'true'); 
+                await fetchGuides(); 
+            } 
         }
+
         function toggleAllGuides() { 
             showAllGuides = !showAllGuides; const lang = document.getElementById('app-lang').value; const btn = document.getElementById('toggle-board-btn');
             if(btn) { btn.innerText = showAllGuides ? (lang==='ko'?'간략히보기':(lang==='en'?'View Less':'收起')) : (lang==='ko'?'전체보기':(lang==='en'?'View All':'查看全部')); } renderGuides(); 
