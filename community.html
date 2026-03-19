@@ -105,7 +105,8 @@
 
     <script>
         // [데이터 구조 혁신] 작품(Novel) 배열 안에 회차(chapters) 배열이 존재함
-        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels_v2')) || [
+        // 기존 g_comm_novels_v2 키 대신 다른 페이지와 안 겹치도록 g_community_lounge_data로 독립시켰음
+        let commNovels = JSON.parse(localStorage.getItem('g_community_lounge_data')) || [
             { 
                 id: 1, 
                 title: "검술명가 막내아들로 살아남기", 
@@ -228,7 +229,8 @@
 
             const newNovel = { id: Date.now(), title, author, desc, chapters: [] };
             commNovels.unshift(newNovel);
-            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+            // 분리된 저장소 키 사용
+            localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
             
             document.getElementById('novel-title').value = ''; document.getElementById('novel-desc').value = '';
             closeCreateNovelModal(); renderNovelList();
@@ -250,7 +252,8 @@
             if(!novel) return;
 
             novel.chapters.push({ chapterId: Date.now(), title, content, likes: 0, dislikes: 0 });
-            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+            // 분리된 저장소 키 사용
+            localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
 
             document.getElementById('chapter-title').value = ''; document.getElementById('chapter-content').value = '';
             closeCreateChapterModal();
@@ -286,6 +289,13 @@
         function closeReadChapterModal() { document.getElementById('modal-read-chapter').classList.add('hidden'); }
 
         function voteChapter(chapterId, type) {
+            // 중복 투표 방지 로직 (해당 회차에 투표한 기록이 있는지 검사)
+            const voteKey = `voted_chapter_${chapterId}`;
+            if (localStorage.getItem(voteKey)) {
+                alert("이미 이 회차에 평가를 남기셨습니다.");
+                return;
+            }
+
             const novel = commNovels.find(x => x.id === currentViewNovelId);
             const chapter = novel.chapters.find(c => c.chapterId === chapterId);
             
@@ -293,7 +303,9 @@
                 if(type === 'like') chapter.likes += 1;
                 if(type === 'dislike') chapter.dislikes += 1;
                 
-                localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+                // 분리된 저장소 키 사용 및 투표 기록 저장
+                localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
+                localStorage.setItem(voteKey, 'true'); 
                 
                 document.getElementById('count-like').innerText = chapter.likes;
                 document.getElementById('count-dislike').innerText = chapter.dislikes;
