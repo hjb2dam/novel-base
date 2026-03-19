@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Lounge - NovelBase</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
         body { font-family: 'Pretendard', sans-serif; background-color: #0f172a; }
@@ -104,32 +105,36 @@
     </div>
 
     <script>
-        // 다른 페이지(메인화면 등)와 데이터가 정상적으로 연동/공유될 수 있도록 원래의 저장소 키(g_comm_novels_v2)를 유지합니다.
-        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels_v2')) || [
-            { 
-                id: 1, 
-                title: "검술명가 막내아들로 살아남기", 
-                author: "검객킴", 
-                desc: "무림 최고의 명가, 백가장의 뒷마당에서 눈을 뜬 30대 찌든 직장인의 무림 생존기.", 
-                chapters: [
-                    {
-                        chapterId: 101,
-                        title: "1화. 낯선 천장",
-                        content: "눈을 떠보니 익숙한 천장이 아니었다.\n이곳은 무림 최고의 명가, 백가장의 뒷마당이었다.\n\n'내가 왜 이곳에 있는 거지?'\n\n머리가 깨질 듯이 아파왔다. 어제 분명히 야근을 마치고 편의점 도시락을 먹으며 자취방 침대에 누웠던 기억이 마지막이었다.",
-                        likes: 45, dislikes: 2
-                    },
-                    {
-                        chapterId: 102,
-                        title: "2화. 기연을 얻다",
-                        content: "그때, 밖에서 날카로운 쇳소리가 들려왔다.\n\n채챙!\n\n\"막내 도련님이 깨어나셨다! 어서 가주님께 알려라!\"\n\n도련님? 가주? \n나는 황급히 자리에서 일어나 거울을 찾았다.",
-                        likes: 38, dislikes: 0
-                    }
-                ]
-            }
-        ];
+        // Supabase DB 연결 (index.html과 동일한 키 사용)
+        const SB_URL = 'https://dsnroiaagryalgjifxjw.supabase.co';
+        const SB_KEY = 'sb_publishable_nZMvt-BKEG1__FgGSgtfig_ODv7u2St';
+        const sbClient = supabase.createClient(SB_URL, SB_KEY);
 
-        let currentViewNovelId = null; // 현재 열어본 작품 ID
-        let currentReadChapterId = null; // 현재 읽고 있는 회차 ID
+        let commNovels = [];
+        let currentViewNovelId = null; 
+        let currentReadChapterId = null; 
+
+        // [핵심 기능] 클라우드(Supabase)에서 모든 커뮤니티 소설 불러오기
+        async function fetchNovels() {
+            const { data, error } = await sbClient
+                .from('community_novels')
+                .select('*')
+                .order('id', { ascending: false }); // 최신 글이 위로 오도록 정렬
+
+            if (error) {
+                console.error("데이터 불러오기 에러:", error);
+                commNovels = [];
+            } else {
+                commNovels = data || [];
+            }
+            
+            renderNovelList();
+            
+            // 만약 현재 어떤 작품의 상세 페이지(회차 목록)를 보고 있다면 거기도 새로고침
+            if (currentViewNovelId && !document.getElementById('view-chapter-list').classList.contains('hidden')) {
+                renderChapterList();
+            }
+        }
 
         // 1. 메인 작품 리스트 렌더링
         function renderNovelList() {
@@ -140,14 +145,15 @@
             }
 
             grid.innerHTML = commNovels.map(novel => {
-                // 총 좋아요 수 계산 (모든 회차의 좋아요 합)
-                const totalLikes = novel.chapters.reduce((sum, ch) => sum + ch.likes, 0);
+                const chapters = novel.chapters || [];
+                // 총 좋아요 수 계산
+                const totalLikes = chapters.reduce((sum, ch) => sum + ch.likes, 0);
                 
                 return `
                 <div onclick="openNovelDetail(${novel.id})" class="glass p-6 md:p-8 rounded-[2rem] novel-card cursor-pointer flex flex-col border border-white/5 relative group h-[250px]">
                     <div class="flex justify-between items-start mb-2 md:mb-3">
                         <h3 class="font-black text-white text-lg md:text-xl italic truncate flex-1 pr-2">${novel.title}</h3>
-                        <span class="text-[10px] font-bold text-slate-500 bg-black/50 px-2 py-1 rounded-md shrink-0">총 ${novel.chapters.length}화</span>
+                        <span class="text-[10px] font-bold text-slate-500 bg-black/50 px-2 py-1 rounded-md shrink-0">총 ${chapters.length}화</span>
                     </div>
                     <span class="text-[10px] md:text-xs font-black text-emerald-400 mb-3 md:mb-4 block">@${novel.author}</span>
                     <p class="text-xs md:text-sm text-slate-500 overflow-hidden flex-1 leading-relaxed line-clamp-3">${novel.desc}</p>
@@ -171,7 +177,9 @@
             document.getElementById('detail-title').innerText = novel.title;
             document.getElementById('detail-author').innerText = `@${novel.author}`;
             document.getElementById('detail-desc').innerText = novel.desc;
-            document.getElementById('detail-chapter-count').innerText = novel.chapters.length;
+            
+            const chapters = novel.chapters || [];
+            document.getElementById('detail-chapter-count').innerText = chapters.length;
 
             // [권한 체크] 로그인한 닉네임과 작가 닉네임이 같으면 연재 버튼 활성화
             const currentUser = localStorage.getItem('g_user_nickname') || "무명작가";
@@ -188,15 +196,16 @@
         // 회차 리스트 렌더링
         function renderChapterList() {
             const novel = commNovels.find(x => x.id === currentViewNovelId);
+            if(!novel) return;
+            const chapters = novel.chapters || [];
             const container = document.getElementById('chapter-list-container');
             
-            if(novel.chapters.length === 0) {
+            if(chapters.length === 0) {
                 container.innerHTML = `<div class="p-6 text-center text-slate-500 bg-white/5 rounded-2xl italic text-xs">아직 연재된 회차가 없습니다.</div>`;
                 return;
             }
 
-            // 최신 회차가 위로 오게 뒤집어서 렌더링 (선택 사항, 여기선 순서대로 1화부터 렌더링)
-            container.innerHTML = novel.chapters.map(ch => `
+            container.innerHTML = chapters.map(ch => `
                 <div onclick="openReadChapterModal(${ch.chapterId})" class="bg-slate-900/50 hover:bg-slate-800 p-4 md:p-5 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition cursor-pointer flex justify-between items-center group">
                     <h4 class="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition truncate pr-4">${ch.title}</h4>
                     <div class="flex items-center gap-4 shrink-0">
@@ -210,16 +219,16 @@
         function backToNovelList() {
             document.getElementById('view-chapter-list').classList.add('hidden');
             document.getElementById('view-novel-list').classList.remove('hidden');
-            renderNovelList(); // 누적 좋아요 갱신을 위해 재렌더링
+            renderNovelList(); 
         }
 
         // ==========================================
-        // 새 작품 만들기 로직
+        // 새 작품 만들기 로직 (클라우드 저장)
         // ==========================================
         function openCreateNovelModal() { document.getElementById('modal-create-novel').classList.remove('hidden'); }
         function closeCreateNovelModal() { document.getElementById('modal-create-novel').classList.add('hidden'); }
 
-        function submitNovel() {
+        async function submitNovel() {
             const title = document.getElementById('novel-title').value.trim();
             const desc = document.getElementById('novel-desc').value.trim();
             const author = localStorage.getItem('g_user_nickname') || "무명작가";
@@ -227,23 +236,26 @@
             if(!title || !desc) return alert("제목과 시놉시스를 모두 적어주세요!");
 
             const newNovel = { id: Date.now(), title, author, desc, chapters: [] };
-            commNovels.unshift(newNovel);
             
-            // 다시 원래 공유되던 키 이름으로 복구
-            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+            // Supabase에 데이터 넣기
+            const { error } = await sbClient.from('community_novels').insert([newNovel]);
+            if(error) return alert("작품 등록 중 에러가 발생했습니다: " + error.message);
             
             document.getElementById('novel-title').value = ''; document.getElementById('novel-desc').value = '';
-            closeCreateNovelModal(); renderNovelList();
+            closeCreateNovelModal(); 
+            
+            // 글이 등록되면 서버에서 최신 리스트 다시 받아오기
+            await fetchNovels();
             alert("새로운 작품이 등록되었습니다! 이제 회차를 연재해보세요.");
         }
 
         // ==========================================
-        // 새 회차 연재하기 로직
+        // 새 회차 연재하기 로직 (클라우드 업데이트)
         // ==========================================
         function openCreateChapterModal() { document.getElementById('modal-create-chapter').classList.remove('hidden'); }
         function closeCreateChapterModal() { document.getElementById('modal-create-chapter').classList.add('hidden'); }
 
-        function submitChapter() {
+        async function submitChapter() {
             const title = document.getElementById('chapter-title').value.trim();
             const content = document.getElementById('chapter-content').value.trim();
             if(!title || !content) return alert("제목과 본문을 입력해주세요!");
@@ -251,15 +263,17 @@
             const novel = commNovels.find(x => x.id === currentViewNovelId);
             if(!novel) return;
 
-            novel.chapters.push({ chapterId: Date.now(), title, content, likes: 0, dislikes: 0 });
+            const existingChapters = novel.chapters || [];
+            const newChapters = [...existingChapters, { chapterId: Date.now(), title, content, likes: 0, dislikes: 0 }];
             
-            // 다시 원래 공유되던 키 이름으로 복구
-            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+            // Supabase의 해당 소설 chapters 데이터만 업데이트
+            const { error } = await sbClient.from('community_novels').update({ chapters: newChapters }).eq('id', novel.id);
+            if(error) return alert("회차 연재 중 에러가 발생했습니다: " + error.message);
 
             document.getElementById('chapter-title').value = ''; document.getElementById('chapter-content').value = '';
             closeCreateChapterModal();
-            document.getElementById('detail-chapter-count').innerText = novel.chapters.length;
-            renderChapterList();
+            
+            await fetchNovels();
             alert("새 회차가 성공적으로 연재되었습니다!");
         }
 
@@ -269,7 +283,9 @@
         function openReadChapterModal(chapterId) {
             currentReadChapterId = chapterId;
             const novel = commNovels.find(x => x.id === currentViewNovelId);
-            const chapter = novel.chapters.find(c => c.chapterId === chapterId);
+            if(!novel) return;
+            const chapters = novel.chapters || [];
+            const chapter = chapters.find(c => c.chapterId === chapterId);
             
             if(chapter) {
                 document.getElementById('read-novel-title').innerText = `${novel.title} >`;
@@ -289,8 +305,8 @@
 
         function closeReadChapterModal() { document.getElementById('modal-read-chapter').classList.add('hidden'); }
 
-        function voteChapter(chapterId, type) {
-            // 중복 투표 방지 로직 (해당 회차에 투표한 기록이 있는지 검사)
+        async function voteChapter(chapterId, type) {
+            // 중복 투표 방지는 기기 로컬 스토리지를 유지
             const voteKey = `voted_chapter_${chapterId}`;
             if (localStorage.getItem(voteKey)) {
                 alert("이미 이 회차에 평가를 남기셨습니다.");
@@ -298,26 +314,44 @@
             }
 
             const novel = commNovels.find(x => x.id === currentViewNovelId);
-            const chapter = novel.chapters.find(c => c.chapterId === chapterId);
+            if(!novel) return;
+            const chapters = novel.chapters || [];
+            const chapterExists = chapters.find(c => c.chapterId === chapterId);
             
-            if(chapter) {
-                if(type === 'like') chapter.likes += 1;
-                if(type === 'dislike') chapter.dislikes += 1;
+            if(chapterExists) {
+                // 기존 챕터 배열을 복사하면서 투표수만 올리기
+                const updatedChapters = chapters.map(c => {
+                    if (c.chapterId === chapterId) {
+                        return { 
+                            ...c, 
+                            likes: type === 'like' ? c.likes + 1 : c.likes, 
+                            dislikes: type === 'dislike' ? c.dislikes + 1 : c.dislikes 
+                        };
+                    }
+                    return c;
+                });
                 
-                // 다시 원래 공유되던 키 이름으로 복구
-                localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
+                // Supabase에 투표된 결과 업데이트
+                const { error } = await sbClient.from('community_novels').update({ chapters: updatedChapters }).eq('id', novel.id);
+                if(error) return alert("평가 처리 중 문제가 발생했습니다: " + error.message);
+                
+                // 내 기기에 투표 완료 기록 남기기
                 localStorage.setItem(voteKey, 'true'); 
                 
-                document.getElementById('count-like').innerText = chapter.likes;
-                document.getElementById('count-dislike').innerText = chapter.dislikes;
+                // 모달 화면 바로 업데이트
+                const updatedCh = updatedChapters.find(c => c.chapterId === chapterId);
+                document.getElementById('count-like').innerText = updatedCh.likes;
+                document.getElementById('count-dislike').innerText = updatedCh.dislikes;
                 
-                // 백그라운드 리스트 최신화
-                renderChapterList();
+                // 백그라운드 서버 데이터 재동기화
+                await fetchNovels();
             }
         }
 
         // 앱 시작 시
-        window.onload = renderNovelList;
+        window.onload = () => {
+            fetchNovels(); // 서버에서 데이터 가져와서 화면 그리기
+        };
     </script>
 </body>
 </html>
