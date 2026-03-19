@@ -104,9 +104,8 @@
     </div>
 
     <script>
-        // [데이터 구조 혁신] 작품(Novel) 배열 안에 회차(chapters) 배열이 존재함
-        // 기존 g_comm_novels_v2 키 대신 다른 페이지와 안 겹치도록 g_community_lounge_data로 독립시켰음
-        let commNovels = JSON.parse(localStorage.getItem('g_community_lounge_data')) || [
+        // 다른 페이지(메인화면 등)와 데이터가 정상적으로 연동/공유될 수 있도록 원래의 저장소 키(g_comm_novels_v2)를 유지합니다.
+        let commNovels = JSON.parse(localStorage.getItem('g_comm_novels_v2')) || [
             { 
                 id: 1, 
                 title: "검술명가 막내아들로 살아남기", 
@@ -229,8 +228,9 @@
 
             const newNovel = { id: Date.now(), title, author, desc, chapters: [] };
             commNovels.unshift(newNovel);
-            // 분리된 저장소 키 사용
-            localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
+            
+            // 다시 원래 공유되던 키 이름으로 복구
+            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
             
             document.getElementById('novel-title').value = ''; document.getElementById('novel-desc').value = '';
             closeCreateNovelModal(); renderNovelList();
@@ -252,8 +252,9 @@
             if(!novel) return;
 
             novel.chapters.push({ chapterId: Date.now(), title, content, likes: 0, dislikes: 0 });
-            // 분리된 저장소 키 사용
-            localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
+            
+            // 다시 원래 공유되던 키 이름으로 복구
+            localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
 
             document.getElementById('chapter-title').value = ''; document.getElementById('chapter-content').value = '';
             closeCreateChapterModal();
@@ -303,8 +304,8 @@
                 if(type === 'like') chapter.likes += 1;
                 if(type === 'dislike') chapter.dislikes += 1;
                 
-                // 분리된 저장소 키 사용 및 투표 기록 저장
-                localStorage.setItem('g_community_lounge_data', JSON.stringify(commNovels));
+                // 다시 원래 공유되던 키 이름으로 복구
+                localStorage.setItem('g_comm_novels_v2', JSON.stringify(commNovels));
                 localStorage.setItem(voteKey, 'true'); 
                 
                 document.getElementById('count-like').innerText = chapter.likes;
