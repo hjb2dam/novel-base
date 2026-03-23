@@ -89,10 +89,17 @@
 
         <div id="mode-play" class="w-full h-full flex flex-col md:flex-row">
             
-            <aside id="char-sheet-panel" class="slide-panel absolute md:relative z-[80] w-[85%] md:w-[320px] h-full glass border-r border-amber-200 dark:border-amber-500/20 flex flex-col p-5 md:p-6 space-y-4 md:space-y-6 transform -translate-x-full md:translate-x-0">
+            <aside id="char-sheet-panel" class="slide-panel absolute md:relative z-[80] w-[85%] md:w-[340px] h-full glass border-r border-amber-200 dark:border-amber-500/20 flex flex-col p-5 md:p-6 space-y-4 transform -translate-x-full md:translate-x-0 overflow-y-auto custom-scrollbar">
                 <div class="flex justify-between items-center mb-2">
                     <h3 class="text-amber-700 dark:text-amber-400 font-black text-lg md:text-xl uppercase tracking-tighter border-b border-amber-300 dark:border-amber-500/30 pb-2 w-full">📝 Character Sheet</h3>
                     <button onclick="toggleCharSheet()" class="md:hidden text-amber-600 dark:text-amber-500 text-xl font-bold px-2">✕</button>
+                </div>
+
+                <div class="bg-amber-100/50 dark:bg-amber-900/20 p-3 rounded-xl border border-amber-300 dark:border-amber-500/30 shadow-sm">
+                    <label class="text-[10px] text-amber-700 dark:text-amber-500 font-bold uppercase mb-1 block">📚 연동할 세계관 설정</label>
+                    <select id="linked-project" onchange="syncProjectData(); saveCampaign();" class="w-full bg-white dark:bg-black/50 text-amber-900 dark:text-amber-100 text-xs p-2 rounded-lg outline-none border border-amber-300 dark:border-amber-500/30 focus:border-amber-500">
+                        <option value="">선택 안 함 (독립 세계관)</option>
+                    </select>
                 </div>
                 
                 <div class="space-y-3 bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/10 shadow-sm">
@@ -101,9 +108,15 @@
                         <div><label class="text-[10px] text-rose-600 dark:text-rose-500 font-bold uppercase">HP (체력)</label><input type="text" id="pc-hp" class="w-full bg-transparent border-b border-rose-300 dark:border-rose-500/30 text-rose-700 dark:text-rose-100 font-black outline-none py-1" value="20 / 20" oninput="saveCampaign()"></div>
                         <div><label class="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase">MP / 기력</label><input type="text" id="pc-mp" class="w-full bg-transparent border-b border-blue-300 dark:border-blue-400/30 text-blue-700 dark:text-blue-100 font-black outline-none py-1" value="10 / 10" oninput="saveCampaign()"></div>
                     </div>
+                    <div class="grid grid-cols-4 gap-2 mt-3 pt-3 border-t border-amber-200 dark:border-amber-500/20">
+                        <div><label class="text-[9px] text-orange-600 dark:text-orange-400 font-black uppercase text-center block">STR</label><input type="text" id="pc-str" class="w-full text-center bg-transparent border-b border-orange-300 text-orange-800 dark:text-orange-100 font-bold outline-none py-0.5 text-xs" value="10" oninput="saveCampaign()"></div>
+                        <div><label class="text-[9px] text-emerald-600 dark:text-emerald-400 font-black uppercase text-center block">DEX</label><input type="text" id="pc-dex" class="w-full text-center bg-transparent border-b border-emerald-300 text-emerald-800 dark:text-emerald-100 font-bold outline-none py-0.5 text-xs" value="10" oninput="saveCampaign()"></div>
+                        <div><label class="text-[9px] text-indigo-600 dark:text-indigo-400 font-black uppercase text-center block">INT</label><input type="text" id="pc-int" class="w-full text-center bg-transparent border-b border-indigo-300 text-indigo-800 dark:text-indigo-100 font-bold outline-none py-0.5 text-xs" value="10" oninput="saveCampaign()"></div>
+                        <div><label class="text-[9px] text-pink-600 dark:text-pink-400 font-black uppercase text-center block">CHA</label><input type="text" id="pc-cha" class="w-full text-center bg-transparent border-b border-pink-300 text-pink-800 dark:text-pink-100 font-bold outline-none py-0.5 text-xs" value="10" oninput="saveCampaign()"></div>
+                    </div>
                 </div>
 
-                <div class="flex-1 flex flex-col min-h-0 bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/10 shadow-sm">
+                <div class="flex-1 flex flex-col min-h-[150px] bg-white/60 dark:bg-black/40 p-4 rounded-2xl border border-amber-200 dark:border-amber-500/10 shadow-sm">
                     <label class="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold uppercase mb-2">🎒 인벤토리 & 소지품</label>
                     <textarea id="pc-inventory" class="w-full flex-1 bg-transparent text-emerald-900 dark:text-emerald-50 text-xs md:text-sm outline-none resize-none custom-scrollbar leading-relaxed" placeholder="- 낡은 롱소드&#10;- 가죽 갑옷&#10;- 체력 포션 2개&#10;- 금화 15G" oninput="saveCampaign()"></textarea>
                 </div>
@@ -128,23 +141,31 @@
                 </div>
 
                 <div class="bg-white/90 dark:bg-black/80 border-t border-amber-200 dark:border-amber-500/20 p-3 md:p-5 flex flex-col gap-3 backdrop-blur-md">
-                    <div class="flex gap-2 items-center px-1">
-                        <span class="text-[10px] md:text-xs text-amber-700 dark:text-amber-500 font-bold uppercase tracking-widest">🎲 Dice:</span>
-                        <button onclick="rollVirtualDice(20)" class="tooltip px-3 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-xs font-black rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-300 dark:hover:bg-amber-600 transition shadow-sm">
+                    <div class="flex flex-wrap gap-2 items-center px-1">
+                        <span class="text-[10px] md:text-xs text-amber-700 dark:text-amber-500 font-bold uppercase tracking-widest">🎲 Tools:</span>
+                        <button onclick="rollVirtualDice(20)" class="tooltip px-3 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-[10px] md:text-xs font-black rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-300 dark:hover:bg-amber-600 transition shadow-sm">
                             D20
                             <span class="tooltip-text">20면체 주사위 굴리기 (주로 판정용)</span>
                         </button>
-                        <button onclick="rollVirtualDice(6)" class="tooltip px-3 py-1 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-xs font-black rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-300 dark:hover:bg-amber-600 transition shadow-sm">
+                        <button onclick="rollVirtualDice(6)" class="tooltip px-3 py-1.5 bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 text-[10px] md:text-xs font-black rounded-lg border border-amber-300 dark:border-amber-500/30 hover:bg-amber-300 dark:hover:bg-amber-600 transition shadow-sm">
                             D6
                             <span class="tooltip-text">6면체 주사위 굴리기 (주로 대미지용)</span>
                         </button>
+                        <button onclick="generateSceneImage()" class="tooltip px-3 py-1.5 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 text-[10px] md:text-xs font-black rounded-lg border border-indigo-300 dark:border-indigo-500/30 hover:bg-indigo-200 dark:hover:bg-indigo-800 transition shadow-sm ml-auto">
+                            🖼️ 씬 이미지 (-1P)
+                            <span class="tooltip-text">현재 묘사된 씬을 AI 이미지로 그립니다.</span>
+                        </button>
                         <span id="dice-display" class="ml-2 text-xs md:text-sm font-black text-emerald-600 dark:text-emerald-400"></span>
                     </div>
+                    
                     <div class="flex gap-2">
-                        <textarea id="play-input" class="flex-1 h-14 md:h-16 bg-slate-50 dark:bg-black/50 rounded-xl p-3 text-sm outline-none border border-amber-300 dark:border-amber-500/30 focus:border-amber-500 dark:focus:border-amber-400 text-amber-900 dark:text-amber-50 placeholder-amber-400/70 dark:placeholder:text-amber-500/30 resize-none custom-scrollbar" placeholder="무엇을 하시겠습니까? (예: 검을 뽑고 주변을 경계한다)"></textarea>
-                        <button onclick="sendPlayAction()" class="tooltip w-16 md:w-24 bg-amber-600 hover:bg-amber-500 rounded-xl font-black text-white text-xs md:text-sm transition-all shadow-lg flex flex-col items-center justify-center gap-1">
-                            <span>행동</span><span class="text-[8px] font-medium opacity-80">(-2P)</span>
-                            <span class="tooltip-text">입력한 행동을 AI 마스터에게 전달합니다.</span>
+                        <select id="play-target" class="w-24 md:w-32 bg-slate-50 dark:bg-black/50 border border-amber-300 dark:border-amber-500/30 text-[10px] md:text-xs text-amber-900 dark:text-amber-100 rounded-xl px-2 outline-none focus:border-amber-500">
+                            <option value="gm">전체 상황 (GM)</option>
+                        </select>
+                        <textarea id="play-input" class="flex-1 h-14 md:h-16 bg-slate-50 dark:bg-black/50 rounded-xl p-3 text-sm outline-none border border-amber-300 dark:border-amber-500/30 focus:border-amber-500 dark:focus:border-amber-400 text-amber-900 dark:text-amber-50 placeholder-amber-400/70 dark:placeholder:text-amber-500/30 resize-none custom-scrollbar" placeholder="무엇을 하시겠습니까? 대상에게 대화할 수도 있습니다."></textarea>
+                        <button onclick="sendPlayAction()" class="tooltip w-16 md:w-20 bg-amber-600 hover:bg-amber-500 rounded-xl font-black text-white text-xs md:text-sm transition-all shadow-lg flex flex-col items-center justify-center gap-1">
+                            <span>입력</span><span class="text-[8px] font-medium opacity-80">(-2P)</span>
+                            <span class="tooltip-text">행동이나 대사를 전달합니다.</span>
                         </button>
                     </div>
                 </div>
@@ -208,9 +229,13 @@
         let lastChargedPoints = 0;
         let currentUserSession = null;
 
+        // [데이터 연동] 메인의 프로젝트(세계관) 리스트 불러오기
+        let allProjects = JSON.parse(localStorage.getItem('g_projects')) || [];
+
         let campaignData = JSON.parse(localStorage.getItem('g_trpg_campaign')) || {
             history: [],
-            pc: { name: "이름없는 모험가 (전사)", hp: "20 / 20", mp: "10 / 10", inventory: "- 낡은 롱소드\n- 가죽 갑옷\n- 체력 포션 2개\n- 금화 15G" }
+            linkedProjectId: "",
+            pc: { name: "이름없는 모험가 (전사)", hp: "20 / 20", mp: "10 / 10", str: "10", dex: "10", int: "10", cha: "10", inventory: "- 낡은 롱소드\n- 가죽 갑옷\n- 체력 포션 2개\n- 금화 15G" }
         };
         let lastRolledDice = ""; 
 
@@ -228,7 +253,7 @@
                 icon.innerText = '🌞';
             }
         }
-        // 로드 시 로컬스토리지 확인
+        
         document.addEventListener("DOMContentLoaded", () => {
             if (localStorage.getItem('theme') === 'light') {
                 document.documentElement.classList.remove('dark');
@@ -274,8 +299,39 @@
             const savedLang = localStorage.getItem('g_app_lang') || 'ko';
             document.getElementById('app-lang').value = savedLang; applyLanguage();
             
+            // [초기화] 프로젝트 리스트 UI 반영
+            initProjectDropdown();
             loadCampaignToUI();
             renderCampaignLog();
+        }
+
+        // [세계관 연동] 드롭다운 초기화 및 동기화
+        function initProjectDropdown() {
+            const selectEl = document.getElementById('linked-project');
+            let optionsHtml = '<option value="">선택 안 함 (독립 세계관)</option>';
+            allProjects.forEach(p => {
+                optionsHtml += `<option value="${p.id}">${p.title}</option>`;
+            });
+            selectEl.innerHTML = optionsHtml;
+            selectEl.value = campaignData.linkedProjectId || "";
+            syncProjectData();
+        }
+
+        function syncProjectData() {
+            const projectId = document.getElementById('linked-project').value;
+            const targetSelect = document.getElementById('play-target');
+            
+            let targetHtml = '<option value="gm">전체 상황 (GM)</option>';
+            
+            if (projectId) {
+                const project = allProjects.find(p => p.id == projectId);
+                if (project && project.chars) {
+                    project.chars.forEach(c => {
+                        targetHtml += `<option value="${c.name}">${c.name} (NPC)</option>`;
+                    });
+                }
+            }
+            targetSelect.innerHTML = targetHtml;
         }
 
         function applyLanguage() {
@@ -298,7 +354,7 @@
         function requestRefund() {
             if(lastChargedPoints > 0) {
                 points += lastChargedPoints; lastChargedPoints = 0; updatePointDisplay();
-                alert("작동 오류가 접수되어 2P가 환급되었습니다.");
+                alert("작동 오류가 접수되어 포인트가 환급되었습니다.");
             } else { alert("최근 이 페이지에서 차감된 내역이 없습니다."); }
         }
 
@@ -333,16 +389,27 @@
         // ==========================================
         
         function loadCampaignToUI() {
+            document.getElementById('linked-project').value = campaignData.linkedProjectId || "";
             document.getElementById('pc-name').value = campaignData.pc.name;
             document.getElementById('pc-hp').value = campaignData.pc.hp;
             document.getElementById('pc-mp').value = campaignData.pc.mp;
+            document.getElementById('pc-str').value = campaignData.pc.str || "10";
+            document.getElementById('pc-dex').value = campaignData.pc.dex || "10";
+            document.getElementById('pc-int').value = campaignData.pc.int || "10";
+            document.getElementById('pc-cha').value = campaignData.pc.cha || "10";
             document.getElementById('pc-inventory').value = campaignData.pc.inventory;
+            syncProjectData();
         }
 
         function saveCampaign() {
+            campaignData.linkedProjectId = document.getElementById('linked-project').value;
             campaignData.pc.name = document.getElementById('pc-name').value;
             campaignData.pc.hp = document.getElementById('pc-hp').value;
             campaignData.pc.mp = document.getElementById('pc-mp').value;
+            campaignData.pc.str = document.getElementById('pc-str').value;
+            campaignData.pc.dex = document.getElementById('pc-dex').value;
+            campaignData.pc.int = document.getElementById('pc-int').value;
+            campaignData.pc.cha = document.getElementById('pc-cha').value;
             campaignData.pc.inventory = document.getElementById('pc-inventory').value;
             localStorage.setItem('g_trpg_campaign', JSON.stringify(campaignData));
         }
@@ -365,6 +432,11 @@
                 return;
             }
             logBox.innerHTML = campaignData.history.map(msg => {
+                // 이미지 태그 렌더링 예외 처리
+                if(msg.role === 'system_image') {
+                    return `<div class="flex justify-center mb-6"><div class="p-2 bg-black/10 dark:bg-white/5 rounded-2xl border border-amber-300 dark:border-amber-500/20 shadow-md"><img src="${msg.content}" class="max-w-[300px] md:max-w-[400px] rounded-xl object-cover"><p class="text-[10px] text-center text-amber-600 mt-2 font-bold">Generated Scene</p></div></div>`;
+                }
+
                 if(msg.role === 'user') return `<div class="flex justify-end mb-4"><div class="bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-500/30 p-3 md:p-4 rounded-2xl rounded-tr-sm max-w-[85%] text-xs md:text-sm text-amber-900 dark:text-amber-100 whitespace-pre-wrap shadow-md leading-relaxed"><span class="text-[10px] text-amber-700 dark:text-amber-500 font-bold block mb-1">▶ 플레이어</span>${msg.content}</div></div>`;
                 else if(msg.role === 'assistant') return `<div class="flex justify-start mb-6"><div class="bg-white dark:bg-black/50 border border-emerald-200 dark:border-emerald-500/20 p-4 md:p-6 rounded-3xl rounded-tl-sm max-w-[95%] md:max-w-[85%] text-sm md:text-base text-slate-800 dark:text-emerald-50 shadow-lg leading-[1.8] md:leading-[2.0] prose dark:prose-invert prose-amber"><span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-black block mb-2 tracking-widest uppercase">👑 AI Game Master</span>${marked.parse(msg.content)}</div></div>`;
                 return '';
@@ -385,6 +457,7 @@
 
         async function sendPlayAction() {
             const inputEl = document.getElementById('play-input');
+            const targetEl = document.getElementById('play-target');
             const actionText = inputEl.value.trim();
             const API_KEY = localStorage.getItem('groq_api_key');
             const lang = document.getElementById('app-lang').value;
@@ -395,8 +468,13 @@
             let cost = 2;
             if(points < cost) return alert("포인트 부족!");
 
-            let userContent = actionText;
-            if (lastRolledDice) { userContent = lastRolledDice + "\n" + actionText; lastRolledDice = ""; document.getElementById('dice-display').innerText = ""; }
+            let targetText = "";
+            if (targetEl.value !== "gm") {
+                targetText = `[대상: NPC ${targetEl.value}] `;
+            }
+
+            let userContent = targetText + actionText;
+            if (lastRolledDice) { userContent = lastRolledDice + "\n" + targetText + actionText; lastRolledDice = ""; document.getElementById('dice-display').innerText = ""; }
             
             campaignData.history.push({role: 'user', content: userContent});
             inputEl.value = ''; renderCampaignLog();
@@ -406,24 +484,43 @@
             scrollPlayToBottom();
 
             saveCampaign();
-            let sysPrompt = `당신은 최고 수준의 다크 판타지 TRPG 게임 마스터(GM)입니다. 플레이어와 1:1로 게임을 진행합니다.
+
+            // 연동된 세계관 데이터 가공
+            let loreContext = "";
+            if (campaignData.linkedProjectId) {
+                const project = allProjects.find(p => p.id == campaignData.linkedProjectId);
+                if (project) {
+                    let charStr = "";
+                    if (project.chars && project.chars.length > 0) {
+                        charStr = project.chars.map(c => `- ${c.name}: ${c.bg}`).join('\n');
+                    }
+                    loreContext = `\n[연동된 소설 세계관 및 설정]\n${project.lore}\n[등장인물(NPC) 정보]\n${charStr}\n`;
+                }
+            }
+
+            let sysPrompt = `당신은 최고 수준의 판타지 TRPG 게임 마스터(GM)입니다. 플레이어와 1:1로 게임을 진행합니다.
+${loreContext}
 [플레이어 캐릭터 시트]
 - 이름/직업: ${campaignData.pc.name}
+- 스탯: STR(${campaignData.pc.str}) | DEX(${campaignData.pc.dex}) | INT(${campaignData.pc.int}) | CHA(${campaignData.pc.cha})
 - HP: ${campaignData.pc.hp} | MP: ${campaignData.pc.mp}
 - 인벤토리:\n${campaignData.pc.inventory}
 
 [GM 절대 수칙]
-1. 플레이어의 행동과 주사위 결과를 보고 주변 환경, 몬스터의 반응, NPC의 대사를 극적으로 묘사하세요.
-2. 플레이어가 피해를 입거나 아이템을 획득하면 "캐릭터 시트의 HP를 깎으세요" 또는 "인벤토리에 추가하세요"라고 안내하세요.
-3. 묘사가 끝나면 반드시 "다음은 어떻게 하시겠습니까?" 처럼 플레이어에게 행동의 주도권을 넘기세요.`;
+1. 플레이어의 행동(스탯 참조)과 주사위 결과를 보고 주변 환경, 몬스터의 반응, NPC의 대사를 극적으로 묘사하세요.
+2. 플레이어가 대상 NPC를 지정해 대화하거나 상호작용했다면, 해당 NPC의 성격과 설정에 완벽하게 빙의하여 대답하세요.
+3. 플레이어가 피해를 입거나 아이템을 획득하면 "캐릭터 시트의 HP를 깎으세요" 또는 "인벤토리에 추가하세요"라고 안내하세요.
+4. 묘사가 끝나면 반드시 "다음은 어떻게 하시겠습니까?" 처럼 플레이어에게 행동의 주도권을 넘기세요.`;
 
-            if (lang === 'ko') sysPrompt += `\n4. 반드시 100% 한국어로 대답하세요. 영어나 다른 언어의 고유명사는 원문 스펠링을 유지하세요.`;
-            else if (lang === 'en') sysPrompt += `\n4. Must output entirely in English. Keep non-English proper nouns original.`;
-            else if (lang === 'zh') sysPrompt += `\n4. 必须完全使用中文输出。专有名词保持原文。`;
+            if (lang === 'ko') sysPrompt += `\n5. 반드시 100% 한국어로 대답하세요. 영어나 다른 언어의 고유명사는 원문 스펠링을 유지하세요.`;
+            else if (lang === 'en') sysPrompt += `\n5. Must output entirely in English. Keep non-English proper nouns original.`;
+            else if (lang === 'zh') sysPrompt += `\n5. 必须完全使用中文输出。专有名词保持原文。`;
 
+            // 시스템 프롬프트 필터링 (시스템 메시지는 history에 섞이지 않도록 분리해서 전송)
             let messagesToSend = [{role: 'system', content: sysPrompt}];
-            let recentHistory = campaignData.history.slice(-10);
-            messagesToSend = messagesToSend.concat(recentHistory);
+            // 이미지 태그 등 더미 로그는 제외하고 실제 대화만 뽑아서 AI에게 전송
+            let filteredHistory = campaignData.history.filter(m => m.role === 'user' || m.role === 'assistant').slice(-10);
+            messagesToSend = messagesToSend.concat(filteredHistory);
 
             try {
                 const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -441,6 +538,53 @@
                 campaignData.history.pop();
                 points += cost; lastChargedPoints = 0; updatePointDisplay();
                 renderCampaignLog();
+            }
+        }
+
+        // [이미지 생성 기능]
+        async function generateSceneImage() {
+            const API_KEY = localStorage.getItem('groq_api_key');
+            if(!API_KEY) return alert("API 키가 필요합니다.");
+            
+            let cost = 1;
+            if(points < cost) return alert("포인트 부족!");
+
+            // 가장 최근의 GM 묘사 찾기
+            const gmLogs = campaignData.history.filter(m => m.role === 'assistant');
+            if (gmLogs.length === 0) return alert("이미지로 그릴 GM의 묘사가 아직 없습니다!");
+            const lastScene = gmLogs[gmLogs.length - 1].content;
+
+            points -= cost; lastChargedPoints = cost; updatePointDisplay();
+
+            document.getElementById('campaign-log').innerHTML += `<div id="img-loading" class="flex justify-center mb-6"><div class="p-4 bg-black/10 dark:bg-white/5 rounded-2xl text-xs text-indigo-600 dark:text-indigo-400 font-bold ai-typing">AI가 현재 씬의 화풍을 상상하는 중입니다... 🎨</div></div>`;
+            scrollPlayToBottom();
+
+            // 1. Groq를 통해 씬 묘사를 짧은 영문 이미지 프롬프트로 변환
+            const promptGenerator = `You are an image prompt generator. Convert the following TRPG scene description into a comma-separated English prompt for an AI image generator. Include keywords for atmosphere, lighting, and style (e.g. dark fantasy, realistic, cinematic lighting). Output ONLY the raw prompt without any explanation. \n\n[Scene]\n${lastScene}`;
+            
+            try {
+                const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: 'POST', headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ model: "llama-3.3-70b-versatile", messages: [{role: "user", content: promptGenerator}], temperature: 0.5 })
+                });
+                const data = await response.json();
+                const imagePrompt = data.choices[0].message.content.trim();
+
+                // 2. 무료 이미지 생성 API (Pollinations.ai)를 통해 이미지 렌더링
+                const encodedPrompt = encodeURIComponent(imagePrompt + ", detailed, masterpiece, 4k");
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=768&height=512&nologo=true`;
+
+                document.getElementById('img-loading').remove();
+                
+                // 로그에 이미지 기록 저장
+                campaignData.history.push({role: 'system_image', content: imageUrl});
+                localStorage.setItem('g_trpg_campaign', JSON.stringify(campaignData));
+                renderCampaignLog();
+
+            } catch(e) {
+                document.getElementById('img-loading').remove();
+                alert("이미지 프롬프트 생성 실패: " + e.message);
+                points += cost; updatePointDisplay();
             }
         }
 
