@@ -47,7 +47,10 @@
             <div class="glass p-6 md:p-10 rounded-[2rem] border border-white/10 mb-8">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h2 id="detail-title" class="text-2xl md:text-4xl font-black text-white italic mb-2">작품 제목</h2>
+                        <div class="flex items-center gap-3 mb-2">
+                            <h2 id="detail-title" class="text-2xl md:text-4xl font-black text-white italic">작품 제목</h2>
+                            <button onclick="deleteCurrentNovel()" class="text-[10px] md:text-xs bg-rose-900/50 text-rose-400 px-2 py-1 md:px-3 md:py-1.5 rounded-lg border border-rose-500/30 hover:bg-rose-600 hover:text-white transition font-bold shadow-sm">🗑️ 작품 삭제</button>
+                        </div>
                         <span id="detail-author" class="text-[10px] md:text-sm font-black text-emerald-400 bg-emerald-900/30 px-3 py-1 rounded-full border border-emerald-500/20">@작가이름</span>
                     </div>
                     <button id="btn-add-chapter" onclick="openCreateChapterModal()" class="hidden px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-black text-[10px] md:text-xs rounded-xl shadow-lg transition">✍️ 새 회차 연재하기</button>
@@ -105,7 +108,8 @@
     </div>
 
     <script>
-        // Supabase DB 연결 (index.html과 동일한 키 사용)
+        const ADMIN_PASS = "2007"; // 운영자 비밀번호
+        // Supabase DB 연결
         const SB_URL = 'https://dsnroiaagryalgjifxjw.supabase.co';
         const SB_KEY = 'sb_publishable_nZMvt-BKEG1__FgGSgtfig_ODv7u2St';
         const sbClient = supabase.createClient(SB_URL, SB_KEY);
@@ -193,7 +197,7 @@
             renderChapterList();
         }
 
-        // 회차 리스트 렌더링
+        // 3. 회차 목록 렌더링
         function renderChapterList() {
             const novel = commNovels.find(x => x.id === currentViewNovelId);
             if(!novel) return;
@@ -205,12 +209,16 @@
                 return;
             }
 
+            // [수정] 회차 목록 옆에 회차 삭제(🗑️) 버튼 추가
             container.innerHTML = chapters.map(ch => `
-                <div onclick="openReadChapterModal(${ch.chapterId})" class="bg-slate-900/50 hover:bg-slate-800 p-4 md:p-5 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition cursor-pointer flex justify-between items-center group">
-                    <h4 class="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition truncate pr-4">${ch.title}</h4>
-                    <div class="flex items-center gap-4 shrink-0">
+                <div class="bg-slate-900/50 hover:bg-slate-800 p-4 md:p-5 rounded-2xl border border-white/5 hover:border-emerald-500/30 transition flex justify-between items-center group">
+                    <div class="flex-1 cursor-pointer truncate" onclick="openReadChapterModal(${ch.chapterId})">
+                        <h4 class="text-sm md:text-base font-bold text-white group-hover:text-emerald-400 transition truncate pr-4">${ch.title}</h4>
+                    </div>
+                    <div class="flex items-center gap-3 md:gap-4 shrink-0">
                         <span class="text-[10px] md:text-xs font-bold text-slate-400">👍 ${ch.likes}</span>
-                        <span class="text-[10px] md:text-xs text-indigo-400 font-bold px-3 py-1 bg-indigo-900/30 rounded-lg">읽기 →</span>
+                        <button onclick="deleteChapter(${ch.chapterId})" class="text-[10px] md:text-xs text-rose-500 hover:text-rose-400 font-bold px-2 py-1 bg-rose-900/20 rounded-lg transition">🗑️</button>
+                        <button onclick="openReadChapterModal(${ch.chapterId})" class="text-[10px] md:text-xs text-indigo-400 font-bold px-3 py-1 bg-indigo-900/30 rounded-lg hover:bg-indigo-900/50 transition">읽기 →</button>
                     </div>
                 </div>
             `).join('');
@@ -220,6 +228,64 @@
             document.getElementById('view-chapter-list').classList.add('hidden');
             document.getElementById('view-novel-list').classList.remove('hidden');
             renderNovelList(); 
+        }
+
+        // ==========================================
+        // [수정된 핵심 로직] 작품 및 회차 삭제 기능 (권한 체크 포함)
+        // ==========================================
+        
+        // 1. 작품 통째로 삭제
+        async function deleteCurrentNovel() {
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            if(!novel) return;
+            
+            const currentUser = localStorage.getItem('g_user_nickname');
+            
+            // 작성자 본인이 아니면 비밀번호 확인
+            if (novel.author !== currentUser) {
+                const pw = prompt("⚠️ 작성자 본인만 삭제할 수 있습니다.\n운영자이신 경우 비밀번호를 입력하세요.");
+                if (pw !== ADMIN_PASS) {
+                    return alert("권한이 없습니다. (운영자 또는 작성자 본인만 삭제 가능)");
+                }
+            }
+
+            if(!confirm(`[${novel.title}]\n이 작품과 포함된 모든 회차를 정말 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+
+            // Supabase에서 삭제 실행
+            const { error } = await sbClient.from('community_novels').delete().eq('id', novel.id);
+            if(error) return alert("작품 삭제 중 에러가 발생했습니다: " + error.message);
+            
+            alert("작품이 성공적으로 삭제되었습니다.");
+            await fetchNovels(); // 리스트 새로고침
+            backToNovelList();   // 메인으로 이동
+        }
+
+        // 2. 개별 회차 삭제
+        async function deleteChapter(chapterId) {
+            const novel = commNovels.find(x => x.id === currentViewNovelId);
+            if(!novel) return;
+            
+            const currentUser = localStorage.getItem('g_user_nickname');
+            
+            // 작성자 본인이 아니면 비밀번호 확인 (회차는 소설 작가 권한을 따름)
+            if (novel.author !== currentUser) {
+                const pw = prompt("⚠️ 작성자 본인만 삭제할 수 있습니다.\n운영자이신 경우 비밀번호를 입력하세요.");
+                if (pw !== ADMIN_PASS) {
+                    return alert("권한이 없습니다. (운영자 또는 작성자 본인만 삭제 가능)");
+                }
+            }
+
+            if(!confirm("이 회차를 정말 삭제하시겠습니까?")) return;
+
+            // 해당 회차만 배열에서 제거
+            const newChapters = novel.chapters.filter(c => c.chapterId !== chapterId);
+            
+            // Supabase에 업데이트된 배열 저장
+            const { error } = await sbClient.from('community_novels').update({ chapters: newChapters }).eq('id', novel.id);
+            if(error) return alert("회차 삭제 중 에러가 발생했습니다: " + error.message);
+            
+            alert("회차가 성공적으로 삭제되었습니다.");
+            await fetchNovels(); // 데이터 재동기화
         }
 
         // ==========================================
