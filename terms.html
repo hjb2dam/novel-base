@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이용약관 - NarrativeForge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .glass { backdrop-filter: blur(20px); transition: all 0.3s; }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
+        html:not(.dark) .glass { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-[#020617] dark:text-slate-200 min-h-screen flex flex-col custom-scrollbar">
+
+    <nav class="w-full glass sticky top-0 z-[100] px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg border-b border-slate-200 dark:border-white/5">
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-[#df7a00] rounded-[0.5rem] flex items-center justify-center font-black text-white shadow-md text-lg md:text-xl tracking-tighter" style="font-family: Arial, sans-serif;">NF</div>
+            <span class="text-lg md:text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Narrative<span class="text-amber-500 dark:text-amber-400">Forge</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="text-xs md:text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-500 transition underline tracking-widest uppercase">← Back to Main</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-6 py-12 md:py-20">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic mb-4">Terms of <span class="text-amber-500">Service</span></h1>
+            <p class="text-sm md:text-base text-slate-500 dark:text-slate-400">내러티브 포지(NarrativeForge) 서비스 이용약관</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">최종 수정일: 2026년 3월</p>
+        </div>
+
+        <div class="glass p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-amber-200 dark:border-amber-500/20 shadow-xl space-y-8 text-sm md:text-base leading-[1.8] text-slate-700 dark:text-slate-300">
+            
+            <section>
+                <h2 class="text-xl font-black text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">제 1조 (목적)</h2>
+                <p>본 약관은 내러티브 포지(이하 "서비스")가 제공하는 웹소설 창작 보조, AI 설정 엔진, TRPG 시뮬레이션 및 커뮤니티 서비스의 이용과 관련하여, 서비스 제공자와 이용자 간의 권리, 의무 및 책임 사항, 기타 필요한 사항을 규정함을 목적으로 합니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">제 2조 (서비스의 제공 및 포인트 정책)</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>본 서비스는 창작자의 세계관 설정 관리, AI 기반 텍스트 생성 및 시나리오 보조 기능을 100% 무료로 제공합니다.</li>
+                    <li>서비스 내 AI 기능을 사용하기 위해 필요한 <b>API 키(Groq 등)는 이용자가 직접 발급받아 연결</b>해야 하며, 이에 따른 외부 API 서비스의 이용 규정은 해당 제공사의 약관을 따릅니다.</li>
+                    <li>원활한 서비스 이용을 위해 사이트 자체적인 '포인트(P)' 시스템을 운영합니다. 비로그인 게스트 사용자에게는 기본 10P가 지급되며, <b>정식 계정을 연동(로그인)한 회원에게는 1000P의 보너스 포인트가 지급</b>됩니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">제 3조 (보안 및 이용자의 의무)</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>이용자가 입력한 외부 <b>API 키는 이용자 기기의 브라우저 로컬 저장소(LocalStorage)에만 안전하게 보관</b>되며, 본 서비스의 데이터베이스(서버)는 어떠한 경우에도 API 키를 수집하거나 저장하지 않습니다.</li>
+                    <li>이용자는 자신의 API 키 및 계정 정보를 안전하게 관리할 책임이 있으며, 이용자의 부주의로 인해 발생한 API 키 유출 및 그로 인한 모든 금전적, 정신적 피해에 대한 책임은 전적으로 이용자 본인에게 있습니다.</li>
+                    <li>이용자는 본 서비스를 불법적인 목적이나 타인의 권리를 침해하는 용도로 사용할 수 없습니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">제 4조 (커뮤니티 검역 및 콘텐츠 관리)</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>'Community Lounge' 및 'Writer's Board' 등 공개된 공간에 작성되는 모든 게시물은 건전한 창작 환경 조성을 위해 <b>AI 시스템에 의한 자동 검역</b>을 거칩니다.</li>
+                    <li>웹소설 집필, 작법, 팁, 세계관 설정 등 <b>창작과 무관한 내용, 스팸, 혐오 표현, 타인 비방 등의 콘텐츠는 AI 검역에 의해 즉시 블락(Block) 처리</b>됩니다.</li>
+                    <li>블락 처리된 게시물은 다른 이용자에게 노출되지 않으며, 시스템에서 제공하는 추천 보상(포인트 지급 등) 대상에서 영구적으로 제외됩니다.</li>
+                    <li>본인이 작성한 글 및 소설 데이터는 작성자 본인과 서비스 운영자만이 삭제할 수 있습니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">제 5조 (저작권 및 면책조항)</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>이용자가 본 서비스를 통해 직접 작성한 설정, 원고, 캐릭터 정보 등의 창작물에 대한 저작권은 이용자 본인에게 귀속됩니다.</li>
+                    <li>서비스 제공자는 무료로 제공되는 서비스의 특성상, 시스템 오류, 데이터 유실, 외부 API 연동 지연 등으로 인해 발생하는 어떠한 손해에 대해서도 법적 책임을 지지 않습니다. 중요한 원고 및 설정 데이터는 이용자가 직접 백업해야 합니다.</li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-200 dark:border-white/5 py-8 glass text-center">
+        <p class="text-[10px] md:text-xs text-slate-500 font-bold tracking-widest uppercase mb-2">© 2026 NARRATIVEFORGE. ALL RIGHTS RESERVED.</p>
+        <p class="text-[9px] text-slate-400">Your AI Partner for Creative Writing</p>
+    </footer>
+
+</body>
+</html>
