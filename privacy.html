@@ -1,1 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>개인정보처리방침 - NarrativeForge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .glass { backdrop-filter: blur(20px); transition: all 0.3s; }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
+        html:not(.dark) .glass { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-[#020617] dark:text-slate-200 min-h-screen flex flex-col custom-scrollbar">
 
+    <nav class="w-full glass sticky top-0 z-[100] px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg border-b border-slate-200 dark:border-white/5">
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="w-8 h-8 md:w-10 md:h-10 bg-[#df7a00] rounded-[0.5rem] flex items-center justify-center font-black text-white shadow-md text-lg md:text-xl tracking-tighter" style="font-family: Arial, sans-serif;">NF</div>
+            <span class="text-lg md:text-xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Narrative<span class="text-amber-500 dark:text-amber-400">Forge</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="text-xs md:text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 transition underline tracking-widest uppercase">← Back to Main</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-6 py-12 md:py-20">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic mb-4">Privacy <span class="text-emerald-500">Policy</span></h1>
+            <p class="text-sm md:text-base text-slate-500 dark:text-slate-400">내러티브 포지(NarrativeForge) 개인정보처리방침</p>
+            <p class="text-xs text-slate-400 dark:text-slate-500 mt-2">최종 수정일: 2026년 3월</p>
+        </div>
+
+        <div class="glass p-8 md:p-12 rounded-[2rem] md:rounded-[3rem] border border-emerald-200 dark:border-emerald-500/20 shadow-xl space-y-8 text-sm md:text-base leading-[1.8] text-slate-700 dark:text-slate-300">
+            
+            <section>
+                <h2 class="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">1. 수집하는 개인정보 항목</h2>
+                <p>내러티브 포지는 회원가입, 원활한 클라우드 동기화 및 서비스 제공을 위해 아래와 같은 최소한의 개인정보를 수집하고 있습니다.</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li><b>필수 수집 항목:</b> 이메일 주소, 비밀번호, 서비스 내 닉네임</li>
+                    <li><b>자동 수집 항목:</b> 서비스 이용 기록(작성한 소설 설정, 원고 데이터, 커뮤니티 게시글 등) 및 보유 포인트</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">2. 개인정보의 이용 목적</h2>
+                <p>수집된 개인정보는 다음의 목적을 위해서만 활용됩니다.</p>
+                <ul class="list-disc pl-5 mt-2 space-y-1">
+                    <li>회원 식별 및 로그인, 클라우드 데이터(소설, TRPG 로그 등) 동기화 지원</li>
+                    <li>커뮤니티 게시판 이용 시 작성자 식별 및 추천(포인트) 시스템 운영</li>
+                    <li>서비스 부정 이용 방지 및 비인가 사용 통제</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-rose-600 dark:text-rose-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">3. [중요] API 키 및 민감 데이터 처리 방침</h2>
+                <ul class="list-disc pl-5 space-y-2">
+                    <li>내러티브 포지는 AI 텍스트 생성을 위해 이용자가 입력한 <b>외부 API 키(Groq 등)를 일절 수집하거나 중앙 서버에 저장하지 않습니다.</b></li>
+                    <li>이용자의 API 키는 오직 <b>이용자 본인 기기의 브라우저 로컬 저장소(LocalStorage)에만 암호화되지 않은 텍스트 형태로 임시 보관</b>되며, API 호출 시 이용자의 브라우저에서 AI 제공 서버로 직접 전송됩니다.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">4. 개인정보의 보유 및 파기</h2>
+                <p>이용자의 개인정보 및 클라우드 연동 데이터(Supabase 기반)는 이용자가 회원 탈퇴를 요청하거나 개인정보 삭제를 요구할 때까지 보관됩니다. 회원 탈퇴 시, 이용자의 데이터베이스 기록은 복구 불가능한 방법으로 지체 없이 파기됩니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">5. 쿠키(Cookie) 및 로컬 스토리지 사용</h2>
+                <p>본 서비스는 이용자에게 개인화된 환경(다크모드/라이트모드 테마, 언어 설정, API 키 임시 보관, 투표 중복 방지 등)을 제공하기 위해 브라우저의 로컬 스토리지(LocalStorage)를 사용합니다. 이는 이용자의 컴퓨터를 식별할 뿐 이용자 개인을 식별하지는 않습니다.</p>
+            </section>
+
+            <section>
+                <h2 class="text-xl font-black text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-white/10 pb-2">6. 문의처</h2>
+                <p>개인정보 처리와 관련된 문의 사항, 불만 처리, 피해 구제 등에 관한 사항은 아래 채널을 통해 문의하실 수 있습니다.</p>
+                <ul class="list-disc pl-5 mt-2">
+                    <li>문의 채널: 웹사이트 내 '문의하기' 기능 활용</li>
+                </ul>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-200 dark:border-white/5 py-8 glass text-center mt-12">
+        <p class="text-[10px] md:text-xs text-slate-500 font-bold tracking-widest uppercase mb-2">© 2026 NARRATIVEFORGE. ALL RIGHTS RESERVED.</p>
+        <p class="text-[9px] text-slate-400">Your AI Partner for Creative Writing</p>
+    </footer>
+
+</body>
+</html>
