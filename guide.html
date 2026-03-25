@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>웹소설 작법 가이드 - NarrativeForge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class' }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;700;900&display=swap');
+        body { font-family: 'Pretendard', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        .glass { backdrop-filter: blur(20px); transition: all 0.3s; }
+        .dark .glass { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.05); }
+        html:not(.dark) .glass { background: rgba(255, 255, 255, 0.85); border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-[#020617] dark:text-slate-200 min-h-screen flex flex-col">
+
+    <nav class="w-full glass sticky top-0 z-[100] px-4 md:px-8 py-3 md:py-4 flex justify-between items-center shadow-lg border-b border-slate-200 dark:border-white/5">
+        <div class="flex items-center gap-2 md:gap-3">
+            <div class="w-8 h-8 bg-[#df7a00] rounded-[0.5rem] flex items-center justify-center font-black text-white shadow-md text-lg tracking-tighter">NF</div>
+            <span class="text-lg font-black tracking-tighter uppercase text-slate-900 dark:text-white">Narrative<span class="text-amber-500">Forge</span></span>
+        </div>
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="text-xs md:text-sm font-bold text-amber-600 dark:text-amber-400 hover:text-amber-500 transition underline tracking-widest uppercase">← Back to Main</a>
+        </div>
+    </nav>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-6 py-12 md:py-20">
+        <div class="text-center mb-12">
+            <h1 class="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase italic mb-4">Creator <span class="text-emerald-500">Guide</span></h1>
+            <p class="text-sm md:text-base text-slate-500 dark:text-slate-400">성공적인 웹소설 집필을 위한 세계관 및 캐릭터 설정 가이드</p>
+        </div>
+
+        <article class="glass p-8 md:p-12 rounded-[2rem] border border-emerald-200 dark:border-emerald-500/20 shadow-xl mb-8 text-sm md:text-base leading-[1.8] text-slate-700 dark:text-slate-300">
+            <h2 class="text-2xl font-black text-emerald-700 dark:text-emerald-400 mb-4 pb-2 border-b border-white/10">1. 매력적인 세계관(Lore)을 구축하는 핵심 원칙</h2>
+            <p class="mb-4">웹소설에서 세계관은 독자가 이야기 속으로 몰입하게 만드는 가장 중요한 뼈대입니다. 흔히 판타지나 무협 장르에서 세계관을 짤 때 '국가 이름', '마법의 종류' 등 표면적인 설정에만 집중하기 쉽습니다. 하지만 정말 중요한 것은 <b>'이 세계의 결핍'</b>과 <b>'갈등의 씨앗'</b>을 설정하는 것입니다.</p>
+            <p class="mb-4">예를 들어, '마법이 풍부한 평화로운 세계'보다는 '마나가 고갈되어 가며, 남은 마나석을 차지하기 위해 귀족들이 평민을 착취하는 세계'가 훨씬 매력적입니다. 결핍이 있어야 주인공이 움직일 명분(동기)이 생기며, 갈등의 씨앗이 있어야 서사가 끊임없이 앞으로 나아갈 수 있습니다.</p>
+            <p>내러티브 포지(NarrativeForge)의 AI 설정 엔진을 활용할 때도 이러한 결핍과 갈등을 명확히 적어주세요. "주인공이 마왕을 물리친다"라는 단순한 목적보다는, "마왕군과 결탁한 부패한 왕실에 의해 가족을 잃은 주인공의 복수극"처럼 구체적인 설정이 AI가 더 입체적인 개연성 검사와 소재 추천을 할 수 있도록 돕습니다.</p>
+        </article>
+
+        <article class="glass p-8 md:p-12 rounded-[2rem] border border-amber-200 dark:border-amber-500/20 shadow-xl mb-8 text-sm md:text-base leading-[1.8] text-slate-700 dark:text-slate-300">
+            <h2 class="text-2xl font-black text-amber-700 dark:text-amber-400 mb-4 pb-2 border-b border-white/10">2. 평면적인 캐릭터를 입체적으로 만드는 '결함'의 미학</h2>
+            <p class="mb-4">모든 면에서 완벽한 먼치킨 주인공은 통쾌함을 주지만, 자칫하면 독자가 지루함을 느낄 수 있습니다. 매력적이고 입체적인 캐릭터는 반드시 <b>'치명적인 결함(Flaw)'</b>이나 <b>'트라우마'</b>를 가지고 있습니다. 겉으로는 냉혹하고 무자비해 보이지만 버려진 동물을 지나치지 못한다거나, 뛰어난 마법사지만 특정 원소를 사용할 때마다 과거의 끔찍한 기억을 떠올려야 하는 식입니다.</p>
+            <p class="mb-4">캐릭터 시뮬레이터를 활용할 때 '설정/배경' 란에 이러한 결함을 반드시 기입해 보세요. AI가 겉 반응과 대사에서는 강한 척을 하지만, '진짜 속마음'에서는 두려움이나 갈등을 느끼는 소름 돋는 롤플레잉을 보여줄 것입니다.</p>
+            <p>또한 조연이나 악역을 설정할 때도 그들만의 정당성을 부여하세요. "그냥 나쁜 놈"보다는 "자신의 국가를 구하기 위해 어쩔 수 없이 악행을 선택한 타락한 영웅"이 이야기의 깊이를 훨씬 더해줍니다. 인물 관계도를 생성할 때 이러한 입체적인 설정들이 얽히고설켜 훌륭한 군상극의 기초가 완성됩니다.</p>
+        </article>
+    </main>
+
+    <footer class="border-t border-slate-200 dark:border-white/5 py-8 glass text-center mt-12">
+        <p class="text-[10px] md:text-xs text-slate-500 font-bold tracking-widest uppercase">© 2026 NARRATIVEFORGE. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+</body>
+</html>
